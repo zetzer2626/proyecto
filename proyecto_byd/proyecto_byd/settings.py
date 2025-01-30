@@ -81,14 +81,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'proyecto_byd.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+import os
+import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=os.getenv("DATABASE_PUBLIC_URL"))
 }
 
 # Password validation
