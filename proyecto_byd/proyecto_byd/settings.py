@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-7v3g5vm+ysn7w_v+j&j6k#^p3@e4b!(s8gvn$ttzymc1jqhs)u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
 
 LOGIN_URL = '/login/'  # URL para el formulario de inicio de sesión
 LOGIN_REDIRECT_URL = ''  # Redirige a la lista de proyectos después de iniciar sesión
@@ -145,3 +145,5 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+ALLOWED_HOSTS = ['localhost','proyecto-production-e5a6.up.railway.app']
