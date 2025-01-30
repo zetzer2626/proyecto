@@ -1,0 +1,91 @@
+{% extends 'base.html' %}  
+{% load widget_tweaks %}
+
+{% block content %}  
+<div class="container mt-5">  
+    <!-- Card Principal -->
+    <div class="card shadow border-0">  
+        <div class="card-header bg-primary text-white rounded-top">  
+            <h2 class="mb-0 d-flex align-items-center justify-content-between">
+                <span><i class="fas fa-plus-circle me-2"></i> Crear Insumo</span>
+            </h2>  
+        </div>  
+        <div class="card-body" style="background-color: #f0f2f5;">  
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>  
+                {% csrf_token %}  
+                <div class="row g-4">  
+                    <!-- Solicitante -->
+                    <div class="col-md-6">
+                        <label for="solicitante" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-user me-2"></i>{{ form.solicitante.label }}
+                        </label>
+                        {{ form.solicitante|add_class:"form-control border-secondary" }}
+                    </div>
+                    <!-- Descripción -->
+                    <div class="col-md-6">
+                        <label for="descripcion" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-info-circle me-2"></i>{{ form.descripcion.label }}
+                        </label>
+                        {{ form.descripcion|add_class:"form-control border-secondary" }}
+                    </div>
+                </div>  
+
+                <div class="row g-4 mt-3">
+                    <!-- Fecha Solicitud -->
+                    <div class="col-md-6">
+                        <label for="fecha_solicitud" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-calendar-alt me-2"></i>{{ form.fecha_solicitud.label }}
+                        </label>
+                        {{ form.fecha_solicitud|add_class:"form-control border-secondary" }}
+                    </div>
+                    <!-- Fecha Recepción -->
+                    <div class="col-md-6">
+                        <label for="fecha_recepcion" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-calendar-check me-2"></i>{{ form.fecha_recepcion.label }}
+                        </label>
+                        {{ form.fecha_recepcion|add_class:"form-control border-secondary" }}
+                    </div>
+                </div>  
+
+                <div class="row g-4 mt-3">
+                    <!-- Valor Total -->
+                    <div class="col-md-6">
+                        <label for="valor_total" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-dollar-sign me-2"></i>{{ form.valor_total.label }}
+                        </label>
+                        {{ form.valor_total|add_class:"form-control border-secondary" }}
+                    </div>
+                    <!-- Pago -->
+                    <div class="col-md-6">
+                        <label for="pago" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-money-bill-wave me-2"></i>{{ form.pago.label }}
+                        </label>
+                        {{ form.pago|add_class:"form-control border-secondary" }}
+                    </div>
+                </div>  
+
+                <div class="row g-4 mt-3">
+                    <!-- Factura -->
+                    <div class="col-md-12">
+                        <label for="factura" class="form-label text-secondary fw-bold">
+                            <i class="fas fa-file-invoice me-2"></i>{{ form.factura.label }}
+                        </label>
+                        {{ form.factura|add_class:"form-control border-secondary" }}
+                    </div>
+                </div>  
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between align-items-center mt-4">  
+                    <a href="{% url 'insumo_list' %}" class="btn btn-light text-primary border border-primary btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a la lista
+                    </a>  
+                    <button type="submit" class="btn btn-primary text-white btn-lg">
+                        <i class="fas fa-save me-2"></i>Guardar
+                    </button>  
+                </div>  
+            </form>  
+        </div>  
+    </div>  
+</div>  
+
+{% endblock %}

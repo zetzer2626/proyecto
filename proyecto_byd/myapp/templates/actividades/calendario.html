@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        table {
+            font-size: 0.9rem;
+        }
+        td {
+            width: 13.5%;
+            padding: 10px;
+            vertical-align: top;
+            height: 80px;
+        }
+        .btn-sm {
+            padding: 0.2rem 0.4rem;
+            font-size: 0.8rem;
+            min-width: 32px;
+            min-height: 32px;
+        }
+        .badge {
+            font-size: 0.8rem;
+            padding: 5px;
+        }
+        .modal-content {
+            font-size: 0.9rem;
+        }
+        .modal-header .btn-close {
+            font-size: 1.2rem;
+        }
+        .form-control {
+            font-size: 0.9rem;
+        }
+        .card-body {
+            font-size: 0.9rem;
+        }
+        .table-gradient {
+            background: linear-gradient(135deg, #6e7dff, #76e3f5);
+        }
+        .btn-outline-primary {
+            background-color: #6e7dff;
+            color: white;
+            border-color: #6e7dff;
+        }
+        .btn-outline-primary:hover {
+            background-color: #5a6fd9;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .bg-gradient-light {
+            background: linear-gradient(135deg, #f7e4c4, #d7e6ff);
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center">
+        <h1 class="mb-4 display-4 text-gradient">Calendario - {{ nombre_mes }} {{ anio }}</h1>
+    </div>
+
+    <div class="d-flex justify-content-between mb-4">
+        <a href="?anio={{ anio_anterior }}&mes={{ mes_anterior }}" class="btn btn-outline-primary btn-lg shadow-sm">
+            <i class="bi bi-arrow-left-circle"></i> Mes anterior
+        </a>
+        <a href="?anio={{ anio_siguiente }}&mes={{ mes_siguiente }}" class="btn btn-outline-primary btn-lg shadow-sm">
+            Mes siguiente <i class="bi bi-arrow-right-circle"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered text-center shadow-lg rounded w-100">
+            <thead class="table-gradient text-white">
+                <tr>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th class="text-primary">Sábado</th>
+                    <th class="text-danger">Domingo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for semana in dias %}
+                    <tr>
+                        {% for dia in semana %}
+                            <td class="p-2 {% if dia.dia %}bg-white{% else %}bg-light{% endif %} align-top rounded">
+                                {% if dia.dia %}
+                                    <div class="fw-bold">{{ dia.dia }}</div>
+                                    <ul class="list-unstyled mt-2">
+                                        {% for evento in dia.eventos %}
+                                            <li class="mb-1">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="badge bg-success text-white">{{ evento.titulo }}</span>
+
+                                                    <form method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                                                        {% if evento.completado %}
+                                                            <button type="submit" name="desmarcar_ticket" class="btn btn-sm btn-warning" title="Trabajando">
+                                                                <i class="bi bi-hourglass-split"></i>
+                                                            </button>
+                                                        {% else %}
+                                                            <button type="submit" name="marcar_ticket" class="btn btn-sm btn-success" title="Completado">
+                                                                <i class="bi bi-check-circle"></i>
+                                                            </button>
+                                                        {% endif %}
+                                                    </form>
+
+                                                    <button class="btn btn-sm btn-warning ms-2" data-bs-toggle="modal" data-bs-target="#editarModal{{ evento.id }}">
+                                                        <i class="bi bi-pencil-fill"></i>
+                                                    </button>
+                                                    
+                                                    <button class="btn btn-sm btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ evento.id }}">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </button>
+                                                </div>
+                                            </li>
+
+                                            <div class="modal fade" id="editarModal{{ evento.id }}" tabindex="-1" aria-labelledby="editarModalLabel{{ evento.id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editarModalLabel{{ evento.id }}">Editar evento</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form method="post">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                                                                <div class="mb-3">
+                                                                    <label for="titulo{{ evento.id }}" class="form-label">Título:</label>
+                                                                    <input type="text" id="titulo{{ evento.id }}" name="titulo" value="{{ evento.titulo }}" class="form-control" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="descripcion{{ evento.id }}" class="form-label">Descripción:</label>
+                                                                    <textarea id="descripcion{{ evento.id }}" name="descripcion" class="form-control">{{ evento.descripcion }}</textarea>
+                                                                </div>
+                                                                <button type="submit" name="editar_evento" class="btn btn-primary">Guardar cambios</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal fade" id="eliminarModal{{ evento.id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ evento.id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="eliminarModalLabel{{ evento.id }}">Eliminar evento</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>¿Estás seguro de que deseas eliminar este evento?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <form method="post">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                <button type="submit" name="eliminar_evento" class="btn btn-danger">Eliminar</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card mt-5 shadow-lg border-0">
+        <div class="card-body bg-gradient-light">
+            <h5 class="card-title text-center text-gradient">Agregar un nuevo evento</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Título:</label>
+                    <input type="text" id="titulo" name="titulo" class="form-control form-control-sm shadow-sm" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control form-control-sm shadow-sm"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="fecha" class="form-label">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" class="form-control form-control-sm shadow-sm" required>
+                </div>
+                <button type="submit" name="agregar_evento" class="btn btn-success w-100 btn-lg shadow-sm">
+                    <i class="bi bi-check-circle-fill"></i> Agregar evento
+                </button>
+            </form>
+        </div>
+    </div>
+    
+
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-primary btn-lg shadow-sm">
+            <i class="bi bi-house-door-fill"></i> Volver al inicio
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center text-primary">Detalles del Proyecto</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 font-weight-bold">Presupuesto</dt>
+                <dd class="col-sm-9">{{ listado.presupuesto }}</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Año</dt>
+                <dd class="col-sm-9">{{ listado.año }}</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Nombre</dt>
+                <dd class="col-sm-9">{{ listado.nombre }}</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Nota</dt>
+                <dd class="col-sm-9">{{ listado.nota }}</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Gestión</dt>
+                <dd class="col-sm-9">{{ listado.gestion }}</dd>
+
+                <dt class="col-sm-3 font-weight-bold">Listado</dt>
+                <dd class="col-sm-9">
+                    {% if listado.listado %}
+                        <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-primary">
+                            Ver Documento
+                        </a>
+                    {% else %}
+                        <span>No disponible</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3 font-weight-bold">Drive</dt>
+                <dd class="col-sm-9">
+                    {% if listado.drive %}
+                        <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-success">
+                            Ver en Google Drive
+                        </a>
+                    {% else %}
+                        <span>No disponible</span>
+                    {% endif %}
+                </dd>
+            </dl>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-warning btn-lg">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <a href="{% url 'listado_delete' listado.pk %}" class="btn btn-danger btn-lg">
+                    <i class="fas fa-trash"></i> Eliminar
+                </a>
+                <a href="{% url 'listado_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

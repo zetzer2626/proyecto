@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Detalle del Contacto</h2>
+<p><strong>Nombre:</strong> {{ contacto.nombre }}</p>
+<p><strong>Teléfono:</strong> {{ contacto.telefono }}</p>
+<p><strong>Correo:</strong> {{ contacto.correo }}</p>
+<p><strong>Tipo de Contacto:</strong> {{ contacto.tipo }}</p>
+
+<a href="{% url 'contacto-update' contacto.pk %}" class="btn btn-secondary">Editar</a>
+<a href="{% url 'contacto-delete' contacto.pk %}" class="btn btn-danger">Eliminar</a>
+<a href="{% url 'contacto-list' %}" class="btn btn-primary">Volver a la lista</a>
+{% endblock %}

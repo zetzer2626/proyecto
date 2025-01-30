@@ -1,0 +1,46 @@
+{% extends 'base.html' %}  
+
+{% block content %}  
+<div class="container mt-4">  
+    <h1 class="mb-4">Actualizar Insumo</h1>  
+    <form method="post" enctype="multipart/form-data">  
+        {% csrf_token %}  
+        <div class="table-responsive">  
+            <table class="table">  
+                <tbody>  
+                    <tr>  
+                        <th>{{ form.solicitante.label }}</th>  
+                        <td>{{ form.solicitante }}</td>  
+                    </tr>  
+                    <tr>  
+                        <th>{{ form.descripcion.label }}</th>  
+                        <td>{{ form.descripcion }}</td>  
+                    </tr>  
+                    <tr>  
+                        <th>{{ form.fecha_solicitud.label }}</th>  
+                        <td>{{ form.fecha_solicitud }}</td>  
+                    </tr>  
+                    <tr>  
+                        <th>{{ form.fecha_recepcion.label }}</th>  
+                        <td>{{ form.fecha_recepcion }}</td>  
+                    </tr>  
+                    <tr>  
+                        <th>{{ form.valor_total.label }}</th>  
+                        <td>{{ form.valor_total }}</td>  
+                    </tr> 
+                    <tr>  
+                        <th>{{ form.pago.label }}</th>  
+                        <td>{{ form.pago }}</td>  
+                    </tr>  
+                    <tr>  
+                        <th>{{ form.factura.label }}</th>  
+                        <td>{{ form.factura }}</td>  
+                    </tr>  
+                </tbody>  
+            </table>  
+        </div>  
+        <button type="submit" class="btn btn-primary">Guardar</button>  
+    </form>  
+    <a href="{% url 'insumo_list' %}" class="btn btn-secondary">Volver a la lista</a>  
+</div>  
+{% endblock %}  

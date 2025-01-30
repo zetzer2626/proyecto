@@ -1,0 +1,126 @@
+{% extends "base.html" %}  
+
+{% load static %}  
+
+{% block content %}  
+<div class="container my-5">  
+    <h2 class="text-center mb-4">Libreta de Contactos</h2>  
+
+    <!-- Resumen de contactos en tarjetas -->  
+    <div class="row mb-4">  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-people-fill fs-2 text-primary"></i>  
+                    <h5 class="card-title mt-3">Total Contactos</h5>  
+                    <p class="card-text fs-2 text-primary">{{ total_contactos }}</p>  
+                </div>  
+            </div>  
+        </div>  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-person-fill fs-2 text-success"></i>  
+                    <h5 class="card-title mt-3">Clientes</h5>  
+                    <p class="card-text fs-2 text-success">{{ total_clientes }}</p>  
+                </div>  
+            </div>  
+        </div>  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-briefcase-fill fs-2 text-warning"></i>  
+                    <h5 class="card-title mt-3">Profesionales</h5>  
+                    <p class="card-text fs-2 text-warning">{{ total_profesionales }}</p>  
+                </div>  
+            </div>  
+        </div>  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-box-seam fs-2 text-info"></i>  
+                    <h5 class="card-title mt-3">Otros</h5>  
+                    <p class="card-text fs-2 text-info">{{ total_otros }}</p>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
+
+    <!-- Barra de búsqueda y filtro -->  
+    <div class="card shadow-sm mb-4">  
+        <form method="get" class="row align-items-center">  
+            <div class="col-md-5 form-group input-group mb-3">  
+                <span class="input-group-text"><i class="bi bi-search"></i></span>  
+                <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, correo o teléfono" value="{{ request.GET.q }}">  
+            </div>  
+            
+            <div class="col-md-4 form-group mb-3">  
+                <select name="tipo" class="form-select">  
+                    <option value="">Filtrar por tipo</option>  
+                    <option value="CLIENTE" {% if request.GET.tipo == "CLIENTE" %}selected{% endif %}>Cliente</option>  
+                    <option value="CLIENTE PROYECTO" {% if request.GET.tipo == "CLIENTE PROYECTO" %}selected{% endif %}>Cliente Proyecto</option>  
+                    <option value="CLIENTE LOTE" {% if request.GET.tipo == "CLIENTE LOTE" %}selected{% endif %}>Cliente Lote</option>  
+                    <option value="PROFESIONAL" {% if request.GET.tipo == "PROFESIONAL" %}selected{% endif %}>Profesional</option>  
+                    <option value="ENTIDAD" {% if request.GET.tipo == "ENTIDAD" %}selected{% endif %}>Entidad</option>  
+                    <option value="OTROS" {% if request.GET.tipo == "OTROS" %}selected{% endif %}>Otros</option>  
+                </select>  
+            </div>  
+            
+            <div class="col-md-3 form-group d-grid mb-3">  
+                <button type="submit" class="btn btn-primary btn-sm">  
+                    <i class="bi bi-search"></i> Buscar  
+                </button>  
+            </div>  
+            
+            <div class="col-md-3 form-group d-grid mb-3">  
+                <a href="{% url 'contacto-create' %}" class="btn btn-success btn-sm">  
+                    <i class="bi bi-person-plus"></i> Agregar  
+                </a>  
+            </div>  
+        </form>  
+    </div>  
+
+    <!-- Tabla de Contactos -->  
+    <table id="example" class="table table-striped" style="width:100%">  
+        <thead class="table-dark">  
+            <tr>  
+                <th>Nombre</th>  
+                <th>Tipo</th>  
+                <th>Teléfono</th>  
+                <th>Correo</th>  
+                <th>Acciones</th>  
+            </tr>  
+        </thead>  
+        <tbody>  
+            {% for contacto in contactos %}  
+                <tr>  
+                    <td><strong>{{ contacto.nombre }}</strong></td>  
+                    <td>{{ contacto.tipo }}</td>  <!-- Corrige aquí a get_tipo_display -->  
+                    <td>{{ contacto.telefono }}</td>  
+                    <td>{{ contacto.correo }}</td>  
+                    <td>  
+                        <a href="{% url 'contacto-detail' contacto.pk %}" class="btn btn-info btn-sm">  
+                            <i class="bi bi-eye"></i> 
+                        </a>  
+                        <a href="{% url 'contacto-delete' contacto.pk %}" class="btn btn-danger btn-sm">  
+                            <i class="bi bi-trash"></i> Eliminar  
+                        </a>  
+                    </td>  
+                </tr>  
+            {% empty %}  
+                <tr>  
+                    <td colspan="5" class="text-center">No hay contactos que coincidan con la búsqueda.</td>  
+                </tr>  
+            {% endfor %}  
+        </tbody>  
+    </table>  
+</div>  
+
+<style>  
+/* Botones pequeños */  
+.btn-sm {  
+    font-size: 0.8rem;  
+    padding: 0.4rem 0.7rem;  
+}  
+</style>  
+{% endblock %}

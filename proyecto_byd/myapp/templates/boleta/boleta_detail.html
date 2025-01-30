@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Boleta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="boleta-container">
+        <div class="boleta-header">
+            <img src="{% static 'img/byd-logo.jpeg' %}" alt="Logo Empresa">
+            <h2>Detalle de Boleta</h2>
+            <div class="talonario">
+                <span><strong>N°Folio:</strong> {{ boleta.numero_talonario }}</span>
+            </div>
+        </div>
+
+        <div class="boleta-details">
+            <div class="boleta-row">
+                <span><strong>N° Presupuesto:</strong> {{ boleta.presupuesto }}/{{ boleta.año }}</span>
+                <span><strong>Fecha:</strong> {{ boleta.fecha }}</span>
+            </div>
+            <div class="boleta-row">
+                <span><strong>Nombre:</strong> {{ boleta.nombre }}</span>
+            </div>
+            <div class="boleta-row">
+                <span><strong>Corresponde:</strong> {{ boleta.correspondiente }}</span>
+            </div>
+            <div class="boleta-row">
+                <span><strong>Forma de Pago:</strong> {{ boleta.forma_pago }}</span>
+                <span><strong>N° Cheque:</strong> {{ boleta.numero_cheque }}</span>
+            </div>
+        </div>
+
+        <div class="boleta-summary">
+            <strong>Total Boleta:</strong> ${{ boleta.monto }}
+        </div>
+
+        <div class="boleta-images">
+            <img src="{% static 'img/sello.jpeg' %}" alt="Sello">
+            <img src="{% static 'img/firma.jpeg' %}" alt="Firma">
+        </div>
+
+        <div class="boleta-footer">
+            <div class="footer-row">
+                <strong>GLORIA DELGADO ARAYA</strong>
+            </div>
+            <div class="footer-row">Representante Legal</div>
+        </div>
+
+        <div class="contact-info">
+            <p><strong>Correo:</strong> byd_arquitectura@yahoo.com</p>
+            <p><strong>Contacto:</strong> 97987 0427</p>
+        </div>
+
+        <div class="print-button">
+            <button onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .boleta-container {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 2px solid #000;
+            padding: 20px;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .boleta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .boleta-header img {
+            max-width: 120px;
+        }
+
+        .boleta-header h2 {
+            flex: 1;
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .talonario {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .boleta-details {
+            margin-bottom: 20px;
+        }
+
+        .boleta-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .boleta-summary {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .boleta-images {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .boleta-images img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .boleta-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
+        }
+
+        .footer-row {
+            margin-top: 10px;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .print-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .print-button button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .print-button button:hover {
+            background-color: #0056b3;
+        }
+
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Pagos Ingresos y Egresos</h1>
+
+    <!-- Filtros y Botones -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <!-- Formulario de filtro -->
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control"
+                           value="{{ request.GET.fecha_inicio }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="fecha_fin" class="form-label">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control"
+                           value="{{ request.GET.fecha_fin }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="tipo_pago" class="form-label">Tipo de Pago</label>
+                    <select name="tipo_pago" id="tipo_pago" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="ingreso" {% if request.GET.tipo_pago == 'ingreso' %}selected{% endif %}>Ingreso</option>
+                        <option value="egreso" {% if request.GET.tipo_pago == 'egreso' %}selected{% endif %}>Egreso</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Botones de acción -->
+            <div class="d-flex flex-column align-items-end">
+                <a href="{% url 'pago_tramitacion_create' %}" class="btn btn-success mb-2 w-100">
+                    <i class="bi bi-plus-circle"></i> Crear Nuevo Pago
+                </a>
+                <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-arrow-clockwise"></i> Restablecer Filtros
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mostrar los totales -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Ingresos</h5>
+                    <p class="card-text">{{ total_ingresos_filtrados|intcomma }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Egresos</h5>
+                    <p class="card-text">{{ total_egresos_filtrados|intcomma }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Saldo</h5>
+                    <p class="card-text">{{ saldo_filtrado|intcomma }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de pagos -->
+    <div class="table-responsive">
+        <table id="example" class="table table-striped table-hover table-bordered" style="width:100%">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo de Pago</th>
+                    <th>Fecha</th>
+                    <th>Origen</th>
+                    <th>Nombre</th>
+                    <th>Gestion</th>
+                    <th>Ingreso</th>
+                    <th>Egreso</th>
+                    <th>Transferencia</th>
+                    <th>Boleta BYD</th>
+                    <th>Factura o Boleta</th>
+                    <th>Aciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos %}
+                <tr>
+                    <td>
+                        <span class="badge {% if pago.tipo_pago == 'ingreso' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ pago.tipo_pago|capfirst }}
+                        </span>
+                    </td>
+                    <td>{{ pago.fecha }}</td>
+                    <td><strong>{{ pago.origen }}</strong></td>
+                    <td>{{ pago.nombre }}</td>
+                    <td>{{ pago.gestion }}</td>
+                    <td>
+                        <span class="badge bg-success">
+                            {{ pago.ingreso|intcomma }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger">
+                            {{ pago.egreso|intcomma }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if pago.transferencia %}
+                            <a href="{{ pago.transferencia.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Comprobante</a>
+                        {% else %}
+                            <span class="text-muted">Sin Documento</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pago.boletabyd %}
+                            <a href="{{ pago.boletabyd.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Comprobante</a>
+                        {% else %}
+                            <span class="text-muted">Sin Documento</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pago.facturabyd %}
+                            <a href="{{ pago.facturabyd.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Comprobante</a>
+                        {% else %}
+                            <span class="text-muted">Sin Documento</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'pago_tramitacion_edit' pago.pk %}" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'pago_tramitacion_delete' pago.pk %}" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta solicitud?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            <a href="{% url 'pago_tramitacion_detail' pago.pk %}" class="btn btn-sm btn-info" title="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay pagos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .badge.bg-success {
+    background-color: #28a745;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545;
+}
+</style>
+{% endblock %}

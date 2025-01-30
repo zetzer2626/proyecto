@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center text-primary fw-bold">Editar Enlace</h1>
+    <div class="card shadow-lg mx-auto" style="max-width: 500px; border-radius: 20px; border: 1px solid #ddd;">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_titulo" class="form-label">
+                        <i class="fas fa-heading text-primary"></i> Título
+                    </label>
+                    {{ form.titulo|add_class:"form-control"}}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">
+                        <i class="fas fa-align-left text-success"></i> Descripción
+                    </label>
+                    {{ form.description|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_link" class="form-label">
+                        <i class="fas fa-link text-info"></i> Enlace
+                    </label>
+                    {{ form.link|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_documento_pdf" class="form-label">
+                        <i class="fas fa-file-pdf text-danger"></i> Subir Documento PDF
+                    </label>
+                    {{ form.documento_pdf|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_avatar" class="form-label">
+                        <i class="fas fa-user-circle text-secondary"></i> Subir Avatar (Opcional)
+                    </label>
+                    {{ form.avatar|add_class:"form-control" }}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <a href="{% url 'enlace_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

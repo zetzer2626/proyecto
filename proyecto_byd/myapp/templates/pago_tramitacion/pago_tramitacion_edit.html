@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load widget_tweaks %}
+{% load humanize %}
+
+{% block title %}Editar Pago{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg border-primary mx-auto" style="max-width: 700px;">
+        <div class="card-header bg-warning text-white">
+            <h3 class="card-title text-center mb-0">Formulario de Edición</h3>
+        </div>
+        <div class="card-body bg-light">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- Mostrar errores del formulario -->
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_tipo_pago" class="form-label">Tipo de Pago</label>
+                            {{ form.tipo_pago|add_class:"form-select" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="id_fecha" name="fecha" value="{{ form.fecha.value|default:'' }}">
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_origen" class="form-label">Origen</label>
+                    {{ form.origen|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_nombre" class="form-label">Nombre</label>
+                    {{ form.nombre|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_gestion" class="form-label">Gestión</label>
+                    {{ form.gestion|add_class:"form-control" }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_ingreso" class="form-label">Ingreso</label>
+                            {{ form.ingreso|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_egreso" class="form-label">Egreso</label>
+                            {{ form.egreso|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_transferencia" class="form-label">Transferencia</label>
+                    {{ form.transferencia|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_boletabyd" class="form-label">Boleta BYD</label>
+                    {{ form.boletabyd|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_facturabyd" class="form-label">Factura BYD</label>
+                    {{ form.facturabyd|add_class:"form-control" }}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 shadow">Actualizar Pago</button>
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+    body {
+    background-color: #f8f9fa;
+}
+
+h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 30px;
+}
+
+.card {
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background: linear-gradient(45deg, #ffb700, #ff8c00);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;  /* Ajustado para ser más compacto */
+}
+
+.form-control {
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.alert-danger ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.alert-danger li {
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

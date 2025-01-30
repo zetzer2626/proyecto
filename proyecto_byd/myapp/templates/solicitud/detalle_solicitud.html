@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Detalle de Solicitud{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow-lg border-0 rounded-3">
+                <!-- Encabezado con título de la solicitud -->
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h4 class="mb-0 font-weight-bold">Detalles de Solicitud #{{ solicitud.pk }}</h4>
+                </div>
+
+                <!-- Cuerpo de la tarjeta con la información -->
+                <div class="card-body px-4 py-5">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><strong>Solicitante:</strong></h5>
+                            <p class="text-muted">{{ solicitud.solicitante }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><strong>Documento:</strong></h5>
+                            <p class="text-muted">{{ solicitud.nombre_documento }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><strong>Nombre:</strong></h5>
+                            <p class="text-muted">{{ solicitud.nombre }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><strong>Dirección:</strong></h5>
+                            <p class="text-muted">{{ solicitud.direccion }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><strong>Fecha Solicitud:</strong></h5>
+                            {% if solicitud.fecha_solicitud %}
+                                <p class="text-muted">{{ solicitud.fecha_solicitud}}</p>
+                            {% else %}
+                                <p class="text-muted">No disponible</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5><strong>Fecha Recepción:</strong></h5>
+                            {% if solicitud.fecha_recepcion %}
+                                <p class="text-muted">{{ solicitud.fecha_recepcion}}</p>
+                            {% else %}
+                                <p class="text-muted">No disponible</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5><strong>Descripción:</strong></h5>
+                            <p class="text-muted">{{ solicitud.descripcion }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Sección de enlaces con iconos y botones -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><strong>Documento Solicitud:</strong></h5>
+                            {% if solicitud.documento_solicitud %}
+                                <a href="{{ solicitud.documento_solicitud.url }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-file-alt"></i> Ver Documento
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No disponible</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><strong>Link Drive:</strong></h5>
+                            {% if solicitud.link_solicitud %}
+                                <a href="{{ solicitud.link_solicitud }}" target="_blank" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-cloud-upload-alt"></i> Ver en Drive
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No disponible</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Estado de la solicitud con color dinámico -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><strong>Estado:</strong></h5>
+                            {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
+                                <span class="badge bg-success text-white">Completada</span>
+                            {% elif solicitud.fecha_solicitud %}
+                                <span class="badge bg-warning text-dark">En Proceso</span>
+                            {% else %}
+                                <span class="badge bg-danger text-white">Pendiente</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Botón de regreso con icono y estilo -->
+                    <div class="text-center">
+                        <a href="{% url 'solicitud-list' %}" class="btn btn-secondary btn-lg rounded-pill px-4 py-2">
+                            <i class="fas fa-arrow-left mr-2"></i> Volver a la Lista
+                        </a>
+                        <a href="{% url 'solicitud-update' solicitud.pk %}" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>Editar
+                        </a>
+                        <a href="{% url 'solicitud-delete' solicitud.pk %}" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta solicitud?')">
+                            <i class="fas fa-trash"></i>Eliminar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Estadísticas y Análisis{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Panel de Análisis de Proyectos</h1>
+
+    <div class="row mb-5">
+        <!-- Tarjetas de Estadísticas -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="mb-0">Proyectos Completados</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title display-4 text-center">{{ proyectos_completados }}</h2>
+                    <p class="card-text text-center">Proyectos aprobados con éxito.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header bg-danger text-white text-center">
+                    <h5 class="mb-0">Proyectos No Concretados</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title display-4 text-center">{{ proyectos_no_concretados }}</h2>
+                    <p class="card-text text-center">Proyectos no concretados.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header bg-info text-white text-center">
+                    <h5 class="mb-0">Total de Clientes</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title display-4 text-center">{{ total_clientes }}</h2>
+                    <p class="card-text text-center">Clientes registrados.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header bg-warning text-white text-center">
+                    <h5 class="mb-0">Ingresados</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title display-4 text-center">{{ ingresado }}</h2>
+                    <p class="card-text text-center">Ingresados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-primary btn-lg">Volver a la lista de proyectos</a>
+    </div>
+</div>
+
+{% endblock %}

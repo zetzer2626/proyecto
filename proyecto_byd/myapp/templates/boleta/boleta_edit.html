@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="form-container">
+        <div class="form-header">Editar Boleta</div>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ boleta.id }}">
+
+            <label for="numero_talonario">N° Talonario:</label>
+            <input type="number" id="numero_talonario" name="numero_talonario" value="{{ boleta.numero_talonario }}">
+
+            <label for="año">Año:</label>
+            <input type="number" id="año" name="año" value="{{ boleta.año }}">
+
+            <label for="presupuesto">Presupuesto:</label>
+            <input type="text" id="presupuesto" name="presupuesto" value="{{ boleta.presupuesto }}" required maxlength="5">
+
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ boleta.nombre }}" required maxlength="200">
+
+            <label for="monto">Monto:</label>
+            <input type="number" id="monto" name="monto" value="{{ boleta.monto }}">
+
+            <label for="correspondiente">Correspondiente:</label>
+            <textarea id="correspondiente" name="correspondiente" maxlength="1000">{{ boleta.correspondiente }}</textarea>
+
+            <label for="fecha">Fecha:</label>
+            <input type="text" id="fecha" name="fecha" value="{{ boleta.fecha }}">
+
+            <label for="forma_pago">Forma de Pago:</label>
+            <select id="forma_pago" name="forma_pago">
+                <option value="">Seleccione una opción</option>
+                {% for key, value in form.fields.forma_pago.choices %}
+                    <option value="{{ key }}" {% if boleta.forma_pago == key %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="cheque">N° Cheque:</label>
+            <input type="number" id="cheque" name="cheque" value="{{ boleta.cheque }}">
+
+
+            <button type="submit">Guardar Cambios</button>
+        </form>
+
+        <div class="cancel-button">
+            <a href="{% url 'boleta_list' %}">Cancelar</a>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .form-container {
+            width: 50%;
+            margin: 50px auto;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .form-header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .cancel-button {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .cancel-button a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .cancel-button a:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}

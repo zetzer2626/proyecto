@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Pago</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .text-secondary {
+            font-weight: 500;
+        }
+        .text-muted {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h1 class="h3 mb-0">Detalles del Pago de Tramitación</h1>
+            </div>
+            <div class="card-body p-4">
+                <!-- Información general -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Registro:</h5>
+                        <p class="fs-5 text-dark">12345</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Fecha:</h5>
+                        <p class="fs-5 text-dark">2025-01-20</p>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Origen:</h5>
+                        <p class="fs-5 text-dark">Banco Nacional</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Nombre:</h5>
+                        <p class="fs-5 text-dark">Juan Pérez</p>
+                    </div>
+                </div>
+
+                <!-- Gestión -->
+                <div class="mb-4">
+                    <h5 class="text-secondary">Gestión:</h5>
+                    <p class="fs-5 text-dark">Pago por tramitación de documentos</p>
+                </div>
+
+                <!-- Ingresos y Egresos -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Ingreso:</h5>
+                        <p class="fs-5 text-success fw-bold">
+                            <i class="fas fa-arrow-up"></i> 10,000
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Egreso:</h5>
+                        <p class="fs-5 text-danger fw-bold">
+                            <i class="fas fa-arrow-down"></i> 8,500
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Documentos -->
+                <div class="mb-4">
+                    <h5 class="text-secondary">Transferencia:</h5>
+                    <a href="#" class="btn btn-primary btn-sm shadow-sm" target="_blank">
+                        <i class="fas fa-file-alt"></i> Ver Transferencia
+                    </a>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-secondary">Boleta BYD:</h5>
+                    <a href="#" class="btn btn-primary btn-sm shadow-sm" target="_blank">
+                        <i class="fas fa-file-alt"></i> Ver Boleta
+                    </a>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-secondary">Factura BYD:</h5>
+                    <a href="#" class="btn btn-primary btn-sm shadow-sm" target="_blank">
+                        <i class="fas fa-file-alt"></i> Ver Factura
+                    </a>
+                </div>
+
+                <!-- Acciones -->
+                <div class="d-flex justify-content-end gap-3">
+                    <a href="#" class="btn btn-warning shadow-sm">
+                        <i class="fas fa-edit"></i> Editar Pago
+                    </a>
+                    <a href="#" class="btn btn-secondary shadow-sm">
+                        <i class="fas fa-list"></i> Volver a la lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

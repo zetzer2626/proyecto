@@ -1,0 +1,56 @@
+{% extends 'base.html' %}  
+
+{% block content %}  
+<div class="container mt-4">  
+    <h1 class="mb-4">Detalle de Insumo</h1>  
+    <div class="table-responsive">  
+        <table class="table table-bordered">  
+            <tbody>  
+                <tr>  
+                    <th>Solicitante</th>  
+                    <td>{{ insumo.solicitante }}</td>  
+                </tr>  
+                <tr>  
+                    <th>Descripción</th>  
+                    <td>{{ insumo.descripcion }}</td>  
+                </tr>  
+                <tr>  
+                    <th>Fecha de Solicitud</th>  
+                    <td>{{ insumo.fecha_solicitud }}</td>  
+                </tr>  
+                <tr>  
+                    <th>Fecha de Recepción</th>  
+                    <td>{{ insumo.fecha_recepcion }}</td>  
+                </tr>  
+                <tr>  
+                    <th>Valor Total</th>  
+                    <td>{{ insumo.valor_total }}</td>  
+                </tr>
+                <tr>  
+                    <th>Pago</th>  
+                    <td>  
+                        {% if insumo.pago %}  
+                            <a href="{{ insumo.pago.url }}">Descargar Pago</a>  
+                        {% else %}  
+                            No disponible  
+                        {% endif %}  
+                    </td>  
+                </tr>  
+                <tr>  
+                    <th>Factura</th>  
+                    <td>  
+                        {% if insumo.factura %}  
+                            <a href="{{ insumo.factura.url }}">Descargar Factura</a>  
+                        {% else %}  
+                            No disponible  
+                        {% endif %}  
+                    </td>  
+                </tr>  
+            </tbody>  
+        </table>  
+    </div>  
+    <a href="{% url 'insumo_edit' insumo.pk %}" class="btn btn-warning">Actualizar</a> | 
+    <a href="{% url 'insumo_delete' insumo.pk %}" class="btn btn-danger">Eliminar</a> |   
+    <a href="{% url 'insumo_list' %}" class="btn btn-secondary">Volver a la lista</a>  
+</div>  
+{% endblock %} 

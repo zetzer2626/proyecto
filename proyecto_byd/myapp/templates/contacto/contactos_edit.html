@@ -1,0 +1,94 @@
+{% extends "base.html" %}  
+
+{% load static %}  
+{% load widget_tweaks %}  
+
+{% block content %}  
+<div class="container my-5">  
+    <h2 class="text-center mb-4">Editar Contacto</h2>  
+
+    <div class="row justify-content-center">  
+        <div class="col-md-8">  
+            <div class="card" style="border: 2px solid #6c757d; border-radius: 15px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">  
+                <div class="card-body">  
+                    <!-- Encabezado con título de la libreta -->  
+                    <div class="mb-4 text-center">  
+                        <h4 class="text-primary">Formulario de Contacto</h4>  
+                        <hr style="border-color: #6c757d; width: 60px; margin: auto;">  
+                    </div>  
+                    
+                    <!-- Formulario con campos estilo libreta -->  
+                    <form method="post">  
+                        {% csrf_token %}  
+                        <div class="mb-4">  
+                            <label for="nombre" class="form-label fw-bold">Nombre Completo</label>  
+                            {{ form.nombre|add_class:"form-control" }}  
+                        </div>  
+
+                        <div class="mb-4">  
+                            <label for="tipo" class="form-label fw-bold">Tipo de Contacto</label>  
+                            <select name="tipo" class="form-select">  
+                                <option value="CLIENTE" {% if form.tipo.value == "CLIENTE" %}selected{% endif %}>Cliente</option>  
+                                <option value="CLIENTE PROYECTO" {% if form.tipo.value == "CLIENTE PROYECTO" %}selected{% endif %}>Cliente Proyecto</option>  
+                                <option value="CLIENTE LOTE" {% if form.tipo.value == "CLIENTE LOTE" %}selected{% endif %}>Cliente Lote</option>  
+                                <option value="PROFESIONAL" {% if form.tipo.value == "PROFESIONAL" %}selected{% endif %}>Profesional</option>  
+                                <option value="ENTIDAD" {% if form.tipo.value == "ENTIDAD" %}selected{% endif %}>Entidad</option>  
+                                <option value="OTROS" {% if form.tipo.value == "OTROS" %}selected{% endif %}>Otros</option>  
+                            </select>  
+                        </div>  
+
+                        <div class="mb-4">  
+                            <label for="telefono" class="form-label fw-bold">Teléfono</label>  
+                            {{ form.telefono|add_class:"form-control" }}  
+                        </div>  
+
+                        <div class="mb-4">  
+                            <label for="correo" class="form-label fw-bold">Correo Electrónico</label>  
+                            {{ form.correo|add_class:"form-control" }}  
+                        </div>  
+
+                        <div class="d-flex justify-content-between align-items-center">  
+                            <button type="submit" class="btn btn-primary px-4 py-2">  
+                                <i class="bi bi-save"></i> Guardar Cambios  
+                            </button>  
+                            <a href="{% url 'contacto-list' %}" class="btn btn-secondary px-4 py-2 text-decoration-none">  
+                                <i class="bi bi-x-circle"></i> Cancelar  
+                            </a>  
+                        </div>  
+                    </form>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
+</div>  
+
+<style>  
+    /* Fondo del formulario con imitación de papel */  
+    .card {  
+        background-color: #fdfdfd;  
+        background-image: linear-gradient(white, #f7f7f7);  
+        padding: 30px;  
+        border-radius: 15px;  
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);  
+    }  
+
+    .form-control, .form-select {  
+        border-radius: 10px;  
+        border: 1px solid #ccc;  
+        box-shadow: none;  
+    }  
+
+    .form-control:focus, .form-select:focus {  
+        border-color: #007bff;  
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);  
+    }  
+
+    /* Botones con estilo de página de libreta */  
+    .btn-primary, .btn-secondary {  
+        border-radius: 10px;  
+        font-weight: 600;  
+        letter-spacing: 0.5px;  
+    }  
+</style>  
+
+{% endblock %}

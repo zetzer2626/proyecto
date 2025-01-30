@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Lista de Trámites{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-primary fw-bold">Listado || Etapa</h2>
+
+   <!-- Contadores de Solicitudes por Estado -->
+<div class="row g-4 mb-5">
+    <!-- Tarjeta Completados -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                </div>
+                <div>
+                    <h5 class="text-success fw-bold">Completados</h5>
+                    <p class="display-6 mb-0 text-success">{{ completados_count }}</p>
+                    <small>Tramitaciones completadas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tarjeta Sin Fecha -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-exclamation-circle fa-3x text-danger"></i>
+                </div>
+                <div>
+                    <h5 class="text-danger fw-bold">Sin Fecha</h5>
+                    <p class="display-6 mb-0 text-danger">{{ sin_fecha_count }}</p>
+                    <small>Tramitaciones sin fecha de recepción</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   
+    <!-- Tabla de Solicitudes -->
+    <div class="table-responsive">
+        <a href="{% url 'exportar_tramitacion_excel' %}" class="btn btn-success">Exportar a Excel</a>
+
+        <table id="example" class="table table-striped table-hover table-bordered" style="width:100%">
+            <thead class="table-dark">
+                <tr>
+                    <th>Presup</th>
+                    <th>Año</th>
+                    <th>Nombre</th>
+                    <th>Direccion</th>
+                    <th>Nota</th>
+                    <th>N° Subdiv. Aprobada</th>
+                    <th>Documento</th>
+                    <th>Link Drive</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tramitacion in tramitaciones %}
+                    <tr>
+                        <td><strong>{{ tramitacion.presupuesto }}</strong></td>
+                        <td><strong>{{ tramitacion.año }}</strong></td>
+                        <td>{{ tramitacion.nombre }}</td>
+                        <td>{{ tramitacion.direccion }}</td>
+                        <td>{{ tramitacion.nota }}</td>
+                        <td>{{ tramitacion.fecha_recepcion }}</td>
+                        <td class="text-center">
+                            {% if tramitacion.documento_tramitacion %}
+                                <a href="{{ tramitacion.documento_tramitacion.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Documento</a>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="text-center">
+                            {% if tramitacion.link_tramitacion %}
+                                <a href="{{ tramitacion.link_tramitacion }}" target="_blank" class="btn btn-outline-primary btn-sm">Drive</a>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if tramitacion.fecha_recepcion %}
+                                <span class="badge bg-success">Completado</span>
+                            {% else %}
+                                <span class="badge bg-danger">Sin Fecha</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'tramitacion-detail' tramitacion.pk %}" class="btn btn-info btn-sm" title="Detalles">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'tramitacion-delete' tramitacion.pk %}" class="btn btn-danger btn-sm ms-2" title="Eliminar" onclick="return confirm('¿Seguro que desea eliminar este trámite?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No se encontraron solicitudes</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

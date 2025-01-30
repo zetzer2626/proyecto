@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Lista de Enlaces</h1>
+    <!-- Resumen -->
+    <div class="mb-4 text-center">
+        <p class="text-muted">
+            Total de Carpetas: <strong>{{ total_enlaces }}</strong> | Enlaces en esta página: <strong>{{ current_page_count }}</strong>
+        </p>
+    </div>
+    <div class="d-flex justify-content-center align-items-center mb-4" style="min-height: 200px;">
+        <form method="get" class="text-center w-100" style="max-width: 800px;">
+            <!-- Campo de Búsqueda -->
+            <div class="input-group mb-3">
+                <input type="text" name="q" value="{{ query }}" 
+                       class="form-control form-control-lg" 
+                       placeholder="Buscar por título o descripción">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+            <!-- Botones Adicionales -->
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'enlace_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times-circle"></i> Limpiar
+                </a>
+                <a href="{% url 'enlace_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle"></i> Crear Nuevo
+                </a>
+            </div>
+        </form>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+        {% for enlace in enlaces %}
+        <div class="col">
+            <div class="card enlace-card">
+                <!-- Avatar en la parte superior -->
+                <div class="text-center mt-3">
+                    {% if enlace.avatar %}
+                    <img src="{{ enlace.avatar.url }}" alt="{{ enlace.titulo }}" 
+                         class="enlace-avatar">
+                    {% else %}
+                    <img src="{% static 'default-avatar.png' %}" alt="Sin Avatar" 
+                         class="enlace-avatar">
+                    {% endif %}
+                </div>
+                
+                <div class="card-body text-center">
+                    <!-- Título -->
+                    <h5 class="card-title enlace-titulo">{{ enlace.titulo }}</h5>
+                    
+                    <!-- Descripción -->
+                    <p class="enlace-descripcion">{{ enlace.description|truncatewords:10 }}</p>
+                    
+                    <!-- Links -->
+                    <div class="d-flex justify-content-center gap-2 my-3">
+                        {% if enlace.link %}
+                        <a href="{{ enlace.link }}" target="_blank" 
+                           class="btn enlace-btn enlace-btn-link">Ver Enlace</a>
+                        {% else %}
+                        <span class="btn enlace-btn enlace-btn-disabled" disabled>Sin Enlace</span>
+                        {% endif %}
+                        
+                        {% if enlace.documento_pdf %}
+                        <a href="{{ enlace.documento_pdf.url }}" target="_blank" 
+                           class="btn enlace-btn enlace-btn-pdf">Ver PDF</a>
+                        {% else %}
+                        <span class="btn enlace-btn enlace-btn-disabled" disabled>Sin PDF</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Acciones -->
+                    <div class="d-flex justify-content-around mt-3">
+                        <a href="{% url 'enlace_update' enlace.pk %}" 
+                           class="btn enlace-btn enlace-btn-edit">Editar</a>
+                        <a href="{% url 'enlace_delete' enlace.pk %}" 
+                           class="btn enlace-btn enlace-btn-delete">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No hay enlaces disponibles.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+/* Estilos generales para tarjetas */
+.enlace-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más oscura */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.enlace-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Sombra más prominente */
+}
+
+/* Estilo del avatar */
+.enlace-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Título */
+.enlace-titulo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #343a40;
+    margin-top: 0.5rem;
+}
+
+/* Descripción */
+.enlace-descripcion {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+/* Botones */
+.enlace-btn {
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.enlace-btn-link {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.enlace-btn-pdf {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.enlace-btn-edit {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.enlace-btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.enlace-btn-disabled {
+    background-color: #6c757d;
+    color: #fff;
+    cursor: not-allowed;
+}
+</style>
+
+{% endblock %}

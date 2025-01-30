@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Crear Nuevo Listado</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_presupuesto" class="form-label">Presupuesto:</label>
+                        <input type="text" id="id_presupuesto" name="presupuesto" class="form-control" placeholder="Ingrese el presupuesto" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_año" class="form-label">Año:</label>
+                        <input type="text" id="id_año" name="año" class="form-control" placeholder="Ingrese el año" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_nombre" class="form-label">Nombre:</label>
+                        <input type="text" id="id_nombre" name="nombre" class="form-control" placeholder="Ingrese el Nombre" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_gestion" class="form-label">Gestión:</label>
+                    <textarea id="id_gestion" name="gestion" rows="3" class="form-control" placeholder="Describa la gestión" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="id_nota" class="form-label">Nota:</label>
+                    <textarea id="id_nota" name="nota" rows="3" class="form-control" placeholder="Describa la Nota" required>{{ listado.nota }}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_listado" class="form-label">URL del Listado:</label>
+                        <input type="url" id="id_listado" name="listado" class="form-control" placeholder="Ingrese la URL del listado">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_drive" class="form-label">URL de Drive:</label>
+                        <input type="url" id="id_drive" name="drive" class="form-control" placeholder="Ingrese la URL de Google Drive">
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg">Guardar</button>
+                    <a href="{% url 'listado_list' %}" class="btn btn-secondary btn-lg">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
