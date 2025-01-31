@@ -81,26 +81,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'proyecto_byd.wsgi.application'
 
 
+import os
 import dj_database_url
-from urllib.parse import urlparse
+from dotenv import load_dotenv
 
-# Obtiene la URL de la base de datos desde la variable de entorno
-database_url = os.getenv('DATABASE_PUBLIC_URL')
-url = urlparse(database_url)
+load_dotenv()
 
-# Configuración de la base de datos
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': url.path[1:],  # Nombre de la base de datos
-        'USER': url.username,  # Usuario
-        'PASSWORD': url.password,  # Contraseña
-        'HOST': url.hostname,  # Host
-        'PORT': url.port,  # Puerto
-        'OPTIONS': {
-            'sslmode': 'require',  # Configuración SSL
-        }
-    }
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_PUBLIC_URL"),
+        engine="django.db.backends.postgresql",
+        conn_max_age=600
+    )
 }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
