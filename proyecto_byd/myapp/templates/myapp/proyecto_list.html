@@ -148,6 +148,7 @@
                     <th>Detalle</th>
                     <th>Kardex</th>
                     <th>Drive</th>
+                    <th>Enlace Pago</th>
                     <th>Proceso</th>
                     <th>Estado Documento</th>
                     <th>Acciones</th>
@@ -173,6 +174,14 @@
                             <span class="text-muted">Sin Link</span>
                         {% endif %}
                     </td>
+                    <td>
+                        {% if proyecto.presupuesto_link %}
+                            <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-outline-primary btn-sm">Enlace Pago</a>
+                        {% else %}
+                            <span class="text-muted">Sin Link</span>
+                        {% endif %}
+                    </td>
+
                     <td>{{ proyecto.proceso }}</td>
                     <td>
                         <div class="progress-wrapper" 
