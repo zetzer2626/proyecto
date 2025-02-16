@@ -33,7 +33,7 @@ class ProyectoListView(ListView):
     model = Proyecto
     template_name = 'myapp/proyecto_list.html'
     context_object_name = 'proyectos'
-    ordering = ['-id']  # Orden descendente id
+    ordering = ['-id']  # Orden descendente por ID
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -69,13 +69,16 @@ class ProyectoListView(ListView):
             for estado_key, estado_label in estados
         }
 
-        # Añadir al contexto
+        # Contadores generales para las tarjetas
+        context['total_proyectos'] = Proyecto.objects.count()
+        context['total_aprobados'] = Proyecto.objects.filter(estado_proyecto='Aprobado').count()
+        context['total_no_concretados'] = Proyecto.objects.filter(estado_proyecto='No Concretado').count()
+        context['total_ingresado'] = Proyecto.objects.filter(estado_proyecto='Ingresado').count()
+        
+        # Añadir estados al contexto
         context['estados'] = estados
         context['estado_counts'] = estado_counts
-
-        # Contadores generales
-        context['total_proyectos'] = Proyecto.objects.count()
-
+        
         return context
 
 
