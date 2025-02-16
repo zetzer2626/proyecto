@@ -61,23 +61,13 @@ class ProyectoListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Obtener todos los estados posibles
-        estados = Proyecto._meta.get_field('estado_proyecto').choices
-        estado_counts = {
-            estado_key: Proyecto.objects.filter(estado_proyecto=estado_key).count()
-            for estado_key, estado_label in estados
-        }
-
+        
         # Contadores generales para las tarjetas
         context['total_proyectos'] = Proyecto.objects.count()
-        context['total_aprobados'] = Proyecto.objects.filter(estado_proyecto='Aprobado').count()
-        context['total_no_concretados'] = Proyecto.objects.filter(estado_proyecto='No Concretado').count()
-        context['total_ingresado'] = Proyecto.objects.filter(estado_proyecto='Ingresado').count()
-        
-        # Añadir estados al contexto
-        context['estados'] = estados
-        context['estado_counts'] = estado_counts
+        context['total_aprobados'] = Proyecto.objects.filter(estado_proyecto='aprobado').count()
+        context['total_no_concretados'] = Proyecto.objects.filter(estado_proyecto='no_concretado').count()
+        context['total_ingresado'] = Proyecto.objects.filter(estado_proyecto='ingresado').count()
+        context['total_observados'] = Proyecto.objects.filter(estado_proyecto='observado').count()
         
         return context
 
