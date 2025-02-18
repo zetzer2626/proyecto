@@ -149,6 +149,7 @@
                     <th>Kardex</th>
                     <th>Drive</th>
                     <th>Enlace Pago</th>
+                    <th>Enlace Documento</th>
                     <th>Proceso</th>
                     <th>Estado Documento</th>
                     <th>Acciones</th>
@@ -177,6 +178,13 @@
                     <td>
                         {% if proyecto.presupuesto_link %}
                             <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-outline-primary btn-sm">Enlace Pago</a>
+                        {% else %}
+                            <span class="text-muted">Sin Link</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if proyecto.enlace_documento %}
+                            <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm">Documentos</a>
                         {% else %}
                             <span class="text-muted">Sin Link</span>
                         {% endif %}

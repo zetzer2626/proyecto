@@ -79,6 +79,7 @@ class Proyecto(models.Model):
     documento_presupuesto_1 = models.FileField(upload_to='presupuesto/', null=True, blank=True)
     documento_presupuesto_2 = models.FileField(upload_to='presupuesto/', null=True, blank=True)
     presupuesto_link= models.URLField(max_length=500, blank=True, null=True)
+    enlace_documento = models.URLField(max_length=500, blank=True, null=True)
     
     # Nombres de Los Ingresos
     nombre_ingreso_1 = models.CharField(max_length=255,null=True,blank=True)
