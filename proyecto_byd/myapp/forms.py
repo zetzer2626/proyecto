@@ -61,6 +61,7 @@ class ProyectoForm(forms.ModelForm):
             'documento_presupuesto_1': forms.FileInput(attrs={'class': 'form-control'}),
             'documento_presupuesto_2': forms.FileInput(attrs={'class': 'form-control'}),
             'presupuesto_link': forms.URLInput(attrs={'class': 'form-control'}),
+            'enlace_documento': forms.URLInput(attrs={'class': 'form-control'}),
 
         }
 
