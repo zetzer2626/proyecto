@@ -25,7 +25,7 @@ class Proyecto(models.Model):
     ]
     
     id = models.AutoField(primary_key=True)
-    presupuesto = models.CharField(max_length=200,null=False,blank=False)
+    presupuesto = models.CharField(max_length=200,null=True,blank=True)
     nombre = models.CharField(max_length=200)
     telefono = models.CharField(max_length=255,null=True,blank=True)
     correo = models.CharField(max_length=255,null=True,blank=True)
@@ -138,9 +138,9 @@ class Proyecto(models.Model):
 
     
 class Solicitud(models.Model):
-    solicitante = models.CharField(max_length=200,null=False,blank=False)
-    nombre_documento = models.CharField(max_length=200,null=False,blank=False)
-    nombre = models.CharField(max_length=200,null=False,blank=False)
+    solicitante = models.CharField(max_length=200,null=True,blank=True)
+    nombre_documento = models.CharField(max_length=200,null=True,blank=True)
+    nombre = models.CharField(max_length=200,null=True,blank=True)
     direccion = models.CharField(max_length=200,null=True,blank=True)
     fecha_solicitud = models.CharField(max_length=200,null=True,blank=True)
     fecha_recepcion = models.CharField(max_length=200,null=True,blank=True)
@@ -165,8 +165,8 @@ class Contactos(models.Model):
     
     nombre = models.CharField(max_length=100)
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
-    telefono = models.CharField(max_length=15)
-    correo = models.EmailField()
+    telefono = models.CharField(max_length=200)
+    correo = models.CharField(max_length=200)
 
     def __str__(self):
         return self.nombre
