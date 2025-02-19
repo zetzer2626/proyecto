@@ -38,7 +38,7 @@
                         <p>{{ proyecto.año }}</p>
                     </div>
                     <!-- Documento Presupuesto 1 -->
-                    <div class="mb-2">
+                    <!--  <div class="mb-2">
                         <strong class="text-secondary">Documento Presupuesto 1:</strong>
                         {% if proyecto.documento_presupuesto_1 %}
                             <a href="{{ proyecto.documento_presupuesto_1.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
@@ -48,7 +48,7 @@
                             <p class="text-muted">No disponible</p>
                         {% endif %}
                     </div>
-                    <!-- Documento Presupuesto 2 -->
+                
                     <div class="mb-2">
                         <strong class="text-secondary">Documento Presupuesto 2:</strong>
                         {% if proyecto.documento_presupuesto_2 %}
@@ -58,7 +58,7 @@
                         {% else %}
                             <p class="text-muted">No disponible</p>
                         {% endif %}
-                    </div>
+                    </div> -->
                     <!-- Link Presupuesto -->
                     <div>
                         <strong class="text-secondary">Enlace de  Pago:</strong>
@@ -130,7 +130,7 @@
 
 
      <!-- Documentos Adicionales -->
-<div class="col-md-6">
+ <!-- <div class="col-md-6">
     <div class="card mb-4">
         <div class="card-header bg-success text-white">Documentos Adicionales</div>
         <div class="card-body">
@@ -362,18 +362,18 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->
 
 
 
         <!-- Opcionales -->
-        <div class="col-md-6">
+        <!--   <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header bg-warning text-white">Ingresos</div>
                 <div class="card-body">
                     <div class="form-group">
                         <div class="row g-3 align-items-center">
-                            <!-- Campo N° 1 -->
+                            <
                             <div class="col-md-6">
                                 <strong>N° 1:</strong>
                                 {% if proyecto.opcional_1 %}
@@ -384,7 +384,7 @@
                                     <span class="text-muted">No disponible</span>
                                 {% endif %}
                             </div>
-                            <!-- Campo Nombre Ingreso 1 -->
+                      
                             <div class="col-md-6">
                                 <strong>Nombre Ingreso 1:</strong>
                                 <p>{{ proyecto.nombre_ingreso_1|default:"No disponible" }}</p>
@@ -394,7 +394,7 @@
 
                   <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                      
                         <div class="col-md-6">
                             <strong>N° 2:</strong>
                             {% if proyecto.opcional_2 %}
@@ -405,7 +405,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                    
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 2:</strong>
                             <p>{{ proyecto.nombre_ingreso_2|default:"No disponible" }}</p>
@@ -415,7 +415,7 @@
 
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                  
                         <div class="col-md-6">
                             <strong>N° 3:</strong>
                             {% if proyecto.opcional_3 %}
@@ -426,7 +426,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                       
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 3:</strong>
                             <p>{{ proyecto.nombre_ingreso_3|default:"No disponible" }}</p>
@@ -436,7 +436,7 @@
 
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                    
                         <div class="col-md-6">
                             <strong>N° 4:</strong>
                             {% if proyecto.opcional_4 %}
@@ -447,7 +447,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                    
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 4:</strong>
                             <p>{{ proyecto.nombre_ingreso_4|default:"No disponible" }}</p>
@@ -457,7 +457,7 @@
 
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                      
                         <div class="col-md-6">
                             <strong>N° 5:</strong>
                             {% if proyecto.opcional_5 %}
@@ -468,7 +468,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                       
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 5:</strong>
                             <p>{{ proyecto.nombre_ingreso_5|default:"No disponible" }}</p>
@@ -478,7 +478,7 @@
 
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                    
                         <div class="col-md-6">
                             <strong>N° 6:</strong>
                             {% if proyecto.opcional_6 %}
@@ -489,7 +489,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                        
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 6:</strong>
                             <p>{{ proyecto.nombre_ingreso_6|default:"No disponible" }}</p>
@@ -499,7 +499,7 @@
 
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                      
                         <div class="col-md-6">
                             <strong>N° 7:</strong>
                             {% if proyecto.opcional_7 %}
@@ -510,7 +510,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                       
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 7:</strong>
                             <p>{{ proyecto.nombre_ingreso_7|default:"No disponible" }}</p>
@@ -520,7 +520,7 @@
                     
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                     
                         <div class="col-md-6">
                             <strong>N° 8:</strong>
                             {% if proyecto.opcional_8 %}
@@ -531,7 +531,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                       
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 8:</strong>
                             <p>{{ proyecto.nombre_ingreso_8|default:"No disponible" }}</p>
@@ -542,7 +542,7 @@
                     
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                        
                         <div class="col-md-6">
                             <strong>N° 9:</strong>
                             {% if proyecto.opcional_9 %}
@@ -553,7 +553,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                        
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 9:</strong>
                             <p>{{ proyecto.nombre_ingreso_9|default:"No disponible" }}</p>
@@ -563,7 +563,7 @@
 
                 <div class="form-group">
                     <div class="row g-3 align-items-center">
-                        <!-- Campo N° 1 -->
+                    
                         <div class="col-md-6">
                             <strong>N° 10:</strong>
                             {% if proyecto.opcional_10 %}
@@ -574,7 +574,7 @@
                                 <span class="text-muted">No disponible</span>
                             {% endif %}
                         </div>
-                        <!-- Campo Nombre Ingreso 1 -->
+                     
                         <div class="col-md-6">
                             <strong>Nombre Ingreso 10:</strong>
                             <p>{{ proyecto.nombre_ingreso_10|default:"No disponible" }}</p>
@@ -583,7 +583,8 @@
                 </div>
                 </div>
             </div>
-        </div>
+        </div>-->
+
               <!-- DESCRIPCIÓN DEL PROYECTO -->
 <div class="col-md-6">
     <div class="card mb-4">

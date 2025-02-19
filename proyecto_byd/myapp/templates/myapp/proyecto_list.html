@@ -147,9 +147,10 @@
                     <th>Estado</th>
                     <th>Detalle</th>
                     <th>Kardex</th>
+                    <th>Enlace Presupuesto</th>
                     <th>Drive</th>
                     <th>Enlace Pago</th>
-                    <th>Enlace Documento</th>
+                    <th>Enlace Presupuesto</th>
                     <th>Proceso</th>
                     <th>Estado Documento</th>
                     <th>Acciones</th>
@@ -169,6 +170,13 @@
                     <td>{{ proyecto.detalle }}</td>
                     <td>{{ proyecto.kardex }}</td>
                     <td>
+                        {% if proyecto.enlace_documento %}
+                            <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm">Presupuesto</a>
+                        {% else %}
+                            <span class="text-muted">Sin Link</span>
+                        {% endif %}
+                    </td>
+                    <td>
                         {% if proyecto.link_1 %}
                             <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-outline-primary btn-sm">Drive</a>
                         {% else %}
@@ -182,17 +190,11 @@
                             <span class="text-muted">Sin Link</span>
                         {% endif %}
                     </td>
-                    <td>
-                        {% if proyecto.enlace_documento %}
-                            <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm">Documentos</a>
-                        {% else %}
-                            <span class="text-muted">Sin Link</span>
-                        {% endif %}
-                    </td>
+                
 
                     <td>{{ proyecto.proceso }}</td>
                     <td>
-                        <div class="progress-wrapper" 
+                        <!--<div class="progress-wrapper" 
                              style="position: relative; width: 100%; height: 30px; background-color: #e5e5e5; border-radius: 50px; overflow: hidden; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);">
                             <div class="progress-bar" 
                                  style="width: {{ proyecto.calcular_porcentaje_completitud|floatformat:0 }}%; 
@@ -208,7 +210,7 @@
                                 </div>
                             </div>
                         </div>
-                    </td>
+                    </td>!-->
                     
                     
                     <td class="d-flex justify-content-start">
