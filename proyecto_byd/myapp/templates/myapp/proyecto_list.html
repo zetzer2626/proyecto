@@ -151,7 +151,6 @@
                     <th>Drive</th>
                     <th>Enlace Pago</th>
                     <th>Proceso</th>
-                    <th>Estado Documento</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -166,7 +165,7 @@
                     <td class="{% if proyecto.estado_proyecto == 'aprobado' %}text-success{% elif proyecto.estado_proyecto == 'no_concretado' %}text-danger{% elif proyecto.estado_proyecto == 'trabajando' %}text-warning{% elif proyecto.estado_proyecto == 'congelado' %}text-info{% else %}text-muted{% endif %}">
                         <strong>{{ proyecto.get_estado_proyecto_display }}</strong>
                     </td>
-                    <td>{{ proyecto.detalle }}</td>
+                    <td><strong>{{ proyecto.detalle }}</strong></td>
                     <td>{{ proyecto.kardex }}</td>
                     <td>
                         {% if proyecto.enlace_documento %}
@@ -191,7 +190,9 @@
                     </td>
                 
 
-                    <td>{{ proyecto.proceso }}</td>
+                    <td class="{% if proyecto.proceso == 'Terminado' %}text-success{% elif proyecto.proceso == 'No Aplica' %}text-danger{% elif proyecto.proceso == 'Pendiente' %}{% else %}text-muted{% endif %}">
+                        <strong>{{ proyecto.proceso }}</strong>
+                    </td>
                     <td>
                         <!--<div class="progress-wrapper" 
                              style="position: relative; width: 100%; height: 30px; background-color: #e5e5e5; border-radius: 50px; overflow: hidden; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);">
