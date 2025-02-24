@@ -176,7 +176,7 @@
                     </td>
                     <td>
                         {% if proyecto.link_1 %}
-                            <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-outline-primary btn-sm">Drive</a>
+                            <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-outline-primary btn-sm">Documentos</a>
                         {% else %}
                             <span class="text-muted">Sin Link</span>
                         {% endif %}
@@ -190,7 +190,7 @@
                     </td>
                 
 
-                    <td class="{% if proyecto.proceso == 'Terminado' %}text-success{% elif proyecto.proceso == 'No Aplica' %}text-danger{% elif proyecto.proceso == 'Pendiente' %}{% else %}text-muted{% endif %}">
+                    <td class="{% if proyecto.proceso == 'terminado' %}text-success{% elif proyecto.proceso == 'No Aplica' %}text-danger{% elif proyecto.proceso == 'pendiente' %}{% else %}text-muted{% endif %}">
                         <strong>{{ proyecto.proceso }}</strong>
                     </td>
                         <!--<div class="progress-wrapper" 
