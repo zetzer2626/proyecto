@@ -19,9 +19,9 @@ class Proyecto(models.Model):
         ('congelado', 'Congelado'),
     ]
     PROCESO_CHOICES = [
-        ('Terminado', 'Terminado'),
-        ('No Aplica', 'No Aplica'),
-        ('Pendiente', 'Pendiente'),
+        ('terminado', 'Terminado'),
+        ('no aplica', 'No Aplica'),
+        ('pendiente', 'Pendiente'),
     ]
     
     id = models.AutoField(primary_key=True)
