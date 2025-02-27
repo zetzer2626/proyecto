@@ -124,7 +124,13 @@
                         </div>
                         <div class="form-group">
                             <label for="id_proceso">Proceso</label>
-                            {{ form.proceso }}
+                            <select name="proceso" id="id_proceso" class="form-control">
+                                {% for value, label in form.fields.proceso.choices %}
+                                    <option value="{{ value }}" {% if form.proceso.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                 </div>
