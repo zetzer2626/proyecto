@@ -138,251 +138,289 @@
     </div>
 </div>
 
-<!-- Tabla de proyectos -->
-<div class="card">
-    <div class="card-header">
+<!-- Tabla de proyectos mejorada -->
+<div class="table-container">
+    <div class="table-header-section">
         <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">
+            <h5 class="table-title">
                 <i class="fas fa-list me-2"></i>Lista de Proyectos
                 {% if proyectos %}
-                    <span class="badge badge-custom">{{ proyectos|length }} de {{ page_obj.paginator.count }}</span>
+                    <span class="count-badge">{{ proyectos|length }} de {{ page_obj.paginator.count }}</span>
                 {% endif %}
             </h5>
+            <div class="table-controls">
+                <button class="btn btn-sm btn-outline-primary" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-primary" onclick="exportTable()">
+                    <i class="fas fa-print"></i>
+                </button>
+            </div>
         </div>
     </div>
-    <div class="card-body p-0">
-        {% if proyectos %}
-            <div class="table-responsive">
-                <table class="table table-professional mb-0">
-                    <thead class="table-header">
-                        <tr>
-                            <th class="col-presupuesto">Presupuesto</th>
-                            <th class="col-año">Año</th>
-                            <th class="col-nombre">Nombre</th>
-                            <th class="col-proyecto">Proyecto</th>
-                            <th class="col-direccion">Dirección</th>
-                            <th class="col-estado">Estado</th>
-                            <th class="col-detalle">Detalle</th>
-                            <th class="col-kardex">Kardex</th>
-                            <th class="col-enlace">Enlace</th>
-                            <th class="col-presupuesto-link">Presupuesto</th>
-                            <th class="col-drive">Drive</th>
-                            <th class="col-pago">Enlace Pago</th>
-                            <th class="col-proceso">Proceso</th>
-                            <th class="col-acciones">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for proyecto in proyectos %}
-                        <tr class="table-row">
-                            <!-- Presupuesto -->
-                            <td class="cell-presupuesto">
-                                <div class="field-content">
-                                    <strong class="text-accent">{{ proyecto.presupuesto|default:"Sin asignar" }}</strong>
-                                </div>
-                            </td>
-                            
-                            <!-- Año -->
-                            <td class="cell-año">
-                                <div class="field-content text-center">
-                                    <span class="badge badge-year">{{ proyecto.año|default:"N/A" }}</span>
-                                </div>
-                            </td>
-                            
-                            <!-- Nombre -->
-                            <td class="cell-nombre">
-                                <div class="field-content">
-                                    <div class="name-container">
-                                        <strong class="client-name">{{ proyecto.nombre }}</strong>
-                                        {% if proyecto.telefono %}
-                                            <div class="contact-info">
-                                                <i class="fas fa-phone contact-icon"></i>
-                                                <span class="contact-text">{{ proyecto.telefono }}</span>
-                                            </div>
-                                        {% endif %}
-                                        {% if proyecto.correo %}
-                                            <div class="contact-info">
-                                                <i class="fas fa-envelope contact-icon"></i>
-                                                <span class="contact-text">{{ proyecto.correo|truncatechars:25 }}</span>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </td>
-                            
-                            <!-- Proyecto -->
-                            <td class="cell-proyecto">
-                                <div class="field-content">
-                                    <div class="project-description" title="{{ proyecto.proyecto }}">
-                                        {{ proyecto.proyecto|default:"Sin descripción" }}
-                                    </div>
-                                </div>
-                            </td>
-                            
-                            <!-- Dirección -->
-                            <td class="cell-direccion">
-                                <div class="field-content">
-                                    <div class="address-container" title="{{ proyecto.direccion }}">
-                                        <i class="fas fa-map-marker-alt address-icon"></i>
-                                        <span class="address-text">{{ proyecto.direccion|default:"Sin dirección" }}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            
-                            <!-- Estado -->
-                            <td class="cell-estado">
-                                <div class="field-content text-center">
-                                    {% if proyecto.estado_proyecto == 'aprobado' %}
-                                        <span class="badge badge-success">{{ proyecto.get_estado_proyecto_display }}</span>
-                                    {% elif proyecto.estado_proyecto == 'observado' %}
-                                        <span class="badge badge-warning">{{ proyecto.get_estado_proyecto_display }}</span>
-                                    {% elif proyecto.estado_proyecto == 'no_concretado' %}
-                                        <span class="badge badge-danger">{{ proyecto.get_estado_proyecto_display }}</span>
-                                    {% elif proyecto.estado_proyecto == 'rechazado' %}
-                                        <span class="badge badge-dark">{{ proyecto.get_estado_proyecto_display }}</span>
-                                    {% elif 'ingresado' in proyecto.estado_proyecto or 'ingreso' in proyecto.estado_proyecto %}
-                                        <span class="badge badge-info">{{ proyecto.get_estado_proyecto_display }}</span>
-                                    {% else %}
-                                        <span class="badge badge-secondary">{{ proyecto.get_estado_proyecto_display|default:"Sin estado" }}</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            
-                            <!-- Detalle -->
-                            <td class="cell-detalle">
-                                <div class="field-content">
-                                    {% if proyecto.detalle %}
-                                        <div class="detail-text" title="{{ proyecto.detalle }}">
-                                            {{ proyecto.detalle }}
+
+    {% if proyectos %}
+        <div class="table-wrapper">
+            <table class="grid-table">
+                <thead class="grid-header">
+                    <tr>
+                        <th class="col-presupuesto" data-sort="presupuesto">
+                            <div class="header-content">
+                                <span>Presupuesto</span>
+                                <i class="fas fa-sort sort-icon"></i>
+                            </div>
+                        </th>
+                        <th class="col-año" data-sort="año">
+                            <div class="header-content">
+                                <span>Año</span>
+                                <i class="fas fa-sort sort-icon"></i>
+                            </div>
+                        </th>
+                        <th class="col-nombre" data-sort="nombre">
+                            <div class="header-content">
+                                <span>Cliente</span>
+                                <i class="fas fa-sort sort-icon"></i>
+                            </div>
+                        </th>
+                        <th class="col-proyecto">
+                            <div class="header-content">
+                                <span>Proyecto</span>
+                            </div>
+                        </th>
+                        <th class="col-direccion">
+                            <div class="header-content">
+                                <span>Dirección</span>
+                            </div>
+                        </th>
+                        <th class="col-estado" data-sort="estado">
+                            <div class="header-content">
+                                <span>Estado</span>
+                                <i class="fas fa-sort sort-icon"></i>
+                            </div>
+                        </th>
+                        <th class="col-detalle">
+                            <div class="header-content">
+                                <span>Detalle</span>
+                            </div>
+                        </th>
+                        <th class="col-kardex">
+                            <div class="header-content">
+                                <span>Kardex</span>
+                            </div>
+                        </th>
+                        <th class="col-enlaces">
+                            <div class="header-content">
+                                <span>Enlaces</span>
+                            </div>
+                        </th>
+                        <th class="col-proceso" data-sort="proceso">
+                            <div class="header-content">
+                                <span>Proceso</span>
+                                <i class="fas fa-sort sort-icon"></i>
+                            </div>
+                        </th>
+                        <th class="col-acciones">
+                            <div class="header-content">
+                                <span>Acciones</span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="grid-body">
+                    {% for proyecto in proyectos %}
+                    <tr class="grid-row" data-id="{{ proyecto.pk }}">
+                        <!-- Presupuesto -->
+                        <td class="cell-presupuesto">
+                            <div class="cell-content">
+                                <span class="presupuesto-code">{{ proyecto.presupuesto|default:"Sin asignar" }}</span>
+                            </div>
+                        </td>
+                        
+                        <!-- Año -->
+                        <td class="cell-año">
+                            <div class="cell-content text-center">
+                                <span class="year-badge">{{ proyecto.año|default:"N/A" }}</span>
+                            </div>
+                        </td>
+                        
+                        <!-- Cliente -->
+                        <td class="cell-nombre">
+                            <div class="cell-content">
+                                <div class="client-info">
+                                    <div class="client-name">{{ proyecto.nombre }}</div>
+                                    {% if proyecto.telefono or proyecto.correo %}
+                                        <div class="client-contact">
+                                            {% if proyecto.telefono %}
+                                                <span class="contact-item">
+                                                    <i class="fas fa-phone"></i>
+                                                    {{ proyecto.telefono }}
+                                                </span>
+                                            {% endif %}
+                                            {% if proyecto.correo %}
+                                                <span class="contact-item">
+                                                    <i class="fas fa-envelope"></i>
+                                                    {{ proyecto.correo|truncatechars:20 }}
+                                                </span>
+                                            {% endif %}
                                         </div>
-                                    {% else %}
-                                        <span class="text-muted-custom">Sin detalle</span>
                                     {% endif %}
                                 </div>
-                            </td>
-                            
-                            <!-- Kardex -->
-                            <td class="cell-kardex">
-                                <div class="field-content text-center">
-                                    {% if proyecto.kardex %}
-                                        <span class="badge badge-info">{{ proyecto.kardex }}</span>
-                                    {% else %}
-                                        <span class="text-muted-custom">-</span>
-                                    {% endif %}
+                            </div>
+                        </td>
+                        
+                        <!-- Proyecto -->
+                        <td class="cell-proyecto">
+                            <div class="cell-content">
+                                <div class="project-desc" title="{{ proyecto.proyecto }}">
+                                    {{ proyecto.proyecto|default:"Sin descripción"|truncatechars:80 }}
                                 </div>
-                            </td>
-                            
-                            <!-- Enlace -->
-                            <td class="cell-enlace">
-                                <div class="field-content text-center">
+                            </div>
+                        </td>
+                        
+                        <!-- Dirección -->
+                        <td class="cell-direccion">
+                            <div class="cell-content">
+                                <div class="address-info" title="{{ proyecto.direccion }}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ proyecto.direccion|default:"Sin dirección"|truncatechars:60 }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <!-- Estado -->
+                        <td class="cell-estado">
+                            <div class="cell-content text-center">
+                                {% if proyecto.estado_proyecto == 'aprobado' %}
+                                    <span class="status-badge status-success">{{ proyecto.get_estado_proyecto_display }}</span>
+                                {% elif proyecto.estado_proyecto == 'observado' %}
+                                    <span class="status-badge status-warning">{{ proyecto.get_estado_proyecto_display }}</span>
+                                {% elif proyecto.estado_proyecto == 'no_concretado' %}
+                                    <span class="status-badge status-danger">{{ proyecto.get_estado_proyecto_display }}</span>
+                                {% elif proyecto.estado_proyecto == 'rechazado' %}
+                                    <span class="status-badge status-dark">{{ proyecto.get_estado_proyecto_display }}</span>
+                                {% elif 'ingresado' in proyecto.estado_proyecto or 'ingreso' in proyecto.estado_proyecto %}
+                                    <span class="status-badge status-info">{{ proyecto.get_estado_proyecto_display }}</span>
+                                {% else %}
+                                    <span class="status-badge status-secondary">{{ proyecto.get_estado_proyecto_display|default:"Sin estado" }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        
+                        <!-- Detalle -->
+                        <td class="cell-detalle">
+                            <div class="cell-content">
+                                {% if proyecto.detalle %}
+                                    <div class="detail-text" title="{{ proyecto.detalle }}">
+                                        {{ proyecto.detalle|truncatechars:60 }}
+                                    </div>
+                                {% else %}
+                                    <span class="empty-field">Sin detalle</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        
+                        <!-- Kardex -->
+                        <td class="cell-kardex">
+                            <div class="cell-content text-center">
+                                {% if proyecto.kardex %}
+                                    <span class="kardex-code">{{ proyecto.kardex }}</span>
+                                {% else %}
+                                    <span class="empty-field">-</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        
+                        <!-- Enlaces -->
+                        <td class="cell-enlaces">
+                            <div class="cell-content">
+                                <div class="link-group">
                                     {% if proyecto.link_1 %}
-                                        <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-action btn-primary-action" title="{{ proyecto.nombre_enlace_1|default:'Ver enlace' }}">
+                                        <a href="{{ proyecto.link_1 }}" target="_blank" class="link-btn link-primary" title="{{ proyecto.nombre_enlace_1|default:'Ver enlace' }}">
                                             <i class="fas fa-external-link-alt"></i>
                                         </a>
-                                    {% else %}
-                                        <span class="text-muted-custom">-</span>
                                     {% endif %}
-                                </div>
-                            </td>
-                            
-                            <!-- Presupuesto -->
-                            <td class="cell-presupuesto-link">
-                                <div class="field-content text-center">
                                     {% if proyecto.presupuesto_link %}
-                                        <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-action btn-success-action" title="Ver presupuesto">
+                                        <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="link-btn link-success" title="Ver presupuesto">
                                             <i class="fas fa-dollar-sign"></i>
                                         </a>
                                     {% elif proyecto.documento_presupuesto_1 %}
-                                        <a href="{{ proyecto.documento_presupuesto_1.url }}" target="_blank" class="btn btn-action btn-success-action" title="Ver documento">
+                                        <a href="{{ proyecto.documento_presupuesto_1.url }}" target="_blank" class="link-btn link-success" title="Ver documento">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
-                                    {% else %}
-                                        <span class="text-muted-custom">-</span>
                                     {% endif %}
-                                </div>
-                            </td>
-                            
-                            <!-- Drive -->
-                            <td class="cell-drive">
-                                <div class="field-content text-center">
                                     {% if proyecto.enlace_documento %}
-                                        <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-action btn-info-action" title="Ver en Drive">
+                                        <a href="{{ proyecto.enlace_documento }}" target="_blank" class="link-btn link-info" title="Ver en Drive">
                                             <i class="fab fa-google-drive"></i>
                                         </a>
-                                    {% else %}
-                                        <span class="text-muted-custom">-</span>
                                     {% endif %}
-                                </div>
-                            </td>
-                            
-                            <!-- Enlace Pago -->
-                            <td class="cell-pago">
-                                <div class="field-content text-center">
                                     {% if proyecto.documento_presupuesto_2 %}
-                                        <a href="{{ proyecto.documento_presupuesto_2.url }}" target="_blank" class="btn btn-action btn-warning-action" title="Ver pago">
+                                        <a href="{{ proyecto.documento_presupuesto_2.url }}" target="_blank" class="link-btn link-warning" title="Ver pago">
                                             <i class="fas fa-receipt"></i>
                                         </a>
-                                    {% else %}
-                                        <span class="text-muted-custom">-</span>
+                                    {% endif %}
+                                    {% if not proyecto.link_1 and not proyecto.presupuesto_link and not proyecto.documento_presupuesto_1 and not proyecto.enlace_documento and not proyecto.documento_presupuesto_2 %}
+                                        <span class="empty-field">Sin enlaces</span>
                                     {% endif %}
                                 </div>
-                            </td>
-                            
-                            <!-- Proceso -->
-                            <td class="cell-proceso">
-                                <div class="field-content text-center">
-                                    {% if proyecto.proceso == 'terminado' %}
-                                        <span class="badge badge-success">{{ proyecto.get_proceso_display }}</span>
-                                    {% elif proyecto.proceso == 'pendiente' %}
-                                        <span class="badge badge-warning">{{ proyecto.get_proceso_display }}</span>
-                                    {% elif proyecto.proceso == 'no aplica' %}
-                                        <span class="badge badge-secondary">{{ proyecto.get_proceso_display }}</span>
-                                    {% else %}
-                                        <span class="badge badge-light">Sin proceso</span>
-                                    {% endif %}
+                            </div>
+                        </td>
+                        
+                        <!-- Proceso -->
+                        <td class="cell-proceso">
+                            <div class="cell-content text-center">
+                                {% if proyecto.proceso == 'terminado' %}
+                                    <span class="process-badge process-success">{{ proyecto.get_proceso_display }}</span>
+                                {% elif proyecto.proceso == 'pendiente' %}
+                                    <span class="process-badge process-warning">{{ proyecto.get_proceso_display }}</span>
+                                {% elif proyecto.proceso == 'no aplica' %}
+                                    <span class="process-badge process-secondary">{{ proyecto.get_proceso_display }}</span>
+                                {% else %}
+                                    <span class="process-badge process-default">Sin proceso</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        
+                        <!-- Acciones -->
+                        <td class="cell-acciones">
+                            <div class="cell-content">
+                                <div class="action-buttons">
+                                    <a href="{% url 'proyecto-detail' proyecto.pk %}" class="action-btn btn-view" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'proyecto-update' proyecto.pk %}" class="action-btn btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="action-btn btn-delete" 
+                                            onclick="confirmarEliminacion({{ proyecto.pk }}, '{{ proyecto.nombre|escapejs }}')" 
+                                            title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                            </td>
-                            
-                            <!-- Acciones -->
-                            <td class="cell-acciones">
-                                <div class="field-content">
-                                    <div class="btn-group-actions" role="group">
-                                        <a href="{% url 'proyecto-detail' proyecto.pk %}" class="btn btn-action btn-primary-action" title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn btn-action btn-warning-action" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-action btn-danger-action" 
-                                                onclick="confirmarEliminacion({{ proyecto.pk }}, '{{ proyecto.nombre|escapejs }}')" 
-                                                title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-folder-open"></i>
             </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No se encontraron proyectos</h5>
-                <p class="text-muted">
-                    {% if request.GET.q or request.GET.estado or request.GET.año %}
-                        No hay proyectos que coincidan con los filtros aplicados.
-                    {% else %}
-                        Aún no hay proyectos registrados en el sistema.
-                    {% endif %}
-                </p>
-                <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Crear Primer Proyecto
-                </a>
-            </div>
-        {% endif %}
-    </div>
+            <h5>No se encontraron proyectos</h5>
+            <p>
+                {% if request.GET.q or request.GET.estado or request.GET.año %}
+                    No hay proyectos que coincidan con los filtros aplicados.
+                {% else %}
+                    Aún no hay proyectos registrados en el sistema.
+                {% endif %}
+            </p>
+            <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Crear Primer Proyecto
+            </a>
+        </div>
+    {% endif %}
 </div>
 
 <!-- Paginación -->
@@ -440,6 +478,851 @@
     </div>
 </div>
 
+<!-- Estilos CSS para la tabla cuadriculada -->
+<style>
+:root {
+    --grid-border-color: #b8c5d1;
+    --grid-header-bg: #2c3e50;
+    --grid-header-text: #ffffff;
+    --grid-row-hover: rgba(52, 152, 219, 0.08);
+    --grid-cell-padding: 8px;
+    --grid-border-width: 2px;
+    --grid-inner-border: 1px solid #d1d9e0;
+    --grid-outer-border: 2px solid #94a3b8;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    border: var(--grid-outer-border);
+}
+
+.table-header-section {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 3px solid var(--grid-border-color);
+}
+
+.table-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.count-badge {
+    background: var(--accent-color);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.table-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+.grid-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 1200px;
+    border: 2px solid #4a5568;
+}
+
+/* Header de la tabla */
+.grid-header {
+    background: var(--grid-header-bg);
+    color: var(--grid-header-text);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.grid-header th {
+    padding: 10px 6px;
+    border: 2px solid #1a252f;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+    position: relative;
+    background: linear-gradient(180deg, #34495e 0%, #2c3e50 100%);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Eliminamos efectos que pueden ocultar bordes */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.header-content:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.sort-icon {
+    opacity: 0.6;
+    font-size: 0.7rem;
+    transition: opacity 0.2s ease;
+}
+
+.header-content:hover .sort-icon {
+    opacity: 1;
+}
+
+/* Cuerpo de la tabla */
+.grid-body tr {
+    transition: background-color 0.2s ease;
+}
+
+.grid-body tr:hover {
+    background-color: var(--grid-row-hover);
+}
+
+.grid-body tr:nth-child(even) {
+    background-color: rgba(248, 249, 250, 0.7);
+}
+
+.grid-body tr:nth-child(even):hover {
+    background-color: var(--grid-row-hover);
+}
+
+.grid-body td {
+    padding: 6px;
+    border: 2px solid #4a5568;
+    vertical-align: top;
+    background-color: inherit;
+    position: relative;
+}
+
+/* Separadores visuales adicionales cada 5 filas */
+.grid-body tr:nth-child(5n) td {
+    border-bottom-width: 3px;
+    border-bottom-color: #2d3748;
+}
+
+.cell-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    position: relative;
+}
+
+/* Anchos optimizados de columnas para sidebar colapsado */
+.col-presupuesto { width: 110px; min-width: 110px; }
+.col-año { width: 70px; min-width: 70px; }
+.col-nombre { width: 180px; min-width: 180px; }
+.col-proyecto { width: 200px; min-width: 200px; }
+.col-direccion { width: 160px; min-width: 160px; }
+.col-estado { width: 110px; min-width: 110px; }
+.col-detalle { width: 150px; min-width: 150px; }
+.col-kardex { width: 80px; min-width: 80px; }
+.col-enlaces { width: 120px; min-width: 120px; }
+.col-proceso { width: 90px; min-width: 90px; }
+.col-acciones { width: 100px; min-width: 100px; }
+
+/* Contenido específico de celdas optimizado */
+.presupuesto-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--accent-color);
+    font-size: 0.8rem;
+}
+
+.year-badge {
+    background: var(--medium-gray);
+    color: var(--text-dark);
+    padding: 0.3rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.client-info {
+    width: 100%;
+}
+
+.client-name {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.2rem;
+    font-size: 0.85rem;
+    line-height: 1.2;
+}
+
+.client-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.contact-item {
+    font-size: 0.7rem;
+    color: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.contact-item i {
+    width: 10px;
+    color: var(--accent-color);
+    flex-shrink: 0;
+}
+
+.project-desc {
+    color: var(--text-dark);
+    line-height: 1.3;
+    word-wrap: break-word;
+    font-size: 0.8rem;
+}
+
+.address-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    color: var(--text-dark);
+    line-height: 1.3;
+    font-size: 0.8rem;
+}
+
+.address-info i {
+    color: var(--accent-color);
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+}
+
+.detail-text {
+    color: var(--text-dark);
+    line-height: 1.3;
+    word-wrap: break-word;
+    font-size: 0.8rem;
+}
+
+.kardex-code {
+    font-family: 'Courier New', monospace;
+    background: var(--light-gray);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.empty-field {
+    color: var(--dark-gray);
+    font-style: italic;
+    font-size: 0.75rem;
+}
+
+/* Badges de estado optimizados */
+.status-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.status-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.status-warning {
+    background: var(--warning-color);
+    color: white;
+}
+
+.status-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.status-info {
+    background: var(--accent-color);
+    color: white;
+}
+
+.status-secondary {
+    background: var(--dark-gray);
+    color: white;
+}
+
+.status-dark {
+    background: var(--secondary-color);
+    color: white;
+}
+
+/* Badges de proceso optimizados */
+.process-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    display: inline-block;
+}
+
+.process-success {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.process-warning {
+    background: rgba(243, 156, 18, 0.1);
+    color: var(--warning-color);
+    border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+.process-secondary {
+    background: rgba(108, 117, 125, 0.1);
+    color: var(--dark-gray);
+    border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.process-default {
+    background: var(--light-gray);
+    color: var(--dark-gray);
+    border: 1px solid var(--medium-gray);
+}
+
+/* Grupo de enlaces compacto */
+.link-group {
+    display: flex;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.link-btn {
+    padding: 0.3rem 0.4rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    border: none;
+    font-size: 0.75rem;
+}
+
+.link-primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.link-primary:hover {
+    background: #2980b9;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+.link-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.link-success:hover {
+    background: #219a52;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3);
+}
+
+.link-info {
+    background: var(--accent-color);
+    color: white;
+}
+
+.link-info:hover {
+    background: #2980b9;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+.link-warning {
+    background: var(--warning-color);
+    color: white;
+}
+
+.link-warning:hover {
+    background: #e67e22;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(243, 156, 18, 0.3);
+}
+
+/* Botones de acción compactos */
+.action-buttons {
+    display: flex;
+    gap: 0.2rem;
+    justify-content: center;
+}
+
+.action-btn {
+    padding: 0.3rem 0.4rem;
+    border-radius: 4px;
+    border: none;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.btn-view {
+    background: var(--accent-color);
+    color: white;
+}
+
+.btn-view:hover {
+    background: #2980b9;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+.btn-edit {
+    background: var(--warning-color);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #e67e22;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(243, 156, 18, 0.3);
+}
+
+.btn-delete {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--dark-gray);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--medium-gray);
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h5 {
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Scrollbar personalizada con bordes más marcados */
+.table-wrapper::-webkit-scrollbar {
+    height: 12px;
+    border: 1px solid var(--grid-border-color);
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 0;
+    border: 1px solid var(--grid-border-color);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, var(--dark-gray), var(--primary-color));
+    border-radius: 0;
+    border: 1px solid var(--grid-border-color);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Responsive optimizado para sidebar colapsado */
+@media (min-width: 768px) and (max-width: 1400px) {
+    .grid-table {
+        min-width: 1150px;
+    }
+    
+    .col-proyecto { width: 180px; min-width: 180px; }
+    .col-direccion { width: 140px; min-width: 140px; }
+    .col-detalle { width: 130px; min-width: 130px; }
+    .col-nombre { width: 160px; min-width: 160px; }
+    
+    .client-name {
+        font-size: 0.8rem;
+    }
+    
+    .contact-item {
+        font-size: 0.65rem;
+    }
+}
+
+/* Ajustes específicos cuando el sidebar está colapsado */
+.main-content.sidebar-collapsed .grid-table {
+    min-width: 1100px;
+}
+
+.main-content.sidebar-collapsed .col-presupuesto { width: 100px; min-width: 100px; }
+.main-content.sidebar-collapsed .col-año { width: 65px; min-width: 65px; }
+.main-content.sidebar-collapsed .col-nombre { width: 170px; min-width: 170px; }
+.main-content.sidebar-collapsed .col-proyecto { width: 190px; min-width: 190px; }
+.main-content.sidebar-collapsed .col-direccion { width: 150px; min-width: 150px; }
+.main-content.sidebar-collapsed .col-estado { width: 105px; min-width: 105px; }
+.main-content.sidebar-collapsed .col-detalle { width: 140px; min-width: 140px; }
+.main-content.sidebar-collapsed .col-kardex { width: 75px; min-width: 75px; }
+.main-content.sidebar-collapsed .col-enlaces { width: 110px; min-width: 110px; }
+.main-content.sidebar-collapsed .col-proceso { width: 85px; min-width: 85px; }
+.main-content.sidebar-collapsed .col-acciones { width: 95px; min-width: 95px; }
+
+/* Truncamiento inteligente de texto */
+.project-desc,
+.detail-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 2.6em;
+}
+
+.address-info span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 140px;
+}
+
+.presupuesto-code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Optimización del espaciado vertical */
+.grid-body tr:nth-child(5n) td {
+    border-bottom-width: 3px;
+    border-bottom-color: #2d3748;
+}
+
+/* Mejoras para pantallas grandes con sidebar colapsado */
+@media (min-width: 1600px) {
+    .main-content.sidebar-collapsed .grid-table {
+        min-width: 1300px;
+    }
+    
+    .main-content.sidebar-collapsed .col-nombre { width: 200px; min-width: 200px; }
+    .main-content.sidebar-collapsed .col-proyecto { width: 220px; min-width: 220px; }
+    .main-content.sidebar-collapsed .col-direccion { width: 180px; min-width: 180px; }
+    .main-content.sidebar-collapsed .col-detalle { width: 160px; min-width: 160px; }
+    .main-content.sidebar-collapsed .col-enlaces { width: 130px; min-width: 130px; }
+}
+
+@media (max-width: 480px) {
+    .table-container {
+        border-radius: 8px;
+    }
+    
+    .table-header-section {
+        padding: 0.75rem;
+    }
+    
+    .grid-table {
+        min-width: 900px;
+    }
+    
+    .cell-content {
+        padding: 6px;
+        min-height: 45px;
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+    
+    .link-group {
+        gap: 0.2rem;
+    }
+}
+
+/* Efectos de animación */
+@keyframes fadeInRow {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.grid-row {
+    animation: fadeInRow 0.3s ease-in-out;
+}
+
+.grid-row:nth-child(1) { animation-delay: 0.05s; }
+.grid-row:nth-child(2) { animation-delay: 0.1s; }
+.grid-row:nth-child(3) { animation-delay: 0.15s; }
+.grid-row:nth-child(4) { animation-delay: 0.2s; }
+.grid-row:nth-child(5) { animation-delay: 0.25s; }
+
+/* Estados de focus para accesibilidad */
+.action-btn:focus,
+.link-btn:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.header-content:focus {
+    outline: 2px solid white;
+    outline-offset: -2px;
+}
+
+/* Simplificamos los efectos para mayor claridad */
+.grid-table {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Aseguramos que los bordes sean visibles */
+.grid-body td {
+    border-color: #4a5568 !important;
+}
+
+.grid-header th {
+    border-color: #1a252f !important;
+}
+
+/* Estados de ordenamiento */
+.header-content.sorted-asc .sort-icon:before {
+    content: '\f0de';
+}
+
+.header-content.sorted-desc .sort-icon:before {
+    content: '\f0dd';
+}
+
+.header-content.sorted-asc,
+.header-content.sorted-desc {
+    background-color: rgba(255,255,255,0.15);
+}
+
+/* Indicadores de progreso de carga */
+.loading-row {
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0.1) 25%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0.1) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Modo pantalla completa */
+.table-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    border-radius: 0;
+    margin: 0;
+}
+
+.table-container.fullscreen .table-wrapper {
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+/* Estilo de impresión */
+@media print {
+    .table-controls,
+    .action-buttons,
+    .link-group {
+        display: none !important;
+    }
+    
+    .grid-table {
+        font-size: 0.8rem;
+    }
+    
+    .grid-header {
+        background: #333 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+    }
+    
+    .status-badge,
+    .process-badge {
+        border: 1px solid #333 !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Mejoras en la selección de texto */
+.grid-table ::selection {
+    background-color: rgba(52, 152, 219, 0.3);
+    color: var(--text-dark);
+}
+
+.grid-table ::-moz-selection {
+    background-color: rgba(52, 152, 219, 0.3);
+    color: var(--text-dark);
+}
+
+/* Optimizaciones de rendimiento */
+.grid-table {
+    contain: layout style paint;
+    will-change: scroll-position;
+}
+
+.action-btn,
+.link-btn {
+    contain: layout;
+    will-change: transform;
+}
+
+/* Estados hover mejorados */
+.grid-row:hover .action-btn,
+.grid-row:hover .link-btn {
+    opacity: 1;
+    visibility: visible;
+}
+
+.action-btn,
+.link-btn {
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+/* Tooltips mejorados */
+[title] {
+    position: relative;
+}
+
+[title]:hover:after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1001;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 300px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+}
+
+[title]:hover:before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--primary-color);
+    z-index: 1001;
+}
+
+/* Mejoras en accesibilidad para reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+    .grid-row {
+        animation: none;
+    }
+    
+    .action-btn,
+    .link-btn {
+        transition: none;
+    }
+    
+    .grid-row:hover {
+        transform: none;
+    }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+    .grid-header {
+        background: #000 !important;
+        color: #fff !important;
+    }
+    
+    .grid-body td {
+        border-color: #000 !important;
+    }
+    
+    .status-badge,
+    .process-badge {
+        border: 2px solid #000 !important;
+    }
+    
+    .action-btn,
+    .link-btn {
+        border: 2px solid #000 !important;
+    }
+}
+</style>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -463,661 +1346,199 @@ document.getElementById('q').addEventListener('keypress', function(e) {
         this.form.submit();
     }
 });
+
+// Funcionalidad de pantalla completa
+function toggleFullscreen() {
+    const container = document.querySelector('.table-container');
+    const button = event.target.closest('button');
+    const icon = button.querySelector('i');
+    
+    if (container.classList.contains('fullscreen')) {
+        container.classList.remove('fullscreen');
+        icon.className = 'fas fa-expand';
+        button.title = 'Pantalla completa';
+    } else {
+        container.classList.add('fullscreen');
+        icon.className = 'fas fa-compress';
+        button.title = 'Salir de pantalla completa';
+    }
+}
+
+// Funcionalidad de exportación/impresión
+function exportTable() {
+    window.print();
+}
+
+// Ordenamiento de tabla
+document.querySelectorAll('[data-sort]').forEach(function(header) {
+    header.addEventListener('click', function() {
+        const sortField = this.getAttribute('data-sort');
+        const currentUrl = new URL(window.location);
+        const currentSort = currentUrl.searchParams.get('sort');
+        const currentOrder = currentUrl.searchParams.get('order');
+        
+        let newOrder = 'asc';
+        if (currentSort === sortField && currentOrder === 'asc') {
+            newOrder = 'desc';
+        }
+        
+        currentUrl.searchParams.set('sort', sortField);
+        currentUrl.searchParams.set('order', newOrder);
+        
+        window.location.href = currentUrl.toString();
+    });
+});
+
+// Indicador visual de ordenamiento
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortField = urlParams.get('sort');
+    const sortOrder = urlParams.get('order');
+    
+    if (sortField && sortOrder) {
+        const header = document.querySelector(`[data-sort="${sortField}"] .header-content`);
+        if (header) {
+            header.classList.add(`sorted-${sortOrder}`);
+        }
+    }
+});
+
+// Escape key para salir de pantalla completa
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const container = document.querySelector('.table-container');
+        if (container.classList.contains('fullscreen')) {
+            toggleFullscreen();
+        }
+    }
+});
+
+// Lazy loading de imágenes (si hay avatares)
+if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+    
+    document.querySelectorAll('img[data-src]').forEach(img => {
+        imageObserver.observe(img);
+    });
+}
+
+// Preservar estado del scroll
+window.addEventListener('beforeunload', function() {
+    sessionStorage.setItem('tableScrollPosition', document.querySelector('.table-wrapper').scrollTop);
+});
+
+window.addEventListener('load', function() {
+    const scrollPosition = sessionStorage.getItem('tableScrollPosition');
+    if (scrollPosition) {
+        document.querySelector('.table-wrapper').scrollTop = scrollPosition;
+        sessionStorage.removeItem('tableScrollPosition');
+    }
+});
+
+// Mejorar rendimiento en scroll
+let ticking = false;
+function updateScrollPosition() {
+    // Aquí puedes agregar lógica adicional para el scroll
+    ticking = false;
+}
+
+document.querySelector('.table-wrapper').addEventListener('scroll', function() {
+    if (!ticking) {
+        requestAnimationFrame(updateScrollPosition);
+        ticking = true;
+    }
+});
+
+// Función para mostrar loading
+function showLoading() {
+    document.querySelectorAll('.grid-row').forEach(row => {
+        row.classList.add('loading-row');
+    });
+}
+
+// Función para ocultar loading
+function hideLoading() {
+    document.querySelectorAll('.grid-row').forEach(row => {
+        row.classList.remove('loading-row');
+    });
+}
+
+// Selección múltiple de filas (funcionalidad futura)
+let selectedRows = new Set();
+
+function toggleRowSelection(rowId) {
+    const row = document.querySelector(`[data-id="${rowId}"]`);
+    if (selectedRows.has(rowId)) {
+        selectedRows.delete(rowId);
+        row.classList.remove('selected');
+    } else {
+        selectedRows.add(rowId);
+        row.classList.add('selected');
+    }
+    
+    updateBulkActions();
+}
+
+function updateBulkActions() {
+    // Aquí puedes agregar lógica para acciones en lote
+    console.log('Filas seleccionadas:', selectedRows.size);
+}
+
+// Buscar en la tabla (búsqueda local)
+function setupLocalSearch() {
+    const searchInput = document.getElementById('q');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.grid-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm) || searchTerm === '') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }, 300));
+    }
+}
+
+// Función debounce para optimizar performance
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Inicializar funcionalidades
+document.addEventListener('DOMContentLoaded', function() {
+    // setupLocalSearch(); // Descomenta si quieres búsqueda local
+    
+    // Añadir clase CSS para filas seleccionadas
+    const style = document.createElement('style');
+    style.textContent = `
+        .grid-row.selected {
+            background-color: rgba(52, 152, 219, 0.15) !important;
+            border-left: 4px solid var(--accent-color);
+        }
+    `;
+    document.head.appendChild(style);
+});
 </script>
-
-<style>
-/* Tabla profesional con colores del tema base */
-.table-professional {
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-.table-header {
-    background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: white;
-}
-
-.table-header th {
-    border: none;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.5px;
-    padding: 1rem 0.75rem;
-    vertical-align: middle;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-/* Columnas con anchos específicos */
-.col-presupuesto { width: 140px; min-width: 140px; }
-.col-año { width: 80px; min-width: 80px; }
-.col-nombre { width: 200px; min-width: 200px; }
-.col-proyecto { width: 220px; min-width: 220px; }
-.col-direccion { width: 200px; min-width: 200px; }
-.col-estado { width: 130px; min-width: 130px; }
-.col-detalle { width: 180px; min-width: 180px; }
-.col-kardex { width: 100px; min-width: 100px; }
-.col-enlace { width: 80px; min-width: 80px; }
-.col-presupuesto-link { width: 100px; min-width: 100px; }
-.col-drive { width: 80px; min-width: 80px; }
-.col-pago { width: 100px; min-width: 100px; }
-.col-proceso { width: 110px; min-width: 110px; }
-.col-acciones { width: 130px; min-width: 130px; }
-
-/* Filas de la tabla */
-.table-row {
-    border-bottom: 1px solid var(--medium-gray);
-    transition: background-color 0.2s ease;
-}
-
-.table-row:hover {
-    background-color: rgba(52, 152, 219, 0.05);
-}
-
-/* Contenido de las celdas */
-.field-content {
-    padding: 0.75rem;
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-/* Nombres y contactos */
-.name-container {
-    width: 100%;
-}
-
-.client-name {
-    color: var(--text-dark);
-    font-weight: 600;
-    font-size: 0.95rem;
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-.contact-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.15rem;
-    font-size: 0.8rem;
-}
-
-.contact-icon {
-    color: var(--dark-gray);
-    width: 12px;
-    margin-right: 0.5rem;
-}
-
-.contact-text {
-    color: var(--dark-gray);
-}
-
-/* Descripciones y direcciones */
-.project-description {
-    color: var(--text-dark);
-    font-size: 0.9rem;
-    line-height: 1.3;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    hyphens: auto;
-}
-
-.address-container {
-    display: flex;
-    align-items: flex-start;
-    width: 100%;
-}
-
-.address-icon {
-    color: var(--accent-color);
-    margin-right: 0.5rem;
-    margin-top: 0.2rem;
-    flex-shrink: 0;
-}
-
-.address-text {
-    color: var(--text-dark);
-    font-size: 0.9rem;
-    line-height: 1.3;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-}
-
-/* Detalles */
-.detail-text {
-    color: var(--text-dark);
-    font-size: 0.85rem;
-    line-height: 1.3;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    max-height: 4em;
-    overflow: hidden;
-}
-
-/* Badges con colores del tema */
-.badge-custom {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-}
-
-.badge-year {
-    background-color: var(--medium-gray);
-    color: var(--text-dark);
-    padding: 0.4rem 0.6rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-success {
-    background-color: var(--success-color);
-    color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-warning {
-    background-color: var(--warning-color);
-    color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-danger {
-    background-color: var(--danger-color);
-    color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-info {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-secondary {
-    background-color: var(--dark-gray);
-    color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-dark {
-    background-color: var(--secondary-color);
-    color: white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge-light {
-    background-color: var(--light-gray);
-    color: var(--text-dark);
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border: 1px solid var(--medium-gray);
-}
-
-/* Botones de acción */
-.btn-action {
-    padding: 0.5rem 0.7rem;
-    border-radius: 6px;
-    border: none;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-    margin: 0 0.1rem;
-}
-
-.btn-primary-action {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.btn-primary-action:hover {
-    background-color: #2980b9;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
-}
-
-.btn-success-action {
-    background-color: var(--success-color);
-    color: white;
-}
-
-.btn-success-action:hover {
-    background-color: #219a52;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
-}
-
-.btn-warning-action {
-    background-color: var(--warning-color);
-    color: white;
-}
-
-.btn-warning-action:hover {
-    background-color: #e67e22;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
-}
-
-.btn-danger-action {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.btn-danger-action:hover {
-    background-color: #c0392b;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
-}
-
-.btn-info-action {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.btn-info-action:hover {
-    background-color: #2980b9;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
-}
-
-/* Grupo de botones de acciones */
-.btn-group-actions {
-    display: flex;
-    gap: 0.2rem;
-    justify-content: center;
-}
-
-/* Texto muted personalizado */
-.text-muted-custom {
-    color: var(--dark-gray);
-    font-size: 0.85rem;
-}
-
-.text-accent {
-    color: var(--accent-color);
-}
-
-/* Responsive design */
-.table-responsive {
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-/* Scroll horizontal suave */
-.table-responsive::-webkit-scrollbar {
-    height: 8px;
-}
-
-.table-responsive::-webkit-scrollbar-track {
-    background: var(--light-gray);
-    border-radius: 4px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb {
-    background: var(--dark-gray);
-    border-radius: 4px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-color);
-}
-
-/* Ajustes para móviles */
-@media (max-width: 768px) {
-    .table-header th {
-        padding: 0.75rem 0.5rem;
-        font-size: 0.75rem;
-    }
-    
-    .field-content {
-        padding: 0.5rem;
-    }
-    
-    .client-name {
-        font-size: 0.9rem;
-    }
-    
-    .contact-info {
-        font-size: 0.75rem;
-    }
-    
-    .btn-action {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.8rem;
-    }
-    
-    .btn-group-actions {
-        flex-direction: column;
-        gap: 0.1rem;
-    }
-}
-
-/* Mejoras en la visualización */
-.table-professional td {
-    vertical-align: top;
-    border: none;
-    background-color: white;
-}
-
-/* Efectos hover mejorados */
-.table-row:hover .btn-action {
-    opacity: 1;
-    visibility: visible;
-}
-
-.btn-action {
-    opacity: 0.8;
-    transition: all 0.2s ease;
-}
-
-/* Tooltips personalizados */
-[title]:hover:after {
-    content: attr(title);
-    position: absolute;
-    background: var(--primary-color);
-    color: white;
-    padding: 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    z-index: 1000;
-    white-space: nowrap;
-    margin-top: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* Espaciado mejorado */
-.card-body {
-    padding: 0 !important;
-}
-
-.table-professional {
-    margin-bottom: 0;
-}
-
-/* Estados de carga */
-.loading-row {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Mejoras en accesibilidad */
-.btn-action:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-.table-professional th:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: -2px;
-}
-
-/* Print styles */
-@media print {
-    .btn-action, .btn-group-actions {
-        display: none !important;
-    }
-    
-    .table-professional {
-        font-size: 0.8rem;
-    }
-    
-    .table-header {
-        background: #333 !important;
-        -webkit-print-color-adjust: exact;
-    }
-}
-
-/* Animaciones suaves */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.table-row {
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Estados de focus mejorados */
-.table-professional tr:focus-within {
-    background-color: rgba(52, 152, 219, 0.1);
-    outline: 2px solid var(--accent-color);
-    outline-offset: -2px;
-}
-
-/* Mejoras en la tipografía */
-.table-professional {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.4;
-}
-
-.client-name {
-    font-weight: 600;
-    letter-spacing: 0.3px;
-}
-
-/* Indicadores visuales */
-.field-content.has-content {
-    border-left: 3px solid var(--accent-color);
-    padding-left: 0.5rem;
-}
-
-.field-content.empty {
-    opacity: 0.6;
-}
-
-/* Mejoras en los badges */
-.badge-success, .badge-warning, .badge-danger, .badge-info, .badge-secondary, .badge-dark {
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Efectos de hover en las filas */
-.table-row:hover {
-    transform: translateX(2px);
-    box-shadow: -3px 0 0 var(--accent-color);
-    transition: all 0.2s ease;
-}
-
-/* Indicador de estado activo */
-.table-row.active {
-    background-color: rgba(52, 152, 219, 0.15);
-    border-left: 4px solid var(--accent-color);
-}
-
-/* Mejoras en la scrollbar */
-.table-responsive {
-    scrollbar-width: thin;
-    scrollbar-color: var(--dark-gray) var(--light-gray);
-}
-
-/* Estados de los botones */
-.btn-action:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-
-.btn-action:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Separadores visuales */
-.table-row:nth-child(5n) {
-    border-bottom: 2px solid var(--medium-gray);
-}
-
-/* Mejoras en la legibilidad */
-.table-professional {
-    color: var(--text-dark);
-}
-
-.table-professional td {
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Estados de carga específicos */
-.loading-state {
-    position: relative;
-    overflow: hidden;
-}
-
-.loading-state::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-/* Optimizaciones de rendimiento */
-.table-professional {
-    contain: layout style paint;
-    will-change: scroll-position;
-}
-
-.btn-action {
-    contain: layout;
-    will-change: transform;
-}
-
-/* Mejoras en contraste */
-.table-header th {
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-/* Responsive mejorado para tablets */
-@media (max-width: 1024px) and (min-width: 769px) {
-    .col-proyecto { width: 180px; min-width: 180px; }
-    .col-direccion { width: 160px; min-width: 160px; }
-    .col-detalle { width: 150px; min-width: 150px; }
-    .col-nombre { width: 180px; min-width: 180px; }
-}
-
-/* Mejoras para pantallas pequeñas */
-@media (max-width: 480px) {
-    .table-header th {
-        padding: 0.5rem 0.3rem;
-        font-size: 0.7rem;
-    }
-    
-    .field-content {
-        padding: 0.4rem;
-    }
-    
-    .btn-group-actions {
-        flex-wrap: wrap;
-    }
-    
-    .client-name {
-        font-size: 0.85rem;
-    }
-    
-    .contact-info {
-        font-size: 0.7rem;
-    }
-}
-
-/* Dark mode support (preparado para futuro) */
-@media (prefers-color-scheme: dark) {
-    .table-professional {
-        background-color: #1a1a1a;
-        color: #e0e0e0;
-    }
-    
-    .table-row:hover {
-        background-color: rgba(52, 152, 219, 0.2);
-    }
-    
-    .table-professional td {
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-}
-
-/* Mejoras en accesibilidad avanzada */
-@media (prefers-reduced-motion: reduce) {
-    .table-row {
-        animation: none;
-    }
-    
-    .btn-action {
-        transition: none;
-    }
-    
-    .table-row:hover {
-        transform: none;
-        transition: none;
-    }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-    .table-header {
-        background: #000 !important;
-        color: #fff !important;
-    }
-    
-    .badge-success { background-color: #008000 !important; }
-    .badge-warning { background-color: #ff8c00 !important; }
-    .badge-danger { background-color: #dc143c !important; }
-    .badge-info { background-color: #0066cc !important; }
-}
-
-/* Selección de texto mejorada */
-.table-professional ::selection {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.table-professional ::-moz-selection {
-    background-color: var(--accent-color);
-    color: white;
-}
-</style>
 {% endblock %}
