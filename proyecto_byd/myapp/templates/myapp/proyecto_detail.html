@@ -1,618 +1,479 @@
 {% extends 'base.html' %}
-{% load static %}
+
+{% block title %}{{ proyecto.nombre }} - Detalle Proyecto{% endblock %}
+{% block page_title %}Detalle del Proyecto{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="mb-4 text-center">Detalle del Proyecto</h1>
-
-    <div class="text-right">
-        <!-- Botón Regresar -->
-        <a href="javascript:history.back()" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Regresar
-        </a>
-        <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn btn-sm btn-warning me-1">
-            <i class="fas fa-pencil-alt"></i>Editar
-        </a>
-        <a href="{% url 'proyecto-delete' proyecto.pk %}" class="btn btn-sm btn-danger me-1">
-            <i class="fas fa-trash"></i>Eliminar
-        </a>
-    </div>
-    <br><br>
-    <div class="row">
-    <!-- Información Adicional -->
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-warning text-white">Información Adicional</div>
-            <div class="card-body">
-                <div class="form-group border p-3 rounded shadow-sm bg-light">
-                    <h5 class="text-primary">
-                        <i class="fas fa-file-invoice-dollar me-2"></i>Presupuesto
-                    </h5>
-                    <!-- Campo Presupuesto -->
-                    <div class="mb-2">
-                        <strong class="text-secondary">Presupuesto:</strong>
-                        <p class="mb-1">{{ proyecto.presupuesto }}</p>
-                    </div>
-                    <div class="form-group">
-                        <strong>Año:</strong>
-                        <p>{{ proyecto.año }}</p>
-                    </div>
-                    <!-- Documento Presupuesto 1 -->
-                    <!--  <div class="mb-2">
-                        <strong class="text-secondary">Documento Presupuesto 1:</strong>
-                        {% if proyecto.documento_presupuesto_1 %}
-                            <a href="{{ proyecto.documento_presupuesto_1.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                Ver Documento 1
-                            </a>
-                        {% else %}
-                            <p class="text-muted">No disponible</p>
-                        {% endif %}
-                    </div>
-                
-                    <div class="mb-2">
-                        <strong class="text-secondary">Documento Presupuesto 2:</strong>
-                        {% if proyecto.documento_presupuesto_2 %}
-                            <a href="{{ proyecto.documento_presupuesto_2.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                Ver Documento 2
-                            </a>
-                        {% else %}
-                            <p class="text-muted">No disponible</p>
-                        {% endif %}
-                    </div> -->
-                    <!-- Link Presupuesto -->
-                    <div>
-                        <strong class="text-secondary">Enlace de  Pago:</strong>
-                        {% if proyecto.presupuesto_link %}
-                            <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-sm btn-outline-success">
-                                Abrir Link
-                            </a>
-                        {% else %}
-                            <p class="text-muted">No disponible</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <strong class="text-secondary">Enlace Carpeta de Drive:</strong>
-                        {% if proyecto.link_1 %}
-                            <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-sm btn-outline-success">
-                                Abrir Link
-                            </a>
-                           {{ proyecto.nombre_enlace_1 }}
-                        {% else %}
-                            <p class="text-muted">No disponible</p>
-                        {% endif %}
-                    </div>
-                </div>
-                <br><br>
-                <div class="form-group">
-                    <strong>Nombre:</strong>
-                    <p><strong>{{ proyecto.nombre }}</strong></p>
-                </div>
-                <div class="form-group">
-                    <strong>Teléfono:</strong>
-                    <p>{{ proyecto.telefono }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Correo:</strong>
-                    <p>{{ proyecto.correo }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Dirección:</strong>
-                    <p>{{ proyecto.direccion }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Rol Avaluo:</strong>
-                    <p>{{ proyecto.rol_avaluo }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Proyecto:</strong>
-                    <p>{{ proyecto.proyecto }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Estado del Proyecto:</strong>
-                    <p>{{ proyecto.estado_proyecto }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Detalle:</strong>
-                    <p>{{ proyecto.detalle }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Kardex:</strong>
-                    <p>{{ proyecto.kardex }}</p>
-                </div>
-                <div class="form-group">
-                    <strong>Proceso:</strong>
-                    <p>{{ proyecto.proceso }}</p>
-                </div>
-            </div>
-        </div>     
-    </div>
-
-
-
-     <!-- Documentos Adicionales -->
- <!-- <div class="col-md-6">
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">Documentos Adicionales</div>
-        <div class="card-body">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Levantamiento:</strong>
-                        {% if proyecto.levantamiento %}
-                            <a href="{{ proyecto.levantamiento.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Escritura:</strong>
-                        {% if proyecto.escritura %}
-                            <a href="{{ proyecto.escritura.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Dominio Vigente:</strong>
-                        {% if proyecto.dominio_vigente %}
-                            <a href="{{ proyecto.dominio_vigente.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Cédula de Identidad:</strong>
-                        {% if proyecto.cedula_identidad %}
-                            <a href="{{ proyecto.cedula_identidad.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Poder:</strong>
-                        {% if proyecto.poder %}
-                            <a href="{{ proyecto.poder.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Boleta de Agua:</strong>
-                        {% if proyecto.boleta_agua %}
-                            <a href="{{ proyecto.boleta_agua.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Boleta de Luz:</strong>
-                        {% if proyecto.boleta_luz %}
-                            <a href="{{ proyecto.boleta_luz.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Rol Avaluo Detallado:</strong>
-                        {% if proyecto.rol_avaluo_detallado %}
-                            <a href="{{ proyecto.rol_avaluo_detallado.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Proyecto Anterior:</strong>
-                        {% if proyecto.proyecto_anterior %}
-                            <a href="{{ proyecto.proyecto_anterior.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Conjunto Habitacional:</strong>
-                        {% if proyecto.conjunto_habitacional %}
-                            <a href="{{ proyecto.conjunto_habitacional.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Informe Previo:</strong>
-                        {% if proyecto.informe_previo %}
-                            <a href="{{ proyecto.informe_previo.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Utilidad Pública:</strong>
-                        {% if proyecto.utilidad_publica %}
-                            <a href="{{ proyecto.utilidad_publica.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Certificado Número:</strong>
-                        {% if proyecto.certificado_numero %}
-                            <a href="{{ proyecto.certificado_numero.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Factibilidad:</strong>
-                        {% if proyecto.factibilidad %}
-                            <a href="{{ proyecto.factibilidad.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">SEIM:</strong>
-                        {% if proyecto.seim %}
-                            <a href="{{ proyecto.seim.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong class="h5">Listado:</strong>
-                        {% if proyecto.listado %}
-                            <a href="{{ proyecto.listado.url }}" class="btn btn-outline-success btn-sm d-flex align-items-center" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver documento completo">
-                                <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                            </a>
-                        {% else %}
-                            <span class="text-muted">No disponible</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-eye me-2"></i>{{ proyecto.nombre }}
+            </h1>
+            <p class="page-subtitle">
+                Presupuesto: <strong>{{ proyecto.presupuesto|default:"No especificado" }}</strong> | 
+                Año: <strong>{{ proyecto.año|default:"N/A" }}</strong>
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Editar
+            </a>
+            <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
         </div>
     </div>
-</div>-->
+</div>
 
-
-
-        <!-- Opcionales -->
-        <!--   <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-white">Ingresos</div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <div class="row g-3 align-items-center">
-                            <
-                            <div class="col-md-6">
-                                <strong>N° 1:</strong>
-                                {% if proyecto.opcional_1 %}
-                                    <a href="{{ proyecto.opcional_1.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                        Ver Documento
-                                    </a>
+<div class="row">
+    <!-- Información Principal -->
+    <div class="col-lg-8">
+        <!-- Información Básica -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Información Básica
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Cliente:</label>
+                            <p class="fw-semibold">{{ proyecto.nombre }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Teléfono:</label>
+                            <p>
+                                {% if proyecto.telefono %}
+                                    <i class="fas fa-phone me-1"></i>{{ proyecto.telefono }}
                                 {% else %}
-                                    <span class="text-muted">No disponible</span>
+                                    <span class="text-muted">No especificado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Correo:</label>
+                            <p>
+                                {% if proyecto.correo %}
+                                    <i class="fas fa-envelope me-1"></i>
+                                    <a href="mailto:{{ proyecto.correo }}">{{ proyecto.correo }}</a>
+                                {% else %}
+                                    <span class="text-muted">No especificado</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Dirección:</label>
+                            <p>
+                                {% if proyecto.direccion %}
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ proyecto.direccion }}
+                                {% else %}
+                                    <span class="text-muted">No especificada</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Rol Avalúo:</label>
+                            <p>{{ proyecto.rol_avaluo|default:"No especificado" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Kardex:</label>
+                            <p>{{ proyecto.kardex|default:"No especificado" }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if proyecto.proyecto %}
+                <div class="mb-3">
+                    <label class="form-label text-muted">Descripción del Proyecto:</label>
+                    <p class="border-start border-primary ps-3">{{ proyecto.proyecto }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Estado y Proceso -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>Estado y Proceso
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Estado del Proyecto:</label>
+                            <div>
+                                {% if proyecto.estado_proyecto == 'aprobado' %}
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fas fa-check me-1"></i>Aprobado
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'observado' %}
+                                    <span class="badge bg-warning fs-6">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Observado
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'no_concretado' %}
+                                    <span class="badge bg-danger fs-6">
+                                        <i class="fas fa-times me-1"></i>No Concretado
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'trabajando' %}
+                                    <span class="badge bg-info fs-6">
+                                        <i class="fas fa-cog me-1"></i>Trabajando
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'realizado' %}
+                                    <span class="badge bg-primary fs-6">
+                                        <i class="fas fa-flag-checkered me-1"></i>Realizado
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6">
+                                        {{ proyecto.get_estado_proyecto_display|default:"Sin estado" }}
+                                    </span>
                                 {% endif %}
                             </div>
-                      
-                            <div class="col-md-6">
-                                <strong>Nombre Ingreso 1:</strong>
-                                <p>{{ proyecto.nombre_ingreso_1|default:"No disponible" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Proceso:</label>
+                            <div>
+                                {% if proyecto.proceso == 'terminado' %}
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fas fa-check-circle me-1"></i>Terminado
+                                    </span>
+                                {% elif proyecto.proceso == 'pendiente' %}
+                                    <span class="badge bg-warning fs-6">
+                                        <i class="fas fa-clock me-1"></i>Pendiente
+                                    </span>
+                                {% elif proyecto.proceso == 'no aplica' %}
+                                    <span class="badge bg-secondary fs-6">
+                                        <i class="fas fa-minus-circle me-1"></i>No Aplica
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark fs-6">Sin especificar</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
-
-                  <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                      
-                        <div class="col-md-6">
-                            <strong>N° 2:</strong>
-                            {% if proyecto.opcional_2 %}
-                                <a href="{{ proyecto.opcional_2.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                    
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 2:</strong>
-                            <p>{{ proyecto.nombre_ingreso_2|default:"No disponible" }}</p>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                  
-                        <div class="col-md-6">
-                            <strong>N° 3:</strong>
-                            {% if proyecto.opcional_3 %}
-                                <a href="{{ proyecto.opcional_3.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                       
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 3:</strong>
-                            <p>{{ proyecto.nombre_ingreso_3|default:"No disponible" }}</p>
-                        </div>
-                    </div>
+                
+                {% if proyecto.detalle %}
+                <div class="mb-3">
+                    <label class="form-label text-muted">Detalle:</label>
+                    <p class="border-start border-info ps-3">{{ proyecto.detalle }}</p>
                 </div>
-
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                    
-                        <div class="col-md-6">
-                            <strong>N° 4:</strong>
-                            {% if proyecto.opcional_4 %}
-                                <a href="{{ proyecto.opcional_4.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                    
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 4:</strong>
-                            <p>{{ proyecto.nombre_ingreso_4|default:"No disponible" }}</p>
-                        </div>
-                    </div>
+                {% endif %}
+                
+                {% if proyecto.descripcion %}
+                <div class="mb-3">
+                    <label class="form-label text-muted">Descripción:</label>
+                    <p class="border-start border-secondary ps-3">{{ proyecto.descripcion }}</p>
                 </div>
-
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                      
-                        <div class="col-md-6">
-                            <strong>N° 5:</strong>
-                            {% if proyecto.opcional_5 %}
-                                <a href="{{ proyecto.opcional_5.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                       
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 5:</strong>
-                            <p>{{ proyecto.nombre_ingreso_5|default:"No disponible" }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                    
-                        <div class="col-md-6">
-                            <strong>N° 6:</strong>
-                            {% if proyecto.opcional_6 %}
-                                <a href="{{ proyecto.opcional_6.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 6:</strong>
-                            <p>{{ proyecto.nombre_ingreso_6|default:"No disponible" }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                      
-                        <div class="col-md-6">
-                            <strong>N° 7:</strong>
-                            {% if proyecto.opcional_7 %}
-                                <a href="{{ proyecto.opcional_7.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                       
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 7:</strong>
-                            <p>{{ proyecto.nombre_ingreso_7|default:"No disponible" }}</p>
-                        </div>
-                    </div>
-                </div>
-                    
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                     
-                        <div class="col-md-6">
-                            <strong>N° 8:</strong>
-                            {% if proyecto.opcional_8 %}
-                                <a href="{{ proyecto.opcional_8.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                       
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 8:</strong>
-                            <p>{{ proyecto.nombre_ingreso_8|default:"No disponible" }}</p>
-                        </div>
-                    </div>
-                </div>
-                  
-                    
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                        
-                        <div class="col-md-6">
-                            <strong>N° 9:</strong>
-                            {% if proyecto.opcional_9 %}
-                                <a href="{{ proyecto.opcional_9.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 9:</strong>
-                            <p>{{ proyecto.nombre_ingreso_9|default:"No disponible" }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row g-3 align-items-center">
-                    
-                        <div class="col-md-6">
-                            <strong>N° 10:</strong>
-                            {% if proyecto.opcional_10 %}
-                                <a href="{{ proyecto.opcional_10.url }}" class="btn btn-outline-success btn-sm" target="_blank">
-                                    Ver Documento
-                                </a>
-                            {% else %}
-                                <span class="text-muted">No disponible</span>
-                            {% endif %}
-                        </div>
-                     
-                        <div class="col-md-6">
-                            <strong>Nombre Ingreso 10:</strong>
-                            <p>{{ proyecto.nombre_ingreso_10|default:"No disponible" }}</p>
-                        </div>
-                    </div>
-                </div>
-                </div>
+                {% endif %}
             </div>
-        </div>-->
-
-              <!-- DESCRIPCIÓN DEL PROYECTO -->
-<div class="col-md-6">
-    <div class="card mb-4">
-        <div class="card-header bg-warning text-white">
-            <i class="fas fa-file-alt"></i> Descripción del Proyecto
         </div>
-        <div class="card-body">
-            <div class="form-group">
-                <p class="lead text-muted">
-                    {{ proyecto.descripcion|linebreaks }}
-                </p>
+        
+        <!-- Documentos -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-folder me-2"></i>Documentos del Proyecto
+                </h5>
             </div>
-            <div class="d-flex justify-content-between mt-3">
-                <button class="btn btn-outline-warning btn-sm" data-toggle="collapse" data-target="#descripcionCollapse" aria-expanded="false" aria-controls="descripcionCollapse">
-                    <i class="fas fa-expand-alt"></i> Ver más
-                </button>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Documentos Principales -->
+                    <div class="col-12 mb-3">
+                        <h6 class="text-muted mb-3">Documentos Principales</h6>
+                        <div class="row">
+                            {% if proyecto.levantamiento %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.levantamiento.url }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-file-upload me-1"></i>Levantamiento
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.escritura %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.escritura.url }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-file-contract me-1"></i>Escritura
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.dominio_vigente %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.dominio_vigente.url }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-certificate me-1"></i>Dominio Vigente
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.cedula_identidad %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.cedula_identidad.url }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-id-card me-1"></i>Cédula ID
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.poder %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.poder.url }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-handshake me-1"></i>Poder
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.rol_avaluo_detallado %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.rol_avaluo_detallado.url }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-file-alt me-1"></i>Rol Avalúo Det.
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Servicios Básicos -->
+                    <div class="col-12 mb-3">
+                        <h6 class="text-muted mb-3">Servicios Básicos</h6>
+                        <div class="row">
+                            {% if proyecto.boleta_agua %}
+                                <div class="col-md-6 mb-2">
+                                    <a href="{{ proyecto.boleta_agua.url }}" class="btn btn-outline-info btn-sm w-100" target="_blank">
+                                        <i class="fas fa-tint me-1"></i>Boleta Agua
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.boleta_luz %}
+                                <div class="col-md-6 mb-2">
+                                    <a href="{{ proyecto.boleta_luz.url }}" class="btn btn-outline-warning btn-sm w-100" target="_blank">
+                                        <i class="fas fa-bolt me-1"></i>Boleta Luz
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Documentos Adicionales -->
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">Documentos Adicionales</h6>
+                        <div class="row">
+                            {% if proyecto.proyecto_anterior %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.proyecto_anterior.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-history me-1"></i>Proy. Anterior
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.conjunto_habitacional %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.conjunto_habitacional.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-building me-1"></i>Conj. Habitacional
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.informe_previo %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.informe_previo.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-file-medical me-1"></i>Informe Previo
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.utilidad_publica %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.utilidad_publica.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-landmark me-1"></i>Utilidad Pública
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.certificado_numero %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.certificado_numero.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-award me-1"></i>Certificado
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.factibilidad %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.factibilidad.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-check-circle me-1"></i>Factibilidad
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.seim %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.seim.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-map me-1"></i>SEIM
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% if proyecto.listado %}
+                                <div class="col-md-4 mb-2">
+                                    <a href="{{ proyecto.listado.url }}" class="btn btn-outline-secondary btn-sm w-100" target="_blank">
+                                        <i class="fas fa-list me-1"></i>Listado
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Colapsar descripción larga si es necesario -->
-            <div class="collapse mt-2" id="descripcionCollapse">
-                <p class="text-dark">{{ proyecto.descripcion|linebreaks }}</p>
+        </div>
+    </div>
+    
+    <!-- Panel Lateral -->
+    <div class="col-lg-4">
+        <!-- Progreso -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Progreso de Documentos
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% with completitud=proyecto.calcular_porcentaje_completitud %}
+                    <div class="position-relative d-inline-block mb-3">
+                        <div class="progress-circle" data-percentage="{{ completitud|floatformat:0 }}">
+                            <svg width="120" height="120" class="mb-3">
+                                <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                                <circle cx="60" cy="60" r="50" fill="none" 
+                                        stroke="{% if completitud >= 80 %}#27ae60{% elif completitud >= 50 %}#f39c12{% else %}#e74c3c{% endif %}" 
+                                        stroke-width="8" 
+                                        stroke-linecap="round"
+                                        stroke-dasharray="314.16" 
+                                        stroke-dashoffset="314.16"
+                                        transform="rotate(-90 60 60)"
+                                        class="progress-stroke"/>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="fs-3 fw-bold">{{ completitud|floatformat:0 }}%</div>
+                                <small class="text-muted">Completado</small>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-0">{{ completitud|floatformat:0 }}% de 16 documentos principales</p>
+                {% endwith %}
+            </div>
+        </div>
+        
+        <!-- Enlaces -->
+        {% if proyecto.link_1 or proyecto.presupuesto_link or proyecto.enlace_documento %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-link me-2"></i>Enlaces
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if proyecto.link_1 %}
+                    <div class="mb-2">
+                        <a href="{{ proyecto.link_1 }}" class="btn btn-outline-primary btn-sm w-100" target="_blank">
+                            <i class="fas fa-cloud me-1"></i>
+                            {{ proyecto.nombre_enlace_1|default:"OneDrive" }}
+                        </a>
+                    </div>
+                {% endif %}
+                {% if proyecto.presupuesto_link %}
+                    <div class="mb-2">
+                        <a href="{{ proyecto.presupuesto_link }}" class="btn btn-outline-success btn-sm w-100" target="_blank">
+                            <i class="fas fa-calculator me-1"></i>Presupuesto
+                        </a>
+                    </div>
+                {% endif %}
+                {% if proyecto.enlace_documento %}
+                    <div class="mb-2">
+                        <a href="{{ proyecto.enlace_documento }}" class="btn btn-outline-info btn-sm w-100" target="_blank">
+                            <i class="fas fa-file-pdf me-1"></i>Documento
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Documentos de Presupuesto -->
+        {% if proyecto.documento_presupuesto_1 or proyecto.documento_presupuesto_2 %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-dollar-sign me-2"></i>Documentos de Presupuesto
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if proyecto.documento_presupuesto_1 %}
+                    <div class="mb-2">
+                        <a href="{{ proyecto.documento_presupuesto_1.url }}" class="btn btn-outline-success btn-sm w-100" target="_blank">
+                            <i class="fas fa-file-pdf me-1"></i>Presupuesto 1
+                        </a>
+                    </div>
+                {% endif %}
+                {% if proyecto.documento_presupuesto_2 %}
+                    <div class="mb-2">
+                        <a href="{{ proyecto.documento_presupuesto_2.url }}" class="btn btn-outline-success btn-sm w-100" target="_blank">
+                            <i class="fas fa-file-pdf me-1"></i>Presupuesto 2
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Acciones -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs me-2"></i>Acciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Editar Proyecto
+                    </a>
+                    <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-2"></i>Ver Todos
+                    </a>
+                    <a href="{% url 'proyecto-delete' proyecto.pk %}" class="btn btn-outline-danger" 
+                       onclick="return confirm('¿Estás seguro de que deseas eliminar este proyecto?')">
+                        <i class="fas fa-trash me-2"></i>Eliminar
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+.progress-circle {
+    position: relative;
+}
 
-       
-        </div>
-    </div>
-</div>
+.progress-stroke {
+    transition: stroke-dashoffset 2s ease-in-out;
+}
+</style>
+
+<script>
+// Animate progress circle
+document.addEventListener('DOMContentLoaded', function() {
+    const progressCircle = document.querySelector('.progress-circle');
+    if (progressCircle) {
+        const percentage = parseInt(progressCircle.getAttribute('data-percentage'));
+        const stroke = progressCircle.querySelector('.progress-stroke');
+        const circumference = 314.16; // 2 * PI * 50
+        const offset = circumference - (percentage / 100 * circumference);
+        
+        // Set initial state
+        stroke.style.strokeDashoffset = circumference;
+        
+        // Animate to final state
+        setTimeout(() => {
+            stroke.style.strokeDashoffset = offset;
+        }, 500);
+    }
+});
+</script>
 {% endblock %}

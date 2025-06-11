@@ -1,122 +1,726 @@
 {% extends 'base.html' %}
 
-{% load static %}
-{% load widget_tweaks %}
+{% block title %}Nueva Tramitación - Sistema de Gestión{% endblock %}
 
-{% block title %}Registrar Listado 2 Etapa{% endblock %}
+{% block page_title %}Nueva Tramitación{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <!-- Tarjeta estilizada con sombras y bordes -->
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #4e73df, #6610f2);">
-                    <h4 class="mb-0 fw-bold">Registrar Listado 2 Etapa</h4>
-                </div>
-                <div class="card-body px-5 py-4">
-                    <p class="text-muted text-center mb-4">Complete el formulario a continuación para registrar su trámite.</p>
-                    <form method="post" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        
-                        <!-- Fila para los primeros campos en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.presupuesto.id_for_label }}" class="form-label fw-bold">{{ form.presupuesto.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-user text-primary"></i>
-                                        </span>
-                                        {{ form.presupuesto|add_class:"form-control" }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.año.id_for_label }}" class="form-label fw-bold">{{ form.año.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-file-alt text-primary"></i>
-                                        </span>
-                                        {{ form.año|add_class:"form-control" }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold">{{ form.nombre.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-file-alt text-primary"></i>
-                                        </span>
-                                        {{ form.nombre|add_class:"form-control" }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.direccion.id_for_label }}" class="form-label fw-bold">{{ form.direccion.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-file-alt text-primary"></i>
-                                        </span>
-                                        {{ form.direccion|add_class:"form-control" }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Fila para fechas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label fw-bold">Fecha Entrega</label>
-                                    {{ form.fecha_recepcion|add_class:"form-control" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Descripción -->
-                        <div class="form-group mb-4">
-                            <label for="{{ form.nota.id_for_label }}" class="form-label fw-bold">{{ form.nota.label }}</label>
-                            {{ form.nota|add_class:"form-control" }}
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">{{ form.descripcion.label }}</label>
-                            {{ form.descripcion|add_class:"form-control" }}
-                        </div>
-
-                        <!-- Fila para archivo y enlace -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.documento_tramitacion.id_for_label }}" class="form-label fw-bold">{{ form.documento_tramitacion.label }}</label>
-                                    {{ form.documento_tramitacion|add_class:"form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.link_tramitacion.id_for_label }}" class="form-label fw-bold">{{ form.link_tramitacion.label }}</label>
-                                    {{ form.link_tramitacion|add_class:"form-control" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Botón de envío centrado -->
-                        <div class="text-center mt-5">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
-                                <i class="fas fa-paper-plane me-2"></i> Crear Listado
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-plus me-2"></i>Nueva Tramitación
+            </h1>
+            <p class="page-subtitle">
+                Complete la información para registrar una nueva tramitación
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+            </a>
         </div>
     </div>
 </div>
 
-<!-- Font Awesome -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<form method="post" enctype="multipart/form-data" id="tramitacionCreateForm">
+    {% csrf_token %}
+    
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <!-- Información Básica -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Información Básica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.presupuesto.id_for_label }}" class="form-label required">
+                                    <i class="fas fa-dollar-sign me-1"></i>Presupuesto
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.presupuesto }}
+                                {% if form.presupuesto.errors %}
+                                    <div class="text-danger small mt-1">{{ form.presupuesto.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Código o número del presupuesto</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.año.id_for_label }}" class="form-label required">
+                                    <i class="fas fa-calendar me-1"></i>Año
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.año }}
+                                {% if form.año.errors %}
+                                    <div class="text-danger small mt-1">{{ form.año.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Año de la tramitación</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label required">
+                                    <i class="fas fa-user me-1"></i>Nombre
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Nombre del cliente o proyecto</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.direccion.id_for_label }}" class="form-label required">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Dirección
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.direccion }}
+                                {% if form.direccion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.direccion.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Dirección del proyecto</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Descripción
+                        </label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                            <div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted">Descripción detallada de la tramitación</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.nota.id_for_label }}" class="form-label">
+                            <i class="fas fa-sticky-note me-1"></i>Nota
+                        </label>
+                        {{ form.nota }}
+                        {% if form.nota.errors %}
+                            <div class="text-danger small mt-1">{{ form.nota.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted">Notas adicionales o comentarios</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fechas y Seguimiento -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar me-2"></i>Fechas y Seguimiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-plus me-1"></i>Fecha de Solicitud
+                                </label>
+                                {{ form.fecha_solicitud }}
+                                {% if form.fecha_solicitud.errors %}
+                                    <div class="text-danger small mt-1">{{ form.fecha_solicitud.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Fecha en que se realizó la solicitud</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-check me-1"></i>Fecha de Recepción
+                                </label>
+                                {{ form.fecha_recepcion }}
+                                {% if form.fecha_recepcion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.fecha_recepcion.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Fecha en que se recibió la tramitación</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Información:</strong> Las fechas son opcionales y pueden agregarse posteriormente. 
+                        La fecha de recepción no puede ser anterior a la fecha de solicitud.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Guía de Campos -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Guía de Campos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="guide-item mb-3">
+                        <h6 class="text-primary">
+                            <i class="fas fa-dollar-sign me-1"></i>Presupuesto
+                        </h6>
+                        <small class="text-muted">
+                            Código único que identifica el presupuesto asociado a esta tramitación.
+                        </small>
+                    </div>
+                    
+                    <div class="guide-item mb-3">
+                        <h6 class="text-info">
+                            <i class="fas fa-user me-1"></i>Nombre
+                        </h6>
+                        <small class="text-muted">
+                            Nombre del cliente, proyecto o entidad responsable de la tramitación.
+                        </small>
+                    </div>
+                    
+                    <div class="guide-item mb-3">
+                        <h6 class="text-success">
+                            <i class="fas fa-calendar me-1"></i>Fechas
+                        </h6>
+                        <small class="text-muted">
+                            Las fechas ayudan a hacer seguimiento del proceso de tramitación.
+                        </small>
+                    </div>
+                    
+                    <div class="guide-item">
+                        <h6 class="text-warning">
+                            <i class="fas fa-file me-1"></i>Documento
+                        </h6>
+                        <small class="text-muted">
+                            Puede adjuntar documentos relacionados con la tramitación.
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enlaces -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-link me-2"></i>Enlace Relacionado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.link_tramitacion.id_for_label }}" class="form-label">
+                            <i class="fas fa-external-link-alt me-1"></i>Enlace de Tramitación
+                        </label>
+                        {{ form.link_tramitacion }}
+                        {% if form.link_tramitacion.errors %}
+                            <div class="text-danger small mt-1">{{ form.link_tramitacion.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted">URL relacionada con la tramitación</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>Acciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>Crear Tramitación
+                        </button>
+                        <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                    
+                    <hr class="my-3">
+                    
+                    <div class="creation-tips">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-lightbulb me-1"></i>Consejos:
+                        </h6>
+                        <ul class="list-unstyled small text-muted">
+                            <li class="mb-1">• Complete todos los campos requeridos (*)</li>
+                            <li class="mb-1">• Use códigos consistentes para presupuestos</li>
+                            <li class="mb-1">• Las fechas pueden agregarse posteriormente</li>
+                            <li>• Adjunte documentos si están disponibles</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documento de Tramitación -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-file-upload me-2"></i>Documento de Tramitación
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="document-upload-container">
+                        <label for="{{ form.documento_tramitacion.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-upload me-2 text-primary"></i>Documento de Tramitación
+                            <span class="badge bg-light text-muted ms-2">Opcional</span>
+                        </label>
+                        
+                        <div class="file-input-container">
+                            {{ form.documento_tramitacion }}
+                            <div class="file-input-overlay" onclick="document.getElementById('{{ form.documento_tramitacion.id_for_label }}').click();">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-cloud-upload-alt fs-1 text-muted mb-2"></i>
+                                    <div class="fw-semibold text-dark">Seleccionar archivo</div>
+                                    <small class="text-muted">PDF, DOC, DOCX - Máximo 50MB</small>
+                                    <div class="mt-2">
+                                        <small class="text-info">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Arrastra y suelta o haz clic para seleccionar
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if form.documento_tramitacion.errors %}
+                            <div class="alert alert-danger mt-2 py-2">
+                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ form.documento_tramitacion.errors.0 }}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botones de Acción Final -->
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Crear Tramitación
+                        </button>
+                        <button type="button" class="btn btn-outline-info" onclick="previewForm()">
+                            <i class="fas fa-eye me-2"></i>Vista Previa
+                        </button>
+                        <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Los campos marcados con * son requeridos
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .required::after {
+        content: " *";
+        color: var(--danger-color);
+    }
+    
+    .guide-item {
+        padding: 0.75rem;
+        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        border-radius: 8px;
+        border-left: 4px solid var(--accent-color);
+    }
+    
+    .creation-tips {
+        background: linear-gradient(145deg, #e3f2fd, #f1f8ff);
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--info-color, #17a2b8);
+    }
+
+    /* File Upload Styling */
+    .document-upload-container {
+        transition: all 0.3s ease;
+    }
+    
+    .file-input-container {
+        position: relative;
+    }
+
+    .file-input-container input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .file-input-overlay {
+        border: 2px dashed var(--medium-gray);
+        border-radius: 12px;
+        background-color: var(--light-gray);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-input-overlay:hover {
+        border-color: var(--accent-color);
+        background-color: rgba(52, 152, 219, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
+    }
+
+    .file-input-overlay:hover i {
+        color: var(--accent-color) !important;
+        transform: scale(1.1);
+    }
+
+    /* Animation for file selection */
+    .file-selected {
+        animation: fileSelected 0.6s ease-out;
+    }
+    
+    @keyframes fileSelected {
+        0% {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+        50% {
+            transform: scale(1.02);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    /* Drag and drop styling */
+    .file-input-overlay.drag-over {
+        border-color: var(--success-color);
+        background-color: rgba(40, 167, 69, 0.05);
+        transform: scale(1.02);
+    }
+
+    /* Form validation styling */
+    .is-invalid {
+        border-color: var(--danger-color);
+    }
+    
+    .is-valid {
+        border-color: var(--success-color);
+    }
+    
+    /* Preview modal styling */
+    .preview-content {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .preview-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 0.9rem;
+    }
+    
+    .preview-value {
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<script>
+    // Form validation and submission
+    document.getElementById('tramitacionCreateForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let hasErrors = false;
+        
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                hasErrors = true;
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos.');
+            
+            // Scroll to first error
+            const firstError = this.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstError.focus();
+            }
+        } else {
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Creando...';
+            submitBtn.disabled = true;
+            
+            // Re-enable after timeout (in case of errors)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 10000);
+        }
+    });
+    
+    // File upload functionality
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            const container = this.closest('.file-input-container');
+            const overlay = container.querySelector('.file-input-overlay');
+            
+            if (file) {
+                // File size validation (50MB limit)
+                if (file.size > 50 * 1024 * 1024) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 50MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Show loading state
+                overlay.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <div class="fw-semibold text-dark">Procesando archivo...</div>
+                    </div>
+                `;
+                
+                // Simulate processing delay
+                setTimeout(() => {
+                    const fileName = file.name;
+                    const fileSize = formatFileSize(file.size);
+                    const fileIcon = getFileIcon(file.type, fileName);
+                    
+                    overlay.innerHTML = `
+                        <div class="text-center py-3">
+                            <i class="${fileIcon} fs-1 mb-2"></i>
+                            <div class="fw-semibold text-dark" title="${fileName}">${fileName}</div>
+                            <small class="text-muted">${fileSize}</small>
+                            <div class="mt-2">
+                                <small class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>Archivo seleccionado
+                                </small>
+                            </div>
+                        </div>
+                    `;
+                    
+                    overlay.style.borderColor = 'var(--success-color)';
+                    overlay.style.backgroundColor = 'rgba(40, 167, 69, 0.05)';
+                    overlay.classList.add('file-selected');
+                    
+                    // Remove animation class
+                    setTimeout(() => {
+                        overlay.classList.remove('file-selected');
+                    }, 600);
+                }, 500);
+                
+            } else {
+                resetFileOverlay(overlay);
+            }
+        });
+        
+        // Drag and drop functionality
+        const container = fileInput.closest('.file-input-container');
+        const overlay = container.querySelector('.file-input-overlay');
+        
+        overlay.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+        
+        overlay.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+        });
+        
+        overlay.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+    
+    // Helper functions
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function getFileIcon(fileType, fileName) {
+        const extension = fileName.split('.').pop().toLowerCase();
+        
+        if (fileType.includes('pdf') || extension === 'pdf') {
+            return 'fas fa-file-pdf text-danger';
+        } else if (fileType.includes('word') || ['doc', 'docx'].includes(extension)) {
+            return 'fas fa-file-word text-primary';
+        } else {
+            return 'fas fa-file text-muted';
+        }
+    }
+    
+    function resetFileOverlay(overlay) {
+        overlay.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-cloud-upload-alt fs-1 text-muted mb-2"></i>
+                <div class="fw-semibold text-dark">Seleccionar archivo</div>
+                <small class="text-muted">Arrastra y suelta o haz clic para seleccionar</small>
+            </div>
+        `;
+        
+        overlay.style.borderColor = 'var(--medium-gray)';
+        overlay.style.backgroundColor = 'var(--light-gray)';
+    }
+    
+    // Date validation
+    const fechaSolicitud = document.getElementById('{{ form.fecha_solicitud.id_for_label }}');
+    const fechaRecepcion = document.getElementById('{{ form.fecha_recepcion.id_for_label }}');
+    
+    if (fechaSolicitud && fechaRecepcion) {
+        function validateDates() {
+            const solicitudDate = new Date(fechaSolicitud.value);
+            const recepcionDate = new Date(fechaRecepcion.value);
+            
+            if (fechaSolicitud.value && fechaRecepcion.value) {
+                if (recepcionDate < solicitudDate) {
+                    fechaRecepcion.setCustomValidity('La fecha de recepción no puede ser anterior a la fecha de solicitud');
+                    fechaRecepcion.classList.add('is-invalid');
+                } else {
+                    fechaRecepcion.setCustomValidity('');
+                    fechaRecepcion.classList.remove('is-invalid');
+                }
+            }
+        }
+        
+        fechaSolicitud.addEventListener('change', validateDates);
+        fechaRecepcion.addEventListener('change', validateDates);
+    }
+    
+    // Preview form function
+    function previewForm() {
+        const formData = new FormData(document.getElementById('tramitacionCreateForm'));
+        let previewContent = '<h5>Vista Previa de la Tramitación</h5>';
+        
+        const fields = [
+            {name: 'presupuesto', label: 'Presupuesto'},
+            {name: 'año', label: 'Año'},
+            {name: 'nombre', label: 'Nombre'},
+            {name: 'direccion', label: 'Dirección'},
+            {name: 'descripcion', label: 'Descripción'},
+            {name: 'nota', label: 'Nota'},
+            {name: 'fecha_solicitud', label: 'Fecha de Solicitud'},
+            {name: 'fecha_recepcion', label: 'Fecha de Recepción'},
+            {name: 'link_tramitacion', label: 'Enlace de Tramitación'}
+        ];
+        
+        fields.forEach(field => {
+            const value = formData.get(field.name);
+            if (value && value.trim()) {
+                previewContent += `
+                    <div class="preview-content">
+                        <div class="preview-label">${field.label}:</div>
+                        <div class="preview-value">${value}</div>
+                    </div>
+                `;
+            }
+        });
+        
+        // Show in modal (you can implement a modal or alert)
+        const previewWindow = window.open('', '_blank', 'width=600,height=400');
+        previewWindow.document.write(`
+            <html>
+                <head><title>Vista Previa - Tramitación</title></head>
+                <body style="font-family: Arial, sans-serif; padding: 20px;">
+                    ${previewContent}
+                    <button onclick="window.close()" style="margin-top: 20px; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px;">Cerrar</button>
+                </body>
+            </html>
+        `);
+    }
+    
+    // Auto-focus on first field
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstField = document.querySelector('input[required]:not([type="hidden"])');
+        if (firstField) {
+            setTimeout(() => firstField.focus(), 300);
+        }
+    });
+    
+    // Form field validation on blur
+    document.querySelectorAll('.form-control, .form-select').forEach(function(field) {
+        field.addEventListener('blur', function() {
+            if (this.hasAttribute('required') && !this.value.trim()) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                if (this.value.trim()) {
+                    this.classList.add('is-valid');
+                }
+            }
+        });
+        
+        field.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid') && this.value.trim()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+    
+    console.log('Sistema de creación de tramitaciones cargado correctamente');
+</script>
 {% endblock %}

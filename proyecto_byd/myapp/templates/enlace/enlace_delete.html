@@ -1,13 +1,419 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Enlace - {{ object.titulo }}{% endblock %}
+
+{% block page_title %}Eliminar Enlace{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'enlace_list' %}">Enlaces</a></li>
+    <li class="breadcrumb-item active">Eliminar: {{ object.titulo }}</li>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Eliminar Enlace</h1>
-    <p>¿Estás seguro de que deseas eliminar el enlace <strong>{{ object.titulo }}</strong>?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="{% url 'enlace_list' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <h1 class="page-title text-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Eliminar Enlace
+            </h1>
+            <p class="page-subtitle">Esta acción eliminará permanentemente el enlace seleccionado</p>
+        </div>
+    </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Advertencia Principal -->
+        <div class="alert alert-danger fade-in" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">¡Atención! Acción Irreversible</h5>
+                    <p class="mb-0">
+                        Estás a punto de eliminar permanentemente el enlace 
+                        <strong>"{{ object.titulo }}"</strong>. Esta acción no se puede deshacer.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Previa del Enlace a Eliminar -->
+        <div class="card fade-in">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-link me-2"></i>
+                    Enlace a Eliminar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        {% if object.avatar %}
+                            {% if object.avatar.name %}
+                                <img src="{{ object.avatar.url }}" 
+                                     alt="{{ object.titulo }}" 
+                                     class="enlace-avatar mb-3">
+                            {% else %}
+                                <div class="enlace-avatar-placeholder mb-3">
+                                    <i class="fas fa-link fa-2x"></i>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="enlace-avatar-placeholder mb-3">
+                                <i class="fas fa-link fa-2x"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h4 class="mb-2">{{ object.titulo }}</h4>
+                        {% if object.description %}
+                            <p class="text-muted mb-3">{{ object.description }}</p>
+                        {% else %}
+                            <p class="text-muted fst-italic mb-3">Sin descripción</p>
+                        {% endif %}
+                        
+                        <!-- Contenido del enlace -->
+                        <div class="content-info">
+                            {% if object.link %}
+                                <div class="mb-2">
+                                    <small class="text-muted d-block">Enlace web:</small>
+                                    <a href="{{ object.link }}" target="_blank" class="text-break">
+                                        <i class="fas fa-external-link-alt me-1"></i>
+                                        {{ object.link }}
+                                    </a>
+                                </div>
+                            {% endif %}
+                            
+                            {% if object.documento_pdf %}
+                                {% if object.documento_pdf.name %}
+                                    <div class="mb-2">
+                                        <small class="text-muted d-block">Documento PDF:</small>
+                                        <a href="{{ object.documento_pdf.url }}" target="_blank" class="text-decoration-none">
+                                            <i class="fas fa-file-pdf text-danger me-1"></i>
+                                            {{ object.documento_pdf.name|slice:"4:" }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consecuencias de la Eliminación -->
+        <div class="card fade-in mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    ¿Qué sucederá al eliminar este enlace?
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-danger"><i class="fas fa-times me-2"></i>Se eliminará permanentemente:</h6>
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fas fa-chevron-right me-2"></i>Título y descripción</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Enlace web (si existe)</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Documento PDF (si existe)</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Imagen asociada (si existe)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Importante:</h6>
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fas fa-chevron-right me-2"></i>Esta acción no se puede deshacer</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Los archivos se eliminarán del servidor</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>No afectará enlaces externos</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Considera hacer una copia de seguridad</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Confirmación -->
+        <div class="card fade-in mt-3">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label" for="confirmDelete">
+                                <strong>Confirmo que entiendo las consecuencias y deseo eliminar este enlace permanentemente</strong>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Cancelar y Volver
+                            </a>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-danger" id="deleteBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>
+                                Eliminar Enlace Definitivamente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Alternativas y Acciones -->
+        <div class="card fade-in mt-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    ¿Estás seguro? Considera estas alternativas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-edit text-primary me-2"></i>Editar en su lugar</h6>
+                            <p class="small text-muted mb-2">
+                                Si la información está desactualizada, puedes editarla.
+                            </p>
+                            <a href="{% url 'enlace_update' object.pk %}" class="btn btn-sm btn-outline-primary">
+                                Editar Enlace
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-copy text-success me-2"></i>Duplicar y modificar</h6>
+                            <p class="small text-muted mb-2">
+                                Crea una copia antes de eliminar este enlace.
+                            </p>
+                            <button class="btn btn-sm btn-outline-success" onclick="duplicateLink()">
+                                Duplicar Enlace
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-download text-warning me-2"></i>Exportar información</h6>
+                            <p class="small text-muted mb-2">
+                                Guarda una copia de la información del enlace.
+                            </p>
+                            <button class="btn btn-sm btn-outline-warning" onclick="exportLinkData()">
+                                Exportar Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        {% if object.link or object.documento_pdf %}
+            {% if object.link or object.documento_pdf.name %}
+                <div class="card fade-in mt-3">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-bolt me-2"></i>
+                            Acciones Rápidas (antes de eliminar)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% if object.link %}
+                                <a href="{{ object.link }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Abrir Enlace
+                                </a>
+                                <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ object.link }}')">
+                                    <i class="fas fa-copy me-1"></i>
+                                    Copiar URL
+                                </button>
+                            {% endif %}
+                            {% if object.documento_pdf %}
+                                {% if object.documento_pdf.name %}
+                                    <a href="{{ object.documento_pdf.url }}" target="_blank" class="btn btn-sm btn-success">
+                                        <i class="fas fa-file-pdf me-1"></i>
+                                        Ver PDF
+                                    </a>
+                                    <a href="{{ object.documento_pdf.url }}" download class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-download me-1"></i>
+                                        Descargar PDF
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    // Habilitar/deshabilitar botón de eliminar
+    confirmCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+    });
+    
+    // Confirmación adicional al enviar
+    deleteBtn.addEventListener('click', function(e) {
+        if (!confirmCheckbox.checked) {
+            e.preventDefault();
+            alert('Debes confirmar que entiendes las consecuencias antes de continuar.');
+            return false;
+        }
+        
+        const confirmed = confirm(
+            '¿Estás absolutamente seguro de que quieres eliminar el enlace "{{ object.titulo }}"?\n\n' +
+            'Esta acción NO SE PUEDE DESHACER y eliminará todos los archivos asociados.'
+        );
+        
+        if (!confirmed) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('URL copiada al portapapeles', 'success');
+    }).catch(function(err) {
+        console.error('Error al copiar: ', err);
+        showToast('Error al copiar al portapapeles', 'danger');
+    });
+}
+
+function exportLinkData() {
+    const linkData = {
+        titulo: "{{ object.titulo }}",
+        descripcion: "{{ object.description|default:'' }}",
+        enlace: "{{ object.link|default:'' }}",
+        documento_pdf: "{% if object.documento_pdf and object.documento_pdf.name %}{{ object.documento_pdf.name }}{% else %}{% endif %}",
+        fecha_exportacion: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(linkData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `enlace_{{ object.titulo|slugify }}_backup.json`;
+    link.click();
+    
+    showToast('Información del enlace exportada exitosamente', 'success');
+}
+
+function duplicateLink() {
+    // Redireccionar a crear enlace con parámetros
+    const params = new URLSearchParams({
+        titulo: "Copia de {{ object.titulo }}",
+        descripcion: "{{ object.description|default:'' }}",
+        enlace: "{{ object.link|default:'' }}"
+    });
+    
+    window.location.href = "{% url 'enlace_create' %}?" + params.toString();
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'danger' ? 'times' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+
+<style>
+.enlace-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--light-gray);
+}
+
+.enlace-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--dark-gray);
+}
+
+.alternative-option {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    height: 100%;
+}
+
+.alternative-option h6 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.content-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.form-check-input:checked {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.alert-danger {
+    border-left: 4px solid var(--danger-color);
+}
+
+.card-header.bg-warning {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.card-header.bg-info {
+    background-color: var(--accent-color) !important;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+</style>
 {% endblock %}

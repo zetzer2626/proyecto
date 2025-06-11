@@ -1,200 +1,836 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Mi Proyecto{% endblock %}</title>
+    <title>{% block title %}Sistema de Gestión de Proyectos{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --text-dark: #2c3e50;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+        }
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <!-- CSS de DataTables -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" rel="stylesheet">
-
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
-    <!-- Font Awesome (iconos) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <!-- Select2 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-</head>
-
-<body>
-
-<!-- Barra de navegación -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container-fluid">
-        <!-- Logo en lugar del texto "Mi Proyecto" -->
-        <a class="navbar-brand" href="#">
-            <img src="{% static 'img/byd-logo.jpeg' %}" alt="Logo" style="height: 40px;">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center {% if 'proyecto' in request.path %}active{% endif %}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
-                        ByD Proyectos
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item {% if 'proyecto-list' in request.path %}active{% endif %}" href="{% url 'proyecto-list' %}" role="menuitem" tabindex="0">Lista de Proyectos</a></li>
-                        <li><a class="dropdown-item {% if 'analisis' in request.path %}active{% endif %}" href="{% url 'analisis' %}" role="menuitem" tabindex="0">Análisis</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'solicitudes' in request.path %}active{% endif %}" href="{% url 'solicitud-list' %}">Solicitudes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'contactos' in request.path %}active{% endif %}" href="{% url 'contacto-list' %}">Contactos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'tramitaciones' in request.path %}active{% endif %}" href="{% url 'tramitacion-list' %}">Etapa II</a>
-                </li>
-             
-                <li class="nav-item">
-                    <a class="nav-link {% if 'listado' in request.path %}active{% endif %}" href="{% url 'listado_list' %}">Listado Otros</a>
-                </li>
-                <!--<li class="nav-item">
-                    <a class="nav-link {% if 'pagotramitacion' in request.path %}active{% endif %}" href="{% url 'pago_tramitacion_list' %}"> Egreso|Ingreso</a>
-                </li>-->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'insumo' in request.path %}active{% endif %}" href="{% url 'insumo_list' %}">Insumos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'enlace' in request.path %}active{% endif %}" href="{% url 'enlace_list' %}">Enlaces</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'boletas' in request.path %}active{% endif %}" href="{% url 'boleta_list' %}">Boleta</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'actividad' in request.path %}active{% endif %}" href="{% url 'calendario' %}">Calendario</a>
-                </li>
-              
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Hola, {{ user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><a class="dropdown-item" href="#">Configuración</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Registrarse</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container-fluid py-5">
-    <!-- Mensajes de alerta -->
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    {% block content %}
-    {% endblock %}
-</div>
-
-<!-- Footer -->
-<footer class="bg-dark text-white py-3 mt-4">
-    <div class="container text-center">
-        <p>&copy; 2024 ERP BYD Arquitectura. Todos los derechos reservados.</p>
-        <p><a href="#">Política de privacidad</a> | <a href="#">Términos y condiciones</a></p>
-    </div>
-</footer>
-
-<!-- Scripts para Bootstrap y dependencias -->
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
-
-
-<script>
-    new DataTable('#example');
-</script>
-
-<!-- Select2 JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- jsPDF AutoTable -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        $('.select2').select2();
-    });
-</script>
-<!-- JSZip (Requerido para exportar a Excel) -->
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<!-- FileSaver.js (Para descargar archivos) -->
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-
-
-<
-<!-- Exportar a Excel -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-
-
-<style>
-         body {
-            font-family: Arial, sans-serif;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-dark);
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
         }
-    /* Estilos para resaltar el enlace activo */
-    .nav-link.active {
-        color: #fff !important;
-        background-color: #a70808 !important;
-        border-radius: 5px;
-    }
 
-    .nav-link {
-        color: #212529;
-        transition: color 0.3s;
-    }
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: width 0.3s ease, transform 0.3s ease;
+        }
 
-    .nav-link:hover {
-        color: #a70808;
-    }
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
 
-    .navbar .dropdown-menu .dropdown-item.active {
-        background-color: #a70808 !important;
-        color: #fff !important;
-    }
-</style>
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
+        .sidebar-header h4 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-header small {
+            transition: opacity 0.3s ease;
+            display: block;
+        }
+
+        .sidebar.collapsed .sidebar-header h4,
+        .sidebar.collapsed .sidebar-header small {
+            opacity: 0;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: 1rem 0.5rem;
+        }
+
+        /* Botón de colapso */
+        .sidebar-toggle {
+            position: absolute;
+            top: 15px;
+            right: -15px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.2rem 0;
+            position: relative;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-link {
+            padding: 0.75rem;
+            justify-content: center;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+        }
+
+        .nav-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        /* Tooltip para sidebar colapsado */
+        .sidebar.collapsed .nav-item {
+            position: relative;
+        }
+
+        .sidebar.collapsed .nav-item:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            z-index: 1001;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .sidebar.collapsed .nav-item:hover::before {
+            content: '';
+            position: absolute;
+            left: 62px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 8px solid transparent;
+            border-right-color: var(--primary-color);
+            z-index: 1001;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Top navbar */
+        .top-navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .breadcrumb-custom {
+            background: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-custom .breadcrumb-item {
+            color: var(--dark-gray);
+        }
+
+        .breadcrumb-custom .breadcrumb-item.active {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-right: 0.5rem;
+        }
+
+        .user-welcome {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            margin: 0;
+        }
+
+        .user-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .user-avatar:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--accent-color);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        /* Content area */
+        .content-wrapper {
+            padding: 2rem;
+            max-width: 100%;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid var(--medium-gray);
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            margin: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Stats cards */
+        .stats-card {
+            background: linear-gradient(135deg, var(--accent-color), #5dade2);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card.success {
+            background: linear-gradient(135deg, var(--success-color), #58d68d);
+        }
+
+        .stats-card.warning {
+            background: linear-gradient(135deg, var(--warning-color), #f7dc6f);
+        }
+
+        .stats-card.danger {
+            background: linear-gradient(135deg, var(--danger-color), #ec7063);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            border-radius: 6px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+
+        .btn-outline-primary {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            border-radius: 6px;
+        }
+
+        /* Tables */
+        .table {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: var(--light-gray);
+            border-bottom: 2px solid var(--medium-gray);
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        /* Forms */
+        .form-control {
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            padding: 0.75rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .form-label {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Badges */
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .badge.bg-success {
+            background-color: var(--success-color) !important;
+        }
+
+        .badge.bg-warning {
+            background-color: var(--warning-color) !important;
+        }
+
+        .badge.bg-danger {
+            background-color: var(--danger-color) !important;
+        }
+
+        /* Page header */
+        .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar.collapsed {
+                width: var(--sidebar-width);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.sidebar-collapsed {
+                margin-left: 0;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .mobile-menu-btn {
+                display: block !important;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .top-navbar {
+                padding: 1rem;
+            }
+
+            .navbar-left {
+                gap: 0.5rem;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        /* Progress bars */
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background-color: var(--medium-gray);
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-gray);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Animaciones adicionales */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Status indicator */
+        .status-online {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--success-color);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-toggle" id="sidebarToggle" title="Colapsar sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h4><i class="fas fa-project-diagram me-2"></i>SGP</h4>
+            <small>Sistema de Gestión de Proyectos</small>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-item" data-tooltip="Dashboard">
+                <a href="{% url 'proyecto-list' %}" class="nav-link {% if request.resolver_match.url_name == 'proyecto-list' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Proyectos">
+                <a href="{% url 'proyecto-list' %}" class="nav-link {% if 'proyecto' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-folder-open"></i>
+                    <span class="nav-text">Proyectos</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Solicitudes">
+                <a href="{% url 'solicitud-list' %}" class="nav-link {% if 'solicitud' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="nav-text">Solicitudes</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Tramitaciones">
+                <a href="{% url 'tramitacion-list' %}" class="nav-link {% if 'tramitacion' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-cogs"></i>
+                    <span class="nav-text">Tramitaciones</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Contactos">
+                <a href="{% url 'contacto-list' %}" class="nav-link {% if 'contacto' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">Contactos</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Ingresos/Egresos">
+                <a href="{% url 'pago_tramitacion_list' %}" class="nav-link {% if 'pago_tramitacion' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="nav-text">Ingresos/Egresos</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Listados">
+                <a href="{% url 'listado_list' %}" class="nav-link {% if 'listado' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-list"></i>
+                    <span class="nav-text">Listados</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Insumos">
+                <a href="{% url 'insumo_list' %}" class="nav-link {% if 'insumo' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-boxes"></i>
+                    <span class="nav-text">Insumos</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Enlaces">
+                <a href="{% url 'enlace_list' %}" class="nav-link {% if 'enlace' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-link"></i>
+                    <span class="nav-text">Enlaces</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Boletas">
+                <a href="{% url 'boleta_list' %}" class="nav-link {% if 'boleta' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-receipt"></i>
+                    <span class="nav-text">Boletas</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Calendario">
+                <a href="{% url 'calendario' %}" class="nav-link {% if 'calendario' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="nav-text">Calendario</span>
+                </a>
+            </div>
+            <div class="nav-item" data-tooltip="Análisis">
+                <a href="{% url 'analisis' %}" class="nav-link {% if 'analisis' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="nav-text">Análisis</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <div class="navbar-left">
+                <button class="mobile-menu-btn me-3" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <div class="navbar-brand">{% block page_title %}Sistema de Gestión{% endblock %}</div>
+                    <nav class="breadcrumb-custom">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'proyecto-list' %}">Inicio</a></li>
+                            {% block breadcrumb %}{% endblock %}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class="user-menu">
+                {% if user.is_authenticated %}
+                    <div class="user-info">
+                        <p class="user-welcome">Bienvenido,</p>
+                        <p class="user-name">{{ user.get_full_name|default:user.username }}</p>
+                    </div>
+                    <div class="dropdown">
+                        <div class="user-avatar dropdown-toggle" data-bs-toggle="dropdown" role="button" title="Menú de usuario">
+                            {{ user.username|first|upper }}
+                            <div class="status-online"></div>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i>Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i>Configuración</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i>Notificaciones</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">Iniciar Sesión</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show fade-in" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle sidebar collapse
+        function toggleSidebarCollapse() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleIcon = document.querySelector('#sidebarToggle i');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('sidebar-collapsed');
+            
+            // Cambiar icono
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+            
+            // Guardar estado en localStorage
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        }
+
+        // Toggle sidebar mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        // Inicializar estado del sidebar desde localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed && window.innerWidth > 768) {
+                toggleSidebarCollapse();
+            }
+        });
+
+        // Event listener para el botón de colapso
+        document.getElementById('sidebarToggle').addEventListener('click', toggleSidebarCollapse);
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Responsive sidebar handling
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+            } else {
+                const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (sidebarCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('sidebar-collapsed');
+                }
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
-
 </html>

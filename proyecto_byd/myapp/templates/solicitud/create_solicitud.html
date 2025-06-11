@@ -1,121 +1,384 @@
 {% extends 'base.html' %}
 
-{% load static %}
+{% block title %}
+    {% if object %}Editar Solicitud{% else %}Nueva Solicitud{% endif %} - Sistema de Gestión
+{% endblock %}
 
-{% block title %}Registrar Solicitud{% endblock %}
+{% block page_title %}
+    {% if object %}Editar Solicitud{% else %}Nueva Solicitud{% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <!-- Tarjeta con sombra y bordes redondeados -->
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-gradient text-white text-center py-3" style="background: linear-gradient(45deg, #007bff, #6610f2);">
-                    <h4 class="mb-0 font-weight-bold">Registrar Nueva Solicitud</h4>
-                </div>
-                <div class="card-body px-5">
-                    <p class="text-muted text-center mb-4">Complete el formulario a continuación para registrar su solicitud.</p>
-                    <form method="post" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        
-                        <!-- Fila para los primeros campos en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.solicitante.id_for_label }}" class="form-label font-weight-bold">{{ form.solicitante.label }}</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text bg-light border-0">
-                                                <i class="fas fa-user text-secondary"></i>
-                                            </span>
-                                        </div>
-                                        {{ form.solicitante }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.nombre_documento.id_for_label }}" class="form-label font-weight-bold">{{ form.nombre_documento.label }}</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text bg-light border-0">
-                                                <i class="fas fa-file-alt text-secondary"></i>
-                                            </span>
-                                        </div>
-                                        {{ form.nombre_documento }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Fila para otros campos en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.nombre.id_for_label }}" class="form-label font-weight-bold">{{ form.nombre.label }}</label>
-                                    {{ form.nombre }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.direccion.id_for_label }}" class="form-label font-weight-bold">{{ form.direccion.label }}</label>
-                                    {{ form.direccion }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Fila para fechas en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.fecha_solicitud.label }}</label>
-                                    {{ form.fecha_solicitud }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label font-weight-bold">{{ form.fecha_recepcion.label }}</label>
-                                    {{ form.fecha_recepcion }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Campo de descripción en una sola fila completa -->
-                        <div class="form-group mb-3">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label font-weight-bold">{{ form.descripcion.label }}</label>
-                            {{ form.descripcion }}
-                        </div>
-
-                        <!-- Fila para archivo y enlace en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.documento_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.documento_solicitud.label }}</label>
-                                    {{ form.documento_solicitud }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.link_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.link_solicitud.label }}</label>
-                                    {{ form.link_solicitud }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Botón de envío centrado -->
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">
-                                <i class="fas fa-paper-plane mr-2"></i> Crear Solicitud
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-{% if object %}edit{% else %}plus{% endif %} me-2"></i>
+                {% if object %}Editar Solicitud{% else %}Nueva Solicitud{% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if object %}
+                    Modifica la información de la solicitud
+                {% else %}
+                    Completa la información para crear una nueva solicitud
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+            </a>
         </div>
     </div>
 </div>
 
-<!-- Librería de Font Awesome para íconos -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <form method="post" enctype="multipart/form-data" id="solicitudForm">
+            {% csrf_token %}
+            
+            <!-- Información del Solicitante -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user me-2"></i>Información del Solicitante
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.solicitante.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Solicitante
+                                </label>
+                                {{ form.solicitante }}
+                                {% if form.solicitante.errors %}
+                                    <div class="text-danger small mt-1">{{ form.solicitante.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                    <i class="fas fa-id-card me-1"></i>Nombre
+                                </label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger small mt-1">{{ form.nombre.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.direccion.id_for_label }}" class="form-label">
+                            <i class="fas fa-map-marker-alt me-1"></i>Dirección
+                        </label>
+                        {{ form.direccion }}
+                        {% if form.direccion.errors %}
+                            <div class="text-danger small mt-1">{{ form.direccion.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Documento -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Información del Documento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.nombre_documento.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-text me-1"></i>Nombre del Documento
+                        </label>
+                        {{ form.nombre_documento }}
+                        {% if form.nombre_documento.errors %}
+                            <div class="text-danger small mt-1">{{ form.nombre_documento.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Descripción
+                        </label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                            <div class="text-danger small mt-1">{{ form.descripcion.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Describe detalladamente el contenido de la solicitud</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fechas -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar me-2"></i>Fechas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-plus me-1"></i>Fecha de Solicitud
+                                </label>
+                                {{ form.fecha_solicitud }}
+                                {% if form.fecha_solicitud.errors %}
+                                    <div class="text-danger small mt-1">{{ form.fecha_solicitud.errors }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">Fecha en que se realizó la solicitud</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar-check me-1"></i>Fecha de Recepción
+                                </label>
+                                {{ form.fecha_recepcion }}
+                                {% if form.fecha_recepcion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.fecha_recepcion.errors }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">Fecha en que se recibió la documentación</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Documentos y Enlaces -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-paperclip me-2"></i>Documentos y Enlaces
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.documento_solicitud.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-upload me-1"></i>Documento de Solicitud
+                        </label>
+                        {{ form.documento_solicitud }}
+                        {% if form.documento_solicitud.errors %}
+                            <div class="text-danger small mt-1">{{ form.documento_solicitud.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Sube el archivo de la solicitud (PDF, DOC, etc.)</small>
+                        {% if object and object.documento_solicitud %}
+                            <div class="mt-2">
+                                <a href="{{ object.documento_solicitud.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-download me-1"></i>Descargar archivo actual
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.link_solicitud.id_for_label }}" class="form-label">
+                            <i class="fas fa-link me-1"></i>Enlace de Solicitud
+                        </label>
+                        {{ form.link_solicitud }}
+                        {% if form.link_solicitud.errors %}
+                            <div class="text-danger small mt-1">{{ form.link_solicitud.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Enlace a documento en la nube o sistema externo</small>
+                        {% if object and object.link_solicitud %}
+                            <div class="mt-2">
+                                <a href="{{ object.link_solicitud }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>Visitar enlace actual
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                        <div>
+                            {% if object %}
+                                <a href="{% url 'solicitud-detail' object.pk %}" class="btn btn-outline-info me-2">
+                                    <i class="fas fa-eye me-2"></i>Ver Detalles
+                                </a>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                {% if object %}Actualizar Solicitud{% else %}Crear Solicitud{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Panel de Ayuda -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Ayuda
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="fw-semibold">
+                        <i class="fas fa-info-circle me-1 text-info"></i>Información del Solicitante
+                    </h6>
+                    <p class="small text-muted">Ingresa los datos de la persona que realiza la solicitud.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold">
+                        <i class="fas fa-file-alt me-1 text-warning"></i>Documento
+                    </h6>
+                    <p class="small text-muted">Especifica el tipo de documento solicitado y proporciona una descripción detallada.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold">
+                        <i class="fas fa-calendar me-1 text-success"></i>Fechas
+                    </h6>
+                    <p class="small text-muted">La fecha de solicitud es cuando se inició el trámite. La fecha de recepción es cuando se completó.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold">
+                        <i class="fas fa-paperclip me-1 text-primary"></i>Archivos y Enlaces
+                    </h6>
+                    <p class="small text-muted">Puedes subir un archivo local o proporcionar un enlace a un documento en línea.</p>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        Todos los campos son opcionales excepto aquellos marcados como requeridos.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        {% if object %}
+        <!-- Información del Estado -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-flag me-2"></i>Estado Actual
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if object.fecha_solicitud and object.fecha_recepcion %}
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle fa-3x text-success"></i>
+                    </div>
+                    <h5 class="text-success">Completada</h5>
+                    <p class="text-muted">La solicitud ha sido procesada completamente.</p>
+                {% elif object.fecha_solicitud and not object.fecha_recepcion %}
+                    <div class="mb-3">
+                        <i class="fas fa-clock fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="text-warning">En Proceso</h5>
+                    <p class="text-muted">La solicitud está siendo procesada.</p>
+                {% else %}
+                    <div class="mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                    </div>
+                    <h5 class="text-danger">Pendiente</h5>
+                    <p class="text-muted">La solicitud aún no ha sido iniciada.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    document.getElementById('solicitudForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let hasErrors = false;
+        
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                hasErrors = true;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos.');
+        }
+    });
+    
+    // Auto-set current date for fecha_solicitud if empty
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaSolicitud = document.getElementById('{{ form.fecha_solicitud.id_for_label }}');
+        if (fechaSolicitud && !fechaSolicitud.value) {
+            const today = new Date().toISOString().split('T')[0];
+            fechaSolicitud.value = today;
+        }
+    });
+    
+    // File upload feedback
+    document.querySelectorAll('input[type="file"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado';
+            const fileSize = this.files[0] ? (this.files[0].size / 1024 / 1024).toFixed(2) + ' MB' : '';
+            
+            let feedback = input.parentNode.querySelector('.file-feedback');
+            if (!feedback) {
+                feedback = document.createElement('small');
+                feedback.className = 'file-feedback form-text text-muted';
+                input.parentNode.appendChild(feedback);
+            }
+            
+            if (this.files[0]) {
+                feedback.innerHTML = `<i class="fas fa-file me-1"></i>${fileName} (${fileSize})`;
+                feedback.className = 'file-feedback form-text text-success';
+            } else {
+                feedback.innerHTML = 'Ningún archivo seleccionado';
+                feedback.className = 'file-feedback form-text text-muted';
+            }
+        });
+    });
+    
+    // URL validation for link field
+    const linkField = document.getElementById('{{ form.link_solicitud.id_for_label }}');
+    if (linkField) {
+        linkField.addEventListener('blur', function() {
+            if (this.value && !this.value.match(/^https?:\/\/.+/)) {
+                this.classList.add('is-invalid');
+                let feedback = this.parentNode.querySelector('.invalid-feedback');
+                if (!feedback) {
+                    feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    this.parentNode.appendChild(feedback);
+                }
+                feedback.textContent = 'Por favor, ingresa una URL válida (debe comenzar con http:// o https://)';
+            } else {
+                this.classList.remove('is-invalid');
+                const feedback = this.parentNode.querySelector('.invalid-feedback');
+                if (feedback) {
+                    feedback.remove();
+                }
+            }
+        });
+    }
+</script>
 {% endblock %}

@@ -1,51 +1,411 @@
 {% extends 'base.html' %}
+
+{% block title %}Crear Nuevo Listado{% endblock %}
+
+{% block page_title %}Crear Listado{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'listado_list' %}">Listados</a></li>
+    <li class="breadcrumb-item active">Nuevo Listado</li>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white text-center">
-            <h2>Crear Nuevo Listado</h2>
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_presupuesto" class="form-label">Presupuesto:</label>
-                        <input type="text" id="id_presupuesto" name="presupuesto" class="form-control" placeholder="Ingrese el presupuesto" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_año" class="form-label">Año:</label>
-                        <input type="text" id="id_año" name="año" class="form-control" placeholder="Ingrese el año" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_nombre" class="form-label">Nombre:</label>
-                        <input type="text" id="id_nombre" name="nombre" class="form-control" placeholder="Ingrese el Nombre" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="id_gestion" class="form-label">Gestión:</label>
-                    <textarea id="id_gestion" name="gestion" rows="3" class="form-control" placeholder="Describa la gestión" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="id_nota" class="form-label">Nota:</label>
-                    <textarea id="id_nota" name="nota" rows="3" class="form-control" placeholder="Describa la Nota" required>{{ listado.nota }}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_listado" class="form-label">URL del Pagos:</label>
-                        <input type="url" id="id_listado" name="listado" class="form-control" placeholder="Ingrese la URL del listado">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_drive" class="form-label">URL de Drive:</label>
-                        <input type="url" id="id_drive" name="drive" class="form-control" placeholder="Ingrese la URL de Google Drive">
-                    </div>
-                </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-success btn-lg">Guardar</button>
-                    <a href="{% url 'listado_list' %}" class="btn btn-secondary btn-lg">Cancelar</a>
-                </div>
-            </form>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-plus me-2"></i>
+                Crear Nuevo Listado
+            </h1>
+            <p class="page-subtitle">Agrega un nuevo listado con información de gestión y enlaces</p>
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Información del Listado
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="listadoForm">
+                    {% csrf_token %}
+                    
+                    <!-- Información Básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.presupuesto.id_for_label }}" class="form-label">
+                                <i class="fas fa-dollar-sign me-1"></i>
+                                Presupuesto
+                            </label>
+                            {{ form.presupuesto }}
+                            {% if form.presupuesto.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.presupuesto.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Código o número de presupuesto (ej: PRES-2025-001)
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.año.id_for_label }}" class="form-label">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Año
+                            </label>
+                            {{ form.año }}
+                            {% if form.año.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.año.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Año del listado
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                <i class="fas fa-tag me-1"></i>
+                                Nombre del Listado
+                            </label>
+                            {{ form.nombre }}
+                            {% if form.nombre.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.nombre.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Título descriptivo del listado
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gestión y Notas -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-cogs me-2"></i>
+                                Gestión y Notas
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.gestion.id_for_label }}" class="form-label">
+                                <i class="fas fa-tasks me-1"></i>
+                                Gestión *
+                            </label>
+                            {{ form.gestion }}
+                            {% if form.gestion.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.gestion.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Describe las gestiones realizadas o por realizar
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.nota.id_for_label }}" class="form-label">
+                                <i class="fas fa-sticky-note me-1"></i>
+                                Notas Adicionales *
+                            </label>
+                            {{ form.nota }}
+                            {% if form.nota.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.nota.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Observaciones, comentarios o información adicional
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enlaces -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-link me-2"></i>
+                                Enlaces y Documentos
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.listado.id_for_label }}" class="form-label">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                Enlace del Listado
+                            </label>
+                            {{ form.listado }}
+                            {% if form.listado.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.listado.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-globe me-1"></i>
+                                URL del listado principal
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.drive.id_for_label }}" class="form-label">
+                                <i class="fas fa-cloud me-1"></i>
+                                Enlace de Google Drive
+                            </label>
+                            {{ form.drive }}
+                            {% if form.drive.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.drive.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-cloud-upload-alt me-1"></i>
+                                Enlace a carpeta o archivo en Drive
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Validación de Errores Generales -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Errores en el formulario:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Volver a Listados
+                                    </a>
+                                </div>
+                                <div>
+                                    <button type="reset" class="btn btn-outline-warning me-2">
+                                        <i class="fas fa-undo me-2"></i>
+                                        Limpiar Formulario
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-2"></i>
+                                        Crear Listado
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ayuda -->
+<div class="row mt-4">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>
+                    Ayuda y Consejos
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-lightbulb text-warning me-2"></i>Consejos para Listados</h6>
+                        <ul class="small text-muted">
+                            <li>Usa códigos de presupuesto únicos y descriptivos</li>
+                            <li>Incluye el año para mejor organización</li>
+                            <li>Describe claramente las gestiones realizadas</li>
+                            <li>Agrega notas que ayuden a otros usuarios</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-link text-primary me-2"></i>Sobre los Enlaces</h6>
+                        <ul class="small text-muted">
+                            <li>Verifica que las URLs funcionen correctamente</li>
+                            <li>Usa enlaces de Google Drive para documentos</li>
+                            <li>Puedes agregar uno o ambos tipos de enlaces</li>
+                            <li>Los enlaces facilitan el acceso a documentos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const listadoInput = document.getElementById('{{ form.listado.id_for_label }}');
+    const driveInput = document.getElementById('{{ form.drive.id_for_label }}');
+    const añoInput = document.getElementById('{{ form.año.id_for_label }}');
+    
+    // Establecer año actual por defecto
+    if (añoInput && !añoInput.value) {
+        añoInput.value = new Date().getFullYear();
+    }
+    
+    // Validación de URL del listado
+    if (listadoInput) {
+        listadoInput.addEventListener('blur', function(e) {
+            const url = e.target.value;
+            if (url && !isValidURL(url)) {
+                e.target.classList.add('is-invalid');
+                showValidationMessage(e.target, 'Por favor, ingresa una URL válida');
+            } else {
+                e.target.classList.remove('is-invalid');
+                removeValidationMessage(e.target);
+            }
+        });
+    }
+    
+    // Validación de URL de Drive
+    if (driveInput) {
+        driveInput.addEventListener('blur', function(e) {
+            const url = e.target.value;
+            if (url && !isValidURL(url)) {
+                e.target.classList.add('is-invalid');
+                showValidationMessage(e.target, 'Por favor, ingresa una URL válida de Google Drive');
+            } else {
+                e.target.classList.remove('is-invalid');
+                removeValidationMessage(e.target);
+            }
+        });
+    }
+    
+    // Validación del formulario antes de enviar
+    document.getElementById('listadoForm').addEventListener('submit', function(e) {
+        const gestion = document.getElementById('{{ form.gestion.id_for_label }}').value.trim();
+        const nota = document.getElementById('{{ form.nota.id_for_label }}').value.trim();
+        
+        if (!gestion || !nota) {
+            e.preventDefault();
+            showToast('Los campos de Gestión y Notas son obligatorios', 'warning');
+        }
+    });
+});
+
+function isValidURL(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+function showValidationMessage(element, message) {
+    removeValidationMessage(element);
+    const feedback = document.createElement('div');
+    feedback.className = 'invalid-feedback custom-validation';
+    feedback.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+    element.parentNode.appendChild(feedback);
+}
+
+function removeValidationMessage(element) {
+    const existing = element.parentNode.querySelector('.custom-validation');
+    if (existing) {
+        existing.remove();
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+
+<style>
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.invalid-feedback {
+    display: block;
+}
+
+.card.border-info {
+    border-width: 2px;
+}
+
+.card-header.bg-info {
+    background-color: var(--accent-color) !important;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 {% endblock %}

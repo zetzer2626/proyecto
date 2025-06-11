@@ -1,14 +1,466 @@
 {% extends 'base.html' %}
 
+{% block title %}Eliminar Listado - {{ object.nombre|default:object.presupuesto }}{% endblock %}
+
+{% block page_title %}Eliminar Listado{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'listado_list' %}">Listados</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'listado_detail' object.pk %}">{{ object.nombre|default:object.presupuesto }}</a></li>
+    <li class="breadcrumb-item active">Eliminar</li>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Confirmar Eliminación</h1>
-    <p>¿Estás seguro de que deseas eliminar el proyecto <strong>{{ listado.presupuesto }}</strong>?</p>
-    
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="{% url 'listado_list' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <h1 class="page-title text-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Eliminar Listado
+            </h1>
+            <p class="page-subtitle">Esta acción eliminará permanentemente el listado seleccionado</p>
+        </div>
+    </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Advertencia Principal -->
+        <div class="alert alert-danger fade-in" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">¡Atención! Acción Irreversible</h5>
+                    <p class="mb-0">
+                        Estás a punto de eliminar permanentemente el listado 
+                        <strong>"{{ object.nombre|default:object.presupuesto|default:"Sin nombre" }}"</strong>. 
+                        Esta acción no se puede deshacer.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Previa del Listado a Eliminar -->
+        <div class="card fade-in">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Listado a Eliminar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="listado-icon-large mb-3">
+                            <i class="fas fa-list fa-3x text-primary"></i>
+                        </div>
+                        {% if object.año %}
+                            <span class="badge bg-secondary">{{ object.año }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h4 class="mb-2">{{ object.nombre|default:"Listado sin nombre" }}</h4>
+                        
+                        <div class="info-summary">
+                            <div class="row">
+                                <div class="col-sm-6 mb-2">
+                                    <strong class="text-muted">Presupuesto:</strong>
+                                    <div>{{ object.presupuesto|default:"No especificado" }}</div>
+                                </div>
+                                <div class="col-sm-6 mb-2">
+                                    <strong class="text-muted">Año:</strong>
+                                    <div>{{ object.año|default:"No especificado" }}</div>
+                                </div>
+                            </div>
+                            
+                            {% if object.gestion %}
+                                <div class="mb-2">
+                                    <strong class="text-muted">Gestión:</strong>
+                                    <div class="gestion-preview">{{ object.gestion|truncatewords:20 }}</div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if object.nota %}
+                                <div class="mb-2">
+                                    <strong class="text-muted">Notas:</strong>
+                                    <div class="nota-preview">{{ object.nota|truncatewords:15 }}</div>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Enlaces disponibles -->
+                            <div class="enlaces-info">
+                                {% if object.listado %}
+                                    <div class="mb-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-external-link-alt me-1"></i>
+                                            Enlace del listado disponible
+                                        </small>
+                                    </div>
+                                {% endif %}
+                                {% if object.drive %}
+                                    <div class="mb-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-cloud me-1"></i>
+                                            Enlace de Google Drive disponible
+                                        </small>
+                                    </div>
+                                {% endif %}
+                                {% if not object.listado and not object.drive %}
+                                    <div class="mb-1">
+                                        <small class="text-muted fst-italic">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Sin enlaces asociados
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consecuencias de la Eliminación -->
+        <div class="card fade-in mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    ¿Qué sucederá al eliminar este listado?
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-danger"><i class="fas fa-times me-2"></i>Se eliminará permanentemente:</h6>
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fas fa-chevron-right me-2"></i>Información básica (nombre, presupuesto, año)</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Descripción de gestión completa</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Notas y observaciones</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Referencias a enlaces externos</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-info"><i class="fas fa-shield-alt me-2"></i>NO se verá afectado:</h6>
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fas fa-chevron-right me-2"></i>Los archivos en Google Drive</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Los documentos en enlaces externos</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Otros listados del sistema</li>
+                            <li><i class="fas fa-chevron-right me-2"></i>Datos de proyectos relacionados</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Importante:</strong> Solo se elimina el registro del sistema. Los documentos y archivos 
+                    externos permanecerán intactos, pero perderás las referencias a ellos.
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Confirmación -->
+        <div class="card fade-in mt-3">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label" for="confirmDelete">
+                                <strong>Confirmo que entiendo las consecuencias y deseo eliminar este listado permanentemente</strong>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{% url 'listado_detail' object.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Cancelar y Volver
+                            </a>
+                            <a href="{% url 'listado_list' %}" class="btn btn-outline-primary ms-2">
+                                <i class="fas fa-list me-2"></i>
+                                Ver Todos los Listados
+                            </a>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-danger" id="deleteBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>
+                                Eliminar Listado Definitivamente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Alternativas y Acciones -->
+        <div class="card fade-in mt-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    ¿Estás seguro? Considera estas alternativas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-edit text-primary me-2"></i>Editar en su lugar</h6>
+                            <p class="small text-muted mb-2">
+                                Si la información está desactualizada, puedes modificarla.
+                            </p>
+                            <a href="{% url 'listado_edit' object.pk %}" class="btn btn-sm btn-outline-primary">
+                                Editar Listado
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-copy text-success me-2"></i>Duplicar primero</h6>
+                            <p class="small text-muted mb-2">
+                                Crea una copia antes de eliminar este listado.
+                            </p>
+                            <button class="btn btn-sm btn-outline-success" onclick="duplicateListado()">
+                                Duplicar Listado
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-download text-warning me-2"></i>Exportar información</h6>
+                            <p class="small text-muted mb-2">
+                                Guarda una copia de todos los datos.
+                            </p>
+                            <button class="btn btn-sm btn-outline-warning" onclick="exportListadoData()">
+                                Exportar Datos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas de Enlaces -->
+        {% if object.listado or object.drive %}
+        <div class="card fade-in mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Acceso a Enlaces (antes de eliminar)
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-2 flex-wrap">
+                    {% if object.listado %}
+                        <a href="{{ object.listado }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-external-link-alt me-1"></i>
+                            Abrir Listado
+                        </a>
+                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ object.listado }}')">
+                            <i class="fas fa-copy me-1"></i>
+                            Copiar URL del Listado
+                        </button>
+                    {% endif %}
+                    {% if object.drive %}
+                        <a href="{{ object.drive }}" target="_blank" class="btn btn-sm btn-success">
+                            <i class="fas fa-cloud me-1"></i>
+                            Abrir en Drive
+                        </a>
+                        <button class="btn btn-sm btn-outline-success" onclick="copyToClipboard('{{ object.drive }}')">
+                            <i class="fas fa-copy me-1"></i>
+                            Copiar URL de Drive
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    // Habilitar/deshabilitar botón de eliminar
+    confirmCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+    });
+    
+    // Confirmación adicional al enviar
+    deleteBtn.addEventListener('click', function(e) {
+        if (!confirmCheckbox.checked) {
+            e.preventDefault();
+            alert('Debes confirmar que entiendes las consecuencias antes de continuar.');
+            return false;
+        }
+        
+        const confirmed = confirm(
+            '¿Estás absolutamente seguro de que quieres eliminar el listado "{{ object.nombre|default:object.presupuesto }}"?\n\n' +
+            'Esta acción NO SE PUEDE DESHACER.'
+        );
+        
+        if (!confirmed) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('URL copiada al portapapeles', 'success');
+    }).catch(function(err) {
+        console.error('Error al copiar: ', err);
+        showToast('Error al copiar al portapapeles', 'danger');
+    });
+}
+
+function exportListadoData() {
+    const listadoData = {
+        id: {{ object.pk }},
+        nombre: "{{ object.nombre|default:'' }}",
+        presupuesto: "{{ object.presupuesto|default:'' }}",
+        año: "{{ object.año|default:'' }}",
+        gestion: "{{ object.gestion|default:'' }}",
+        nota: "{{ object.nota|default:'' }}",
+        listado: "{{ object.listado|default:'' }}",
+        drive: "{{ object.drive|default:'' }}",
+        fecha_exportacion: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(listadoData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `listado_backup_{{ object.presupuesto|default:"sin_presupuesto" }}_{{ object.pk }}.json`;
+    link.click();
+    
+    showToast('Información del listado exportada exitosamente', 'success');
+}
+
+function duplicateListado() {
+    // Construir parámetros para el formulario de creación
+    const params = new URLSearchParams({
+        nombre: "Copia de {{ object.nombre|default:'' }}",
+        presupuesto: "{{ object.presupuesto|default:'' }}-COPIA",
+        año: "{{ object.año|default:'' }}",
+        gestion: "{{ object.gestion|default:'' }}",
+        nota: "{{ object.nota|default:'' }}"
+    });
+    
+    // Redireccionar a crear con datos prellenados
+    window.location.href = "{% url 'listado_create' %}?" + params.toString();
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'danger' ? 'times' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+
+<style>
+.listado-icon-large {
+    width: 80px;
+    height: 80px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 2px solid #dee2e6;
+}
+
+.alternative-option {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    height: 100%;
+    border: 1px solid #dee2e6;
+}
+
+.alternative-option h6 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.info-summary {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.gestion-preview, .nota-preview {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.enlaces-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.form-check-input:checked {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.alert-danger {
+    border-left: 4px solid var(--danger-color);
+}
+
+.card-header.bg-warning {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.card-header.bg-info {
+    background-color: var(--accent-color) !important;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 {% endblock %}

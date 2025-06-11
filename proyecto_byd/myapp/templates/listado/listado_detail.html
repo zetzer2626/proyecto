@@ -1,62 +1,501 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ listado.nombre|default:listado.presupuesto }} - Detalle del Listado{% endblock %}
+
+{% block page_title %}Detalle del Listado{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'listado_list' %}">Listados</a></li>
+    <li class="breadcrumb-item active">{{ listado.nombre|default:listado.presupuesto }}</li>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4 text-center text-primary">Detalles del Proyecto</h1>
-
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3 font-weight-bold">Presupuesto</dt>
-                <dd class="col-sm-9">{{ listado.presupuesto }}</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Año</dt>
-                <dd class="col-sm-9">{{ listado.año }}</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Nombre</dt>
-                <dd class="col-sm-9">{{ listado.nombre }}</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Nota</dt>
-                <dd class="col-sm-9">{{ listado.nota }}</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Gestión</dt>
-                <dd class="col-sm-9">{{ listado.gestion }}</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Pagos</dt>
-                <dd class="col-sm-9">
-                    {% if listado.listado %}
-                        <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-primary">
-                            Ver Documento
-                        </a>
-                    {% else %}
-                        <span>No disponible</span>
-                    {% endif %}
-                </dd>
-
-                <dt class="col-sm-3 font-weight-bold">Drive</dt>
-                <dd class="col-sm-9">
-                    {% if listado.drive %}
-                        <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-success">
-                            Ver en Google Drive
-                        </a>
-                    {% else %}
-                        <span>No disponible</span>
-                    {% endif %}
-                </dd>
-            </dl>
-
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-warning btn-lg">
-                    <i class="fas fa-edit"></i> Editar
-                </a>
-                <a href="{% url 'listado_delete' listado.pk %}" class="btn btn-danger btn-lg">
-                    <i class="fas fa-trash"></i> Eliminar
-                </a>
-                <a href="{% url 'listado_list' %}" class="btn btn-secondary btn-lg">
-                    <i class="fas fa-arrow-left"></i> Volver a la lista
-                </a>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-list me-2"></i>
+                        {{ listado.nombre|default:listado.presupuesto|default:"Listado sin nombre" }}
+                    </h1>
+                    <p class="page-subtitle">
+                        {% if listado.presupuesto and listado.año %}
+                            <span class="badge bg-primary fs-6">{{ listado.presupuesto }} - {{ listado.año }}</span>
+                        {% elif listado.presupuesto %}
+                            <span class="badge bg-primary fs-6">{{ listado.presupuesto }}</span>
+                        {% elif listado.año %}
+                            <span class="badge bg-secondary fs-6">Año {{ listado.año }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">ID: {{ listado.pk }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>
+                        Editar
+                    </a>
+                    <a href="{% url 'listado_delete' listado.pk %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i>
+                        Eliminar
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Información Principal -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información del Listado
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-dollar-sign text-primary me-2"></i>
+                                Presupuesto
+                            </label>
+                            <p class="info-value">{{ listado.presupuesto|default:"No especificado" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                Año
+                            </label>
+                            <p class="info-value">{{ listado.año|default:"No especificado" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-tag text-primary me-2"></i>
+                                Nombre del Listado
+                            </label>
+                            <p class="info-value">{{ listado.nombre|default:"Sin nombre específico" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-tasks text-primary me-2"></i>
+                                Gestión
+                            </label>
+                            <div class="info-value">
+                                {% if listado.gestion %}
+                                    <div class="gestion-content">
+                                        {{ listado.gestion|linebreaks }}
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted fst-italic">Sin información de gestión</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-sticky-note text-primary me-2"></i>
+                                Notas Adicionales
+                            </label>
+                            <div class="info-value">
+                                {% if listado.nota %}
+                                    <div class="nota-content">
+                                        {{ listado.nota|linebreaks }}
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted fst-italic">Sin notas adicionales</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel de Acciones -->
+    <div class="col-lg-4">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tools me-2"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if listado.listado %}
+                        <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>
+                            Abrir Listado
+                        </a>
+                    {% endif %}
+                    {% if listado.drive %}
+                        <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-success">
+                            <i class="fas fa-cloud me-2"></i>
+                            Abrir en Drive
+                        </a>
+                    {% endif %}
+                    <button class="btn btn-outline-info" onclick="copyToClipboard()">
+                        <i class="fas fa-copy me-2"></i>
+                        Copiar Información
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="exportData()">
+                        <i class="fas fa-download me-2"></i>
+                        Exportar Datos
+                    </button>
+                    <hr>
+                    <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>
+                        Editar Listado
+                    </a>
+                    <a href="{% url 'listado_delete' listado.pk %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i>
+                        Eliminar Listado
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enlaces Disponibles -->
+        {% if listado.listado or listado.drive %}
+        <div class="card fade-in mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-link me-2"></i>
+                    Enlaces Disponibles
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if listado.listado %}
+                    <div class="link-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="fas fa-external-link-alt text-primary me-2"></i>
+                                    Enlace del Listado
+                                </h6>
+                                <small class="text-muted text-break">{{ listado.listado }}</small>
+                            </div>
+                            <div class="ms-2">
+                                <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ listado.listado }}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if listado.drive %}
+                    <div class="link-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="fas fa-cloud text-success me-2"></i>
+                                    Google Drive
+                                </h6>
+                                <small class="text-muted text-break">{{ listado.drive }}</small>
+                            </div>
+                            <div class="ms-2">
+                                <button class="btn btn-sm btn-outline-success" onclick="copyToClipboard('{{ listado.drive }}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Información del Sistema -->
+        <div class="card fade-in mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información del Sistema
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <strong>ID del Listado:</strong> {{ listado.pk }}
+                </p>
+                <p class="mb-2">
+                    <strong>Estado:</strong> 
+                    {% if listado.listado and listado.drive %}
+                        <span class="badge bg-success">Completo</span>
+                    {% elif listado.listado or listado.drive %}
+                        <span class="badge bg-warning">Parcial</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Sin enlaces</span>
+                    {% endif %}
+                </p>
+                <p class="mb-0 text-muted small">
+                    Listado registrado en el sistema
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen Visual -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Resumen Visual
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign text-primary"></i>
+                            </div>
+                            <div class="stat-value">{{ listado.presupuesto|default:"N/A" }}</div>
+                            <div class="stat-label">Presupuesto</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-alt text-info"></i>
+                            </div>
+                            <div class="stat-value">{{ listado.año|default:"N/A" }}</div>
+                            <div class="stat-label">Año</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-link text-success"></i>
+                            </div>
+                            <div class="stat-value">
+                                {% if listado.listado %}1{% else %}0{% endif %}
+                            </div>
+                            <div class="stat-label">Enlace Principal</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-cloud text-warning"></i>
+                            </div>
+                            <div class="stat-value">
+                                {% if listado.drive %}1{% else %}0{% endif %}
+                            </div>
+                            <div class="stat-label">Drive</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navegación -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Volver a Listados
+                        </a>
+                    </div>
+                    <div>
+                        <a href="{% url 'listado_create' %}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>
+                            Nuevo Listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(text = null) {
+    let textToCopy = text;
+    
+    if (!textToCopy) {
+        // Copiar toda la información del listado
+        textToCopy = `INFORMACIÓN DEL LISTADO
+=============================
+Nombre: {{ listado.nombre|default:"Sin nombre" }}
+Presupuesto: {{ listado.presupuesto|default:"No especificado" }}
+Año: {{ listado.año|default:"No especificado" }}
+
+GESTIÓN:
+{{ listado.gestion|default:"Sin información de gestión" }}
+
+NOTAS:
+{{ listado.nota|default:"Sin notas adicionales" }}
+
+ENLACES:
+{% if listado.listado %}Listado: {{ listado.listado }}{% endif %}
+{% if listado.drive %}Drive: {{ listado.drive }}{% endif %}
+
+ID Sistema: {{ listado.pk }}`;
+    }
+    
+    navigator.clipboard.writeText(textToCopy).then(function() {
+        showToast('Información copiada al portapapeles', 'success');
+    }).catch(function(err) {
+        console.error('Error al copiar: ', err);
+        showToast('Error al copiar al portapapeles', 'danger');
+    });
+}
+
+function exportData() {
+    const data = {
+        id: {{ listado.pk }},
+        nombre: "{{ listado.nombre|default:'' }}",
+        presupuesto: "{{ listado.presupuesto|default:'' }}",
+        año: "{{ listado.año|default:'' }}",
+        gestion: "{{ listado.gestion|default:'' }}",
+        nota: "{{ listado.nota|default:'' }}",
+        listado: "{{ listado.listado|default:'' }}",
+        drive: "{{ listado.drive|default:'' }}",
+        fecha_exportacion: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `listado_{{ listado.presupuesto|default:"sin_presupuesto" }}_{{ listado.pk }}.json`;
+    link.click();
+    
+    showToast('Datos exportados exitosamente', 'success');
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'danger' ? 'times' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+
+// Confirmar antes de eliminar
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('a[href*="eliminarlo"]');
+    deleteButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este listado? Esta acción no se puede deshacer.')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.info-group {
+    margin-bottom: 1rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 0;
+    word-break: break-word;
+}
+
+.gestion-content, .nota-content {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.link-item {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.stat-item {
+    padding: 1rem;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--dark-gray);
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.toast {
+    min-width: 250px;
+}
+</style>
 {% endblock %}

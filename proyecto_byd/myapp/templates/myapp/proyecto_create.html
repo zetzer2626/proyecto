@@ -1,507 +1,713 @@
 {% extends 'base.html' %}
-{% load static %}
-{% load widget_tweaks %}
+
+{% block title %}
+    {% if object %}Editar Proyecto{% else %}Nuevo Proyecto{% endif %} - Sistema de Gestión
+{% endblock %}
+
+{% block page_title %}
+    {% if object %}Editar Proyecto{% else %}Nuevo Proyecto{% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="mb-4 text-center">Crear Proyecto</h1>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-{% if object %}edit{% else %}plus{% endif %} me-2"></i>
+                {% if object %}Editar Proyecto{% else %}Nuevo Proyecto{% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if object %}
+                    Modifica la información del proyecto: {{ object.nombre }}
+                {% else %}
+                    Completa la información para crear un nuevo proyecto
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+            </a>
+        </div>
+    </div>
+</div>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="row">
-
-            <!-- Información del Proyecto -->
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">Información del Proyecto</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="id_presupuesto" class="form-label fw-bold text-secondary">
-                                
-                            </label>
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-4">
-                                    <label for="id_presupuesto" class="form-label small text-secondary">
-                                        Presupuesto
-                                    </label>
-                                    {{ form.presupuesto|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                              
-                                <!-- <div class="col-md-4">
-                                    <label for="id_documento_presupuesto_1" class="form-label small text-secondary">
-                                        Documento Presupuesto 1
-                                    </label>
-                                    {{ form.documento_presupuesto_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                        
-                                <div class="col-md-4">
-                                    <label for="id_documento_presupuesto_2" class="form-label small text-secondary">
-                                        Documento Presupuesto 2
-                                    </label>
-                                    {{ form.documento_presupuesto_2|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>-->
-                            <div class="row g-3 mt-3">
-                                <!-- Link Presupuesto -->
-                                <div class="col-md-12">
-                                    <label for="id_presupuesto_link" class="form-label fw-bold small text-secondary">
-                                        <i class="fas fa-link me-2"></i>Link de Pago
-                                    </label>
-                                    {{ form.presupuesto_link|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                                <div class="col-md-12">
-                                    <label for="enlace_documento" class="form-label fw-bold small text-secondary">
-                                        <i class="fas fa-link me-2"></i>Enlace de Presupuesto
-                                    </label>
-                                    {{ form.enlace_documento|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row g-3 align-items-center">
-                                        <!-- Campo Enlace de Drive -->
-                                        <div class="col-md-6">
-                                            <label for="id_link_1" class="form-label fw-bold text-secondary">
-                                                <i class="fas fa-link me-2"></i>Enlace de Drive
-                                            </label>
-                                            {{ form.link_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                        </div>
-                                        <!-- Campo Nombre Enlace 1 -->
-                                        <div class="col-md-6">
-                                            <label for="id_nombre_enlace_1" class="form-label fw-bold text-secondary">
-                                                <i class="fas fa-pencil-alt me-2"></i>Nombre Enlace 1
-                                            </label>
-                                            {{ form.nombre_enlace_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                        </div>
-                                    </div>
-                                </div>
+<form method="post" enctype="multipart/form-data" id="proyectoForm">
+    {% csrf_token %}
+    
+    <div class="row">
+        <!-- Información Básica -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Información Básica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.presupuesto.id_for_label }}" class="form-label">
+                                    <i class="fas fa-dollar-sign me-1"></i>Presupuesto
+                                </label>
+                                {{ form.presupuesto }}
+                                {% if form.presupuesto.errors %}
+                                    <div class="text-danger small mt-1">{{ form.presupuesto.errors }}</div>
+                                {% endif %}
                             </div>
                         </div>
-                        
-                        
-                        <br><br>
-                        
-                        <div class="form-group">
-                            <label for="id_nombre">Nombre</label>
-                            {{ form.nombre }}
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.año.id_for_label }}" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Año
+                                </label>
+                                {{ form.año }}
+                                {% if form.año.errors %}
+                                    <div class="text-danger small mt-1">{{ form.año.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_año">Año</label>
-                            {{ form.año }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label required">
+                                    <i class="fas fa-user me-1"></i>Nombre del Cliente
+                                </label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger small mt-1">{{ form.nombre.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_telefono">Teléfono</label>
-                            {{ form.telefono }}
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.telefono.id_for_label }}" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Teléfono
+                                </label>
+                                {{ form.telefono }}
+                                {% if form.telefono.errors %}
+                                    <div class="text-danger small mt-1">{{ form.telefono.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_correo">Correo</label>
-                            {{ form.correo }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.correo.id_for_label }}" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                                </label>
+                                {{ form.correo }}
+                                {% if form.correo.errors %}
+                                    <div class="text-danger small mt-1">{{ form.correo.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_direccion">Dirección</label>
-                            {{ form.direccion }}
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.rol_avaluo.id_for_label }}" class="form-label">
+                                    <i class="fas fa-file-alt me-1"></i>Rol Avalúo
+                                </label>
+                                {{ form.rol_avaluo }}
+                                {% if form.rol_avaluo.errors %}
+                                    <div class="text-danger small mt-1">{{ form.rol_avaluo.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_rol_avaluo">Rol de Avalúo</label>
-                            {{ form.rol_avaluo }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.direccion.id_for_label }}" class="form-label">
+                            <i class="fas fa-map-marker-alt me-1"></i>Dirección
+                        </label>
+                        {{ form.direccion }}
+                        {% if form.direccion.errors %}
+                            <div class="text-danger small mt-1">{{ form.direccion.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.proyecto.id_for_label }}" class="form-label">
+                            <i class="fas fa-project-diagram me-1"></i>Descripción del Proyecto
+                        </label>
+                        {{ form.proyecto }}
+                        {% if form.proyecto.errors %}
+                            <div class="text-danger small mt-1">{{ form.proyecto.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estado y Proceso -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tasks me-2"></i>Estado y Proceso
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.estado_proyecto.id_for_label }}" class="form-label">
+                                    <i class="fas fa-flag me-1"></i>Estado del Proyecto
+                                </label>
+                                {{ form.estado_proyecto }}
+                                {% if form.estado_proyecto.errors %}
+                                    <div class="text-danger small mt-1">{{ form.estado_proyecto.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                       
-                        <div class="form-group">
-                            <label for="id_proyecto">Proyecto</label>
-                            {{ form.proyecto }}
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.proceso.id_for_label }}" class="form-label">
+                                    <i class="fas fa-cog me-1"></i>Proceso
+                                </label>
+                                {{ form.proceso }}
+                                {% if form.proceso.errors %}
+                                    <div class="text-danger small mt-1">{{ form.proceso.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_estado_proyecto">Estado del Proyecto</label>
-                            {{ form.estado_proyecto }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.kardex.id_for_label }}" class="form-label">
+                            <i class="fas fa-clipboard me-1"></i>Kardex
+                        </label>
+                        {{ form.kardex }}
+                        {% if form.kardex.errors %}
+                            <div class="text-danger small mt-1">{{ form.kardex.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.detalle.id_for_label }}" class="form-label">
+                                    <i class="fas fa-align-left me-1"></i>Detalle
+                                </label>
+                                {{ form.detalle }}
+                                {% if form.detalle.errors %}
+                                    <div class="text-danger small mt-1">{{ form.detalle.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_detalle">Detalles</label>
-                            {{ form.detalle }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_kardex">Kardex</label>
-                            {{ form.kardex }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_proceso">Proceso</label>
-                            {{ form.proceso }}
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                    <i class="fas fa-file-text me-1"></i>Descripción
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.descripcion.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Documentos Adicionales -->
-            <!-- <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">Documentos Adicionales</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="id_levantamiento">Levantamiento</label>
-                            {{ form.levantamiento }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_escritura">Escritura</label>
-                            {{ form.escritura }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_dominio_vigente">Dominio Vigente</label>
-                            {{ form.dominio_vigente }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_cedula_identidad">Cédula de Identidad</label>
-                            {{ form.cedula_identidad }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_poder">Poder</label>
-                            {{ form.poder }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_boleta_agua">Boleta de Agua</label>
-                            {{ form.boleta_agua }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_boleta_luz">Boleta de Luz</label>
-                            {{ form.boleta_luz }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_rol_avaluo_detallado">Rol de Avalúo Detallado</label>
-                            {{ form.rol_avaluo_detallado }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_proyecto_anterior">Proyecto Anterior</label>
-                            {{ form.proyecto_anterior }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_conjunto_habitacional">Conjunto Habitacional</label>
-                            {{ form.conjunto_habitacional }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_informe_previo">Informe Previo</label>
-                            {{ form.informe_previo }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_utilidad_publica">Utilidad Pública</label>
-                            {{ form.utilidad_publica }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_certificado_numero">Certificado Número</label>
-                            {{ form.certificado_numero }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_factibilidad">Factibilidad</label>
-                            {{ form.factibilidad }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_seim">SEIM</label>
-                            {{ form.seim }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_listado">Listado</label>
-                            {{ form.listado }}
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- Opcionales -->
-               <!--  <div class="col-lg-6 mb-4">
-                    <div class="card">
-                    <div class="card-header">Ingresos</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                               
-                                <div class="col-md-6">
-                                    <label for="id_opcional_1" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 1
-                                    </label>
-                                    {{ form.opcional_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_1" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 1
-                                    </label>
-                                    {{ form.nombre_ingreso_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-                       
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                              
-                                <div class="col-md-6">
-                                    <label for="id_opcional_1" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 2
-                                    </label>
-                                    {{ form.opcional_2|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                               
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_2" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 2
-                                    </label>
-                                    {{ form.nombre_ingreso_2|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_3" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 3
-                                    </label>
-                                    {{ form.opcional_3|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                        
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_3" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 3
-                                    </label>
-                                    {{ form.nombre_ingreso_3|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_4" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 4
-                                    </label>
-                                    {{ form.opcional_4|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                              
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_4" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 4
-                                    </label>
-                                    {{ form.nombre_ingreso_4|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                      
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                          
-                                <div class="col-md-6">
-                                    <label for="id_opcional_5" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 5
-                                    </label>
-                                    {{ form.opcional_5|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                              
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_5" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 5
-                                    </label>
-                                    {{ form.nombre_ingreso_5|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                              
-                                <div class="col-md-6">
-                                    <label for="id_opcional_6" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 6
-                                    </label>
-                                    {{ form.opcional_6|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                               
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_6" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 6
-                                    </label>
-                                    {{ form.nombre_ingreso_6|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                              
-                                <div class="col-md-6">
-                                    <label for="id_opcional_7" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 7
-                                    </label>
-                                    {{ form.opcional_7|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                    
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_7" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 7
-                                    </label>
-                                    {{ form.nombre_ingreso_7|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_8" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 8
-                                    </label>
-                                    {{ form.opcional_8|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                               
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_8" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 8
-                                    </label>
-                                    {{ form.nombre_ingreso_8|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                           
-                                <div class="col-md-6">
-                                    <label for="id_opcional_9" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 9
-                                    </label>
-                                    {{ form.opcional_9|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                       
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_9" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 9
-                                    </label>
-                                    {{ form.nombre_ingreso_9|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_10" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 10
-                                    </label>
-                                    {{ form.opcional_10|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                             
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_10" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 10
-                                    </label>
-                                    {{ form.nombre_ingreso_10|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </div> -->
-            
-             <!-- descripcion -->
-             <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">Descripción del Proyecto</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="id_descripcion">Descripción</label>
-                            <p>{{ form.descripcion }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>            
         </div>
         
-
-        <div class="text-right">
-              <!-- Botón Regresar -->
-            <a href="javascript:history.back()" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Regresar
-            </a>  <!-- Botón Regresar -->
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Progreso del Proyecto -->
+            {% if object %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Progreso del Proyecto
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    {% with completitud=object.calcular_porcentaje_completitud %}
+                        <div class="mb-3">
+                            <div class="progress mx-auto" style="width: 120px; height: 120px; border-radius: 50%; position: relative;">
+                                <div class="progress-bar" style="width: {{ completitud }}%"></div>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: bold;">
+                                    {{ completitud|floatformat:0 }}%
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0">Documentos Completados</p>
+                        <small class="text-muted">{{ completitud|floatformat:0 }}% de 16 documentos</small>
+                    {% endwith %}
+                </div>
+            </div>
+            {% endif %}
             
-            <button type="submit" class="btn btn-primary">Crear Proyecto</button> 
+            <!-- Enlaces y Presupuesto -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-link me-2"></i>Enlaces y Documentos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="{{ form.link_1.id_for_label }}" class="form-label">
+                            <i class="fas fa-cloud me-1"></i>Enlace OneDrive
+                        </label>
+                        {{ form.link_1 }}
+                        {% if form.link_1.errors %}
+                            <div class="text-danger small mt-1">{{ form.link_1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.nombre_enlace_1.id_for_label }}" class="form-label">
+                            <i class="fas fa-tag me-1"></i>Nombre del Enlace
+                        </label>
+                        {{ form.nombre_enlace_1 }}
+                        {% if form.nombre_enlace_1.errors %}
+                            <div class="text-danger small mt-1">{{ form.nombre_enlace_1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.presupuesto_link.id_for_label }}" class="form-label">
+                            <i class="fas fa-calculator me-1"></i>Enlace Presupuesto
+                        </label>
+                        {{ form.presupuesto_link }}
+                        {% if form.presupuesto_link.errors %}
+                            <div class="text-danger small mt-1">{{ form.presupuesto_link.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.enlace_documento.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-pdf me-1"></i>Enlace Documento
+                        </label>
+                        {{ form.enlace_documento }}
+                        {% if form.enlace_documento.errors %}
+                            <div class="text-danger small mt-1">{{ form.enlace_documento.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>Acciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if object %}Actualizar Proyecto{% else %}Crear Proyecto{% endif %}
+                        </button>
+                        {% if object %}
+                            <a href="{% url 'proyecto-detail' object.pk %}" class="btn btn-outline-info">
+                                <i class="fas fa-eye me-2"></i>Ver Detalles
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+    
+    <!-- Documentos Principales -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-folder me-2"></i>Documentos Principales
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.levantamiento.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-upload me-1"></i>Levantamiento
+                        </label>
+                        {{ form.levantamiento }}
+                        {% if form.levantamiento.errors %}
+                            <div class="text-danger small mt-1">{{ form.levantamiento.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.escritura.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-contract me-1"></i>Escritura
+                        </label>
+                        {{ form.escritura }}
+                        {% if form.escritura.errors %}
+                            <div class="text-danger small mt-1">{{ form.escritura.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.dominio_vigente.id_for_label }}" class="form-label">
+                            <i class="fas fa-certificate me-1"></i>Dominio Vigente
+                        </label>
+                        {{ form.dominio_vigente }}
+                        {% if form.dominio_vigente.errors %}
+                            <div class="text-danger small mt-1">{{ form.dominio_vigente.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.cedula_identidad.id_for_label }}" class="form-label">
+                            <i class="fas fa-id-card me-1"></i>Cédula de Identidad
+                        </label>
+                        {{ form.cedula_identidad }}
+                        {% if form.cedula_identidad.errors %}
+                            <div class="text-danger small mt-1">{{ form.cedula_identidad.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.poder.id_for_label }}" class="form-label">
+                            <i class="fas fa-handshake me-1"></i>Poder
+                        </label>
+                        {{ form.poder }}
+                        {% if form.poder.errors %}
+                            <div class="text-danger small mt-1">{{ form.poder.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.rol_avaluo_detallado.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-alt me-1"></i>Rol Avalúo Detallado
+                        </label>
+                        {{ form.rol_avaluo_detallado }}
+                        {% if form.rol_avaluo_detallado.errors %}
+                            <div class="text-danger small mt-1">{{ form.rol_avaluo_detallado.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Servicios Básicos -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-lightbulb me-2"></i>Servicios Básicos
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.boleta_agua.id_for_label }}" class="form-label">
+                            <i class="fas fa-tint me-1"></i>Boleta de Agua
+                        </label>
+                        {{ form.boleta_agua }}
+                        {% if form.boleta_agua.errors %}
+                            <div class="text-danger small mt-1">{{ form.boleta_agua.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.boleta_luz.id_for_label }}" class="form-label">
+                            <i class="fas fa-bolt me-1"></i>Boleta de Luz
+                        </label>
+                        {{ form.boleta_luz }}
+                        {% if form.boleta_luz.errors %}
+                            <div class="text-danger small mt-1">{{ form.boleta_luz.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documentos Adicionales -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-folder-plus me-2"></i>Documentos Adicionales
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.proyecto_anterior.id_for_label }}" class="form-label">
+                            <i class="fas fa-history me-1"></i>Proyecto Anterior
+                        </label>
+                        {{ form.proyecto_anterior }}
+                        {% if form.proyecto_anterior.errors %}
+                            <div class="text-danger small mt-1">{{ form.proyecto_anterior.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.conjunto_habitacional.id_for_label }}" class="form-label">
+                            <i class="fas fa-building me-1"></i>Conjunto Habitacional
+                        </label>
+                        {{ form.conjunto_habitacional }}
+                        {% if form.conjunto_habitacional.errors %}
+                            <div class="text-danger small mt-1">{{ form.conjunto_habitacional.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.informe_previo.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-medical me-1"></i>Informe Previo
+                        </label>
+                        {{ form.informe_previo }}
+                        {% if form.informe_previo.errors %}
+                            <div class="text-danger small mt-1">{{ form.informe_previo.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.utilidad_publica.id_for_label }}" class="form-label">
+                            <i class="fas fa-landmark me-1"></i>Utilidad Pública
+                        </label>
+                        {{ form.utilidad_publica }}
+                        {% if form.utilidad_publica.errors %}
+                            <div class="text-danger small mt-1">{{ form.utilidad_publica.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.certificado_numero.id_for_label }}" class="form-label">
+                            <i class="fas fa-award me-1"></i>Certificado Número
+                        </label>
+                        {{ form.certificado_numero }}
+                        {% if form.certificado_numero.errors %}
+                            <div class="text-danger small mt-1">{{ form.certificado_numero.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.factibilidad.id_for_label }}" class="form-label">
+                            <i class="fas fa-check-circle me-1"></i>Factibilidad
+                        </label>
+                        {{ form.factibilidad }}
+                        {% if form.factibilidad.errors %}
+                            <div class="text-danger small mt-1">{{ form.factibilidad.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.seim.id_for_label }}" class="form-label">
+                            <i class="fas fa-map me-1"></i>SEIM
+                        </label>
+                        {{ form.seim }}
+                        {% if form.seim.errors %}
+                            <div class="text-danger small mt-1">{{ form.seim.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.listado.id_for_label }}" class="form-label">
+                            <i class="fas fa-list me-1"></i>Listado
+                        </label>
+                        {{ form.listado }}
+                        {% if form.listado.errors %}
+                            <div class="text-danger small mt-1">{{ form.listado.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documentos Opcionales -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-paperclip me-2"></i>Documentos Opcionales
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_1.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 1
+                        </label>
+                        {{ form.opcional_1 }}
+                        {% if form.opcional_1.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_1.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_2.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 2
+                        </label>
+                        {{ form.opcional_2 }}
+                        {% if form.opcional_2.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_2.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_3.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 3
+                        </label>
+                        {{ form.opcional_3 }}
+                        {% if form.opcional_3.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_3.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_4.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 4
+                        </label>
+                        {{ form.opcional_4 }}
+                        {% if form.opcional_4.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_4.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_5.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 5
+                        </label>
+                        {{ form.opcional_5 }}
+                        {% if form.opcional_5.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_5.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_6.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 6
+                        </label>
+                        {{ form.opcional_6 }}
+                        {% if form.opcional_6.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_6.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_7.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 7
+                        </label>
+                        {{ form.opcional_7 }}
+                        {% if form.opcional_7.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_7.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_8.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 8
+                        </label>
+                        {{ form.opcional_8 }}
+                        {% if form.opcional_8.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_8.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_9.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 9
+                        </label>
+                        {{ form.opcional_9 }}
+                        {% if form.opcional_9.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_9.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.opcional_10.id_for_label }}" class="form-label">
+                            <i class="fas fa-file me-1"></i>Opcional 10
+                        </label>
+                        {{ form.opcional_10 }}
+                        {% if form.opcional_10.errors %}
+                            <div class="text-danger small mt-1">{{ form.opcional_10.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
 
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        line-height: 1.6;
-    }
-
-    h1, h2, h3 {
-        color: #2980b9;
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .card {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin: 20px 0;
-    }
-
-    .card-header {
-        font-weight: bold;
-        background-color: #2980b9;
-        color: white;
-        border-radius: 8px;
-        padding: 10px;
-    }
-
-    .form-group label {
-        font-weight: bold;
-        color: #555;
-    }
-
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-
-    .btn {
-        background-color: #2980b9;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .btn:hover {
-        background-color: #3498db;
-    }
-
-    .uniform-field {
-        height: 45px; /* Asegura el mismo tamaño de altura para todos los campos */
-        font-size: 0.95rem; /* Uniformidad en el tamaño de la fuente */
-    }
-
-    .form-label {
-        font-size: 0.85rem; /* Consistencia en el tamaño de las etiquetas */
-    }
-
-    .form-control {
-        display: flex;
-        align-items: center; /* Centrado vertical en caso de desajustes */
-    }
-
-    .row.g-3 {
-        margin-bottom: 1rem; /* Espaciado uniforme entre las filas */
-    }
-
-
-</style>
-
+{% block extra_js %}
+<script>
+    // Auto-save functionality (optional)
+    let saveTimeout;
+    document.getElementById('proyectoForm').addEventListener('input', function() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(function() {
+            // You can implement auto-save here if needed
+            console.log('Form data changed');
+        }, 2000);
+    });
+    
+    // Form validation
+    document.getElementById('proyectoForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let hasErrors = false;
+        
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                hasErrors = true;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos.');
+        }
+    });
+    
+    // File upload preview
+    document.querySelectorAll('input[type="file"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado';
+            const label = this.closest('.mb-3').querySelector('label');
+            if (this.files[0]) {
+                label.innerHTML = label.innerHTML.replace(/(<i[^>]*><\/i>\s*)(.*)/, '$1' + fileName);
+            }
+        });
+    });
+</script>
 {% endblock %}

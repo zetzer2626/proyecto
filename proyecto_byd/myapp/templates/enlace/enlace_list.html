@@ -1,170 +1,376 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% load static %}
+{% block title %}Enlaces - Sistema de Gestión{% endblock %}
+
+{% block page_title %}Enlaces{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Enlaces</li>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">Lista de Enlaces</h1>
-    <!-- Resumen -->
-    <div class="mb-4 text-center">
-        <p class="text-muted">
-            Total de Carpetas: <strong>{{ total_enlaces }}</strong> | Enlaces en esta página: <strong>{{ current_page_count }}</strong>
-        </p>
-    </div>
-    <div class="d-flex justify-content-center align-items-center mb-4" style="min-height: 200px;">
-        <form method="get" class="text-center w-100" style="max-width: 800px;">
-            <!-- Campo de Búsqueda -->
-            <div class="input-group mb-3">
-                <input type="text" name="q" value="{{ query }}" 
-                       class="form-control form-control-lg" 
-                       placeholder="Buscar por título o descripción">
-                <button type="submit" class="btn btn-success btn-lg">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-            </div>
-            <!-- Botones Adicionales -->
-            <div class="d-flex justify-content-center gap-3">
-                <a href="{% url 'enlace_list' %}" class="btn btn-secondary btn-lg">
-                    <i class="fas fa-times-circle"></i> Limpiar
-                </a>
-                <a href="{% url 'enlace_create' %}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus-circle"></i> Crear Nuevo
-                </a>
-            </div>
-        </form>
-    </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-        {% for enlace in enlaces %}
-        <div class="col">
-            <div class="card enlace-card">
-                <!-- Avatar en la parte superior -->
-                <div class="text-center mt-3">
-                    {% if enlace.avatar %}
-                    <img src="{{ enlace.avatar.url }}" alt="{{ enlace.titulo }}" 
-                         class="enlace-avatar">
-                    {% endif %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-link me-2"></i>
+                        Gestión de Enlaces
+                    </h1>
+                    <p class="page-subtitle">Administra enlaces y documentos importantes</p>
                 </div>
-                
-                <div class="card-body text-center">
-                    <!-- Título -->
-                    <h5 class="card-title enlace-titulo">{{ enlace.titulo }}</h5>
-                    
-                    <!-- Descripción -->
-                    <p class="enlace-descripcion">{{ enlace.description|truncatewords:10 }}</p>
-                    
-                    <!-- Links -->
-                    <div class="d-flex justify-content-center gap-2 my-3">
-                        {% if enlace.link %}
-                        <a href="{{ enlace.link }}" target="_blank" 
-                           class="btn enlace-btn enlace-btn-link">Ver Enlace</a>
-                        {% else %}
-                        <span class="btn enlace-btn enlace-btn-disabled" disabled>Sin Enlace</span>
-                        {% endif %}
-                        
-                        {% if enlace.documento_pdf %}
-                        <a href="{{ enlace.documento_pdf.url }}" target="_blank" 
-                           class="btn enlace-btn enlace-btn-pdf">Ver PDF</a>
-                        {% else %}
-                        <span class="btn enlace-btn enlace-btn-disabled" disabled>Sin PDF</span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Acciones -->
-                    <div class="d-flex justify-content-around mt-3">
-                        <a href="{% url 'enlace_update' enlace.pk %}" 
-                           class="btn enlace-btn enlace-btn-edit">Editar</a>
-                        <a href="{% url 'enlace_delete' enlace.pk %}" 
-                           class="btn enlace-btn enlace-btn-delete">Eliminar</a>
-                    </div>
+                <div>
+                    <a href="{% url 'enlace_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Nuevo Enlace
+                    </a>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12">
-            <p class="text-center text-muted">No hay enlaces disponibles.</p>
-        </div>
-        {% endfor %}
     </div>
 </div>
 
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_enlaces }}</div>
+            <div class="stats-label">Total Enlaces</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card success">
+            <div class="stats-number">{{ current_page_count }}</div>
+            <div class="stats-label">En Esta Página</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card warning">
+            <div class="stats-number">{{ enlaces|length }}</div>
+            <div class="stats-label">Resultados Actuales</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card danger">
+            <div class="stats-number">12</div>
+            <div class="stats-label">Por Página</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros y Búsqueda -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="q" 
+                                   value="{{ query }}" 
+                                   placeholder="Buscar por título o descripción...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>
+                                Buscar
+                            </button>
+                            <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>
+                                Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Enlaces en Cards -->
+<div class="row">
+    {% for enlace in enlaces %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 fade-in enlace-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0 text-truncate" title="{{ enlace.titulo }}">
+                        <i class="fas fa-link me-2 text-primary"></i>
+                        {{ enlace.titulo }}
+                    </h6>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                type="button" 
+                                data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'enlace_update' enlace.pk %}">
+                                    <i class="fas fa-edit me-2"></i>Editar
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'enlace_delete' enlace.pk %}">
+                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <!-- Avatar o Icono -->
+                    <div class="text-center mb-3">
+                        {% if enlace.avatar %}
+                            <img src="{{ enlace.avatar.url }}" 
+                                 alt="{{ enlace.titulo }}" 
+                                 class="enlace-avatar">
+                        {% else %}
+                            <div class="enlace-avatar-placeholder">
+                                <i class="fas fa-link fa-2x"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Descripción -->
+                    <div class="flex-grow-1">
+                        {% if enlace.description %}
+                            <p class="card-text text-muted small">
+                                {{ enlace.description|truncatewords:15 }}
+                            </p>
+                        {% else %}
+                            <p class="card-text text-muted small fst-italic">
+                                Sin descripción disponible
+                            </p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Tipos de Contenido -->
+                    <div class="mb-3">
+                        <div class="d-flex gap-1 flex-wrap">
+                            {% if enlace.link %}
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Enlace Web
+                                </span>
+                            {% endif %}
+                            {% if enlace.documento_pdf and enlace.documento_pdf.name %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-file-pdf me-1"></i>
+                                    PDF
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="mt-auto">
+                        <div class="d-grid gap-2">
+                            {% if enlace.link %}
+                                <a href="{{ enlace.link }}" 
+                                   target="_blank" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-external-link-alt me-2"></i>
+                                    Abrir Enlace
+                                </a>
+                            {% endif %}
+                            {% if enlace.documento_pdf %}
+                                {% if enlace.documento_pdf.name %}
+                                    <a href="{{ enlace.documento_pdf.url }}" 
+                                       target="_blank" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-file-pdf me-2"></i>
+                                        Ver PDF
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                            <div class="d-flex gap-1">
+                                <a href="{% url 'enlace_update' enlace.pk %}" 
+                                   class="btn btn-outline-primary btn-sm flex-fill">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Editar
+                                </a>
+                                <button type="button" 
+                                        class="btn btn-outline-secondary btn-sm"
+                                        onclick="copyToClipboard('{% if enlace.link %}{{ enlace.link }}{% elif enlace.documento_pdf %}{% if enlace.documento_pdf.name %}{{ enlace.documento_pdf.url }}{% endif %}{% endif %}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-link fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay enlaces disponibles</h4>
+                    <p class="text-muted">
+                        {% if query %}
+                            No se encontraron enlaces que coincidan con "{{ query }}"
+                        {% else %}
+                            Comienza agregando tu primer enlace
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'enlace_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Crear Primer Enlace
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Paginación -->
+{% if is_paginated %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Paginación de enlaces">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(text) {
+    if (!text) {
+        showToast('No hay URL para copiar', 'warning');
+        return;
+    }
+    
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('URL copiada al portapapeles', 'success');
+    }).catch(function(err) {
+        console.error('Error al copiar: ', err);
+        showToast('Error al copiar al portapapeles', 'danger');
+    });
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+
 <style>
-/* Estilos generales para tarjetas */
 .enlace-card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más oscura */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    max-width: 300px;
-    margin: 0 auto;
-    padding: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .enlace-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Sombra más prominente */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
-/* Estilo del avatar */
 .enlace-avatar {
-    width: 90px;
-    height: 90px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #f8f9fa;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 3px solid var(--light-gray);
 }
 
-/* Título */
-.enlace-titulo {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #343a40;
-    margin-top: 0.5rem;
+.enlace-avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--dark-gray);
 }
 
-/* Descripción */
-.enlace-descripcion {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 1rem;
+.card-title {
+    max-width: 200px;
 }
 
-/* Botones */
-.enlace-btn {
-    border-radius: 20px;
-    padding: 0.4rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-transform: capitalize;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.badge {
+    font-size: 0.7rem;
 }
 
-.enlace-btn-link {
-    background-color: #17a2b8;
-    color: #fff;
+.btn-sm {
+    font-size: 0.8rem;
 }
 
-.enlace-btn-pdf {
-    background-color: #28a745;
-    color: #fff;
+.stats-card {
+    transition: transform 0.2s ease;
 }
 
-.enlace-btn-edit {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.enlace-btn-delete {
-    background-color: #dc3545;
-    color: #fff;
-}
-
-.enlace-btn-disabled {
-    background-color: #6c757d;
-    color: #fff;
-    cursor: not-allowed;
+.stats-card:hover {
+    transform: scale(1.02);
 }
 </style>
-
 {% endblock %}

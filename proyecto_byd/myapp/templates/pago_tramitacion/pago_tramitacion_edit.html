@@ -1,147 +1,592 @@
 {% extends 'base.html' %}
 
-{% load static %}
-{% load widget_tweaks %}
-{% load humanize %}
+{% block title %}Editar Movimiento - Sistema de Gestión{% endblock %}
 
-{% block title %}Editar Pago{% endblock %}
+{% block page_title %}Editar Movimiento Financiero{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'pago_tramitacion_list' %}">Ingresos/Egresos</a></li>
+<li class="breadcrumb-item"><a href="{% url 'pago_tramitacion_detail' object.pk %}">{{ object.nombre|truncatechars:30 }}</a></li>
+<li class="breadcrumb-item active">Editar</li>
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-lg border-primary mx-auto" style="max-width: 700px;">
-        <div class="card-header bg-warning text-white">
-            <h3 class="card-title text-center mb-0">Formulario de Edición</h3>
-        </div>
-        <div class="card-body bg-light">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <!-- Mostrar errores del formulario -->
-                {% if form.errors %}
-                    <div class="alert alert-danger">
-                        <ul>
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    </div>
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-edit me-2"></i>Editar Movimiento
+            </h1>
+            <p class="page-subtitle">
+                Modificar información del 
+                {% if object.tipo_pago == 'ingreso' %}
+                    <span class="badge bg-success">INGRESO</span>
+                {% else %}
+                    <span class="badge bg-danger">EGRESO</span>
                 {% endif %}
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="id_tipo_pago" class="form-label">Tipo de Pago</label>
-                            {{ form.tipo_pago|add_class:"form-select" }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="id_fecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="id_fecha" name="fecha" value="{{ form.fecha.value|default:'' }}">
-                        </div>
-                        
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_origen" class="form-label">Origen</label>
-                    {{ form.origen|add_class:"form-control" }}
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_nombre" class="form-label">Nombre</label>
-                    {{ form.nombre|add_class:"form-control" }}
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_gestion" class="form-label">Gestión</label>
-                    {{ form.gestion|add_class:"form-control" }}
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="id_ingreso" class="form-label">Ingreso</label>
-                            {{ form.ingreso|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="id_egreso" class="form-label">Egreso</label>
-                            {{ form.egreso|add_class:"form-control" }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_transferencia" class="form-label">Transferencia</label>
-                    {{ form.transferencia|add_class:"form-control" }}
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_boletabyd" class="form-label">Boleta BYD</label>
-                    {{ form.boletabyd|add_class:"form-control" }}
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_facturabyd" class="form-label">Factura BYD</label>
-                    {{ form.facturabyd|add_class:"form-control" }}
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-lg w-100 shadow">Actualizar Pago</button>
-            </form>
+                - {{ object.nombre }}
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'pago_tramitacion_detail' object.pk %}" class="btn btn-outline-info me-2">
+                <i class="fas fa-eye me-2"></i>Ver Detalle
+            </a>
+            <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+            </a>
         </div>
     </div>
 </div>
+
+<!-- Información del movimiento actual -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            {% if object.tipo_pago == 'ingreso' %}
+                                <i class="fas fa-arrow-up fa-3x text-success mb-2"></i>
+                                <h6 class="text-success">INGRESO</h6>
+                            {% else %}
+                                <i class="fas fa-arrow-down fa-3x text-danger mb-2"></i>
+                                <h6 class="text-danger">EGRESO</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 class="mb-2">{{ object.nombre }}</h5>
+                        <p class="text-muted mb-1">
+                            <strong>Fecha:</strong> {{ object.fecha|date:"d/m/Y" }}
+                        </p>
+                        <p class="text-muted mb-1">
+                            <strong>Origen:</strong> {{ object.origen|default:"No especificado" }}
+                        </p>
+                        <p class="text-muted mb-0">
+                            <strong>Monto Actual:</strong> 
+                            <span class="h5 {% if object.tipo_pago == 'ingreso' %}text-success{% else %}text-danger{% endif %}">
+                                ${{ object.ingreso|default:object.egreso|floatformat:0 }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Información
+                </h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>
+                    Registrado: {{ object.fecha|date:"d/m/Y" }}
+                </small>
+                <br>
+                <small class="text-muted">
+                    <i class="fas fa-tag me-1"></i>
+                    Tipo: 
+                    {% if object.tipo_pago == 'ingreso' %}
+                        <span class="text-success">Ingreso</span>
+                    {% else %}
+                        <span class="text-danger">Egreso</span>
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de edición -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-edit me-2"></i>Modificar Información
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id="edit-form">
+            {% csrf_token %}
+            
+            <div class="row">
+                <!-- Tipo de Pago (readonly) -->
+                <div class="col-12 mb-3">
+                    <div class="alert {% if object.tipo_pago == 'ingreso' %}alert-success{% else %}alert-danger{% endif %}" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Tipo de movimiento:</strong> 
+                        {% if object.tipo_pago == 'ingreso' %}INGRESO{% else %}EGRESO{% endif %}
+                        <small class="d-block mt-1">El tipo de movimiento no puede ser modificado. Para cambiar el tipo, elimina este registro y crea uno nuevo.</small>
+                    </div>
+                    {{ form.tipo_pago.as_hidden }}
+                </div>
+                
+                <!-- Información Básica -->
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.fecha.id_for_label }}" class="form-label">
+                            <i class="fas fa-calendar-alt me-1"></i>Fecha *
+                        </label>
+                        {{ form.fecha }}
+                        {% if form.fecha.errors %}
+                            <div class="text-danger small">{{ form.fecha.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.origen.id_for_label }}" class="form-label">
+                            <i class="fas fa-building me-1"></i>Origen
+                        </label>
+                        {{ form.origen }}
+                        {% if form.origen.errors %}
+                            <div class="text-danger small">{{ form.origen.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                            <i class="fas fa-tag me-1"></i>Nombre/Concepto *
+                        </label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger small">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Monto -->
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-dollar-sign me-1"></i>
+                            Monto del {% if object.tipo_pago == 'ingreso' %}Ingreso{% else %}Egreso{% endif %} *
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="amount-input" 
+                                   name="monto" 
+                                   value="{% if object.tipo_pago == 'ingreso' %}{{ object.ingreso }}{% else %}{{ object.egreso }}{% endif %}"
+                                   placeholder="0.00" 
+                                   step="0.01" 
+                                   min="0"
+                                   required>
+                        </div>
+                        <div id="amount-error" class="text-danger small" style="display: none;"></div>
+                    </div>
+                </div>
+                
+                <!-- Descripción/Gestión -->
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.gestion.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Descripción de la Gestión *
+                        </label>
+                        {{ form.gestion }}
+                        {% if form.gestion.errors %}
+                            <div class="text-danger small">{{ form.gestion.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Documentos de Soporte -->
+            <div class="row">
+                <div class="col-12">
+                    <h6 class="text-muted mb-3">
+                        <i class="fas fa-paperclip me-2"></i>Documentos de Soporte
+                    </h6>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.transferencia.id_for_label }}" class="form-label">
+                            <i class="fas fa-exchange-alt me-1"></i>Comprobante de Transferencia
+                        </label>
+                        {% if object.transferencia %}
+                            <div class="current-file mb-2">
+                                <a href="{{ object.transferencia.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye me-1"></i>Ver archivo actual
+                                </a>
+                            </div>
+                        {% endif %}
+                        {{ form.transferencia }}
+                        {% if form.transferencia.errors %}
+                            <div class="text-danger small">{{ form.transferencia.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">PDF, JPG, PNG. Dejar vacío para mantener el archivo actual.</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.boletabyd.id_for_label }}" class="form-label">
+                            <i class="fas fa-receipt me-1"></i>Boleta B&D
+                        </label>
+                        {% if object.boletabyd %}
+                            <div class="current-file mb-2">
+                                <a href="{{ object.boletabyd.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye me-1"></i>Ver archivo actual
+                                </a>
+                            </div>
+                        {% endif %}
+                        {{ form.boletabyd }}
+                        {% if form.boletabyd.errors %}
+                            <div class="text-danger small">{{ form.boletabyd.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">PDF, JPG, PNG. Dejar vacío para mantener el archivo actual.</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.facturabyd.id_for_label }}" class="form-label">
+                            <i class="fas fa-file-invoice me-1"></i>Factura B&D
+                        </label>
+                        {% if object.facturabyd %}
+                            <div class="current-file mb-2">
+                                <a href="{{ object.facturabyd.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye me-1"></i>Ver archivo actual
+                                </a>
+                            </div>
+                        {% endif %}
+                        {{ form.facturabyd }}
+                        {% if form.facturabyd.errors %}
+                            <div class="text-danger small">{{ form.facturabyd.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">PDF, JPG, PNG. Dejar vacío para mantener el archivo actual.</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Campos ocultos -->
+            {{ form.ingreso.as_hidden }}
+            {{ form.egreso.as_hidden }}
+            
+            <!-- Botones de Acción -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="{% url 'pago_tramitacion_detail' object.pk %}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-outline-info">
+                                <i class="fas fa-list me-2"></i>Ir a Lista
+                            </a>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn {% if object.tipo_pago == 'ingreso' %}btn-success{% else %}btn-danger{% endif %}" id="submit-btn">
+                                <i class="fas fa-save me-2"></i>Actualizar {% if object.tipo_pago == 'ingreso' %}Ingreso{% else %}Egreso{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Historial de cambios -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <i class="fas fa-history me-2"></i>Información Adicional
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted">Resumen del Movimiento</h6>
+                <ul class="list-unstyled">
+                    <li><strong>ID:</strong> #{{ object.pk }}</li>
+                    <li><strong>Fecha de registro:</strong> {{ object.fecha|date:"d/m/Y" }}</li>
+                    <li><strong>Tipo:</strong> 
+                        {% if object.tipo_pago == 'ingreso' %}
+                            <span class="badge bg-success">INGRESO</span>
+                        {% else %}
+                            <span class="badge bg-danger">EGRESO</span>
+                        {% endif %}
+                    </li>
+                    <li><strong>Monto:</strong> ${{ object.ingreso|default:object.egreso|floatformat:0 }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted">Documentos Adjuntos</h6>
+                <ul class="list-unstyled">
+                    <li>
+                        <i class="fas fa-exchange-alt me-2"></i>Transferencia: 
+                        {% if object.transferencia %}
+                            <span class="text-success">Adjunto</span>
+                        {% else %}
+                            <span class="text-muted">No adjunto</span>
+                        {% endif %}
+                    </li>
+                    <li>
+                        <i class="fas fa-receipt me-2"></i>Boleta B&D: 
+                        {% if object.boletabyd %}
+                            <span class="text-success">Adjunto</span>
+                        {% else %}
+                            <span class="text-muted">No adjunto</span>
+                        {% endif %}
+                    </li>
+                    <li>
+                        <i class="fas fa-file-invoice me-2"></i>Factura B&D: 
+                        {% if object.facturabyd %}
+                            <span class="text-success">Adjunto</span>
+                        {% else %}
+                            <span class="text-muted">No adjunto</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Variables globales
+const movementType = '{{ object.tipo_pago }}';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('amount-input');
+    const nombreInput = document.querySelector('input[name="nombre"]');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Validar monto
+    function validateAmount() {
+        const value = parseFloat(amountInput.value);
+        const errorDiv = document.getElementById('amount-error');
+        
+        if (isNaN(value) || value <= 0) {
+            errorDiv.textContent = 'El monto debe ser mayor a 0';
+            errorDiv.style.display = 'block';
+            amountInput.classList.add('is-invalid');
+            return false;
+        } else if (value > 999999999) {
+            errorDiv.textContent = 'El monto es demasiado grande';
+            errorDiv.style.display = 'block';
+            amountInput.classList.add('is-invalid');
+            return false;
+        } else {
+            errorDiv.style.display = 'none';
+            amountInput.classList.remove('is-invalid');
+            return true;
+        }
+    }
+    
+    // Validar formulario completo
+    function validateForm() {
+        const isAmountValid = validateAmount();
+        const isNameValid = nombreInput.value.trim().length > 0;
+        
+        submitBtn.disabled = !(isAmountValid && isNameValid);
+        
+        return isAmountValid && isNameValid;
+    }
+    
+    // Event listeners
+    amountInput.addEventListener('input', function() {
+        validateAmount();
+        validateForm();
+    });
+    
+    amountInput.addEventListener('blur', validateAmount);
+    nombreInput.addEventListener('input', validateForm);
+    
+    // Formatear números
+    amountInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        // Permitir solo números y punto decimal
+        value = value.replace(/[^0-9.]/g, '');
+        
+        // Permitir solo un punto decimal
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        e.target.value = value;
+    });
+    
+    // Validación inicial
+    validateForm();
+});
+
+// Interceptar envío del formulario
+document.getElementById('edit-form').addEventListener('submit', function(e) {
+    const amountInput = document.getElementById('amount-input');
+    const amount = parseFloat(amountInput.value);
+    
+    if (!amount || amount <= 0) {
+        e.preventDefault();
+        alert('Por favor ingresa un monto válido mayor a 0');
+        return;
+    }
+    
+    // Asignar el monto al campo correcto según el tipo
+    if (movementType === 'ingreso') {
+        document.querySelector('input[name="ingreso"]').value = amount;
+        document.querySelector('input[name="egreso"]').value = '';
+    } else {
+        document.querySelector('input[name="egreso"]').value = amount;
+        document.querySelector('input[name="ingreso"]').value = '';
+    }
+    
+    // Confirmar cambios importantes
+    const originalAmount = parseFloat('{% if object.tipo_pago == "ingreso" %}{{ object.ingreso }}{% else %}{{ object.egreso }}{% endif %}');
+    const difference = Math.abs(amount - originalAmount);
+    
+    if (difference > originalAmount * 0.1) { // Si la diferencia es mayor al 10%
+        const confirmed = confirm('El monto ha cambiado significativamente. ¿Estás seguro de continuar?');
+        if (!confirmed) {
+            e.preventDefault();
+            return;
+        }
+    }
+});
+
+// Función para mostrar previsualización de archivos
+function previewFile(input, previewId) {
+    const file = input.files[0];
+    const preview = document.getElementById(previewId);
+    
+    if (file) {
+        const fileName = file.name;
+        const fileSize = (file.size / 1024 / 1024).toFixed(2); // MB
+        
+        preview.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-file me-2"></i>
+                <strong>Nuevo archivo:</strong> ${fileName} (${fileSize} MB)
+            </div>
+        `;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+// Confirmación antes de salir si hay cambios no guardados
+let formChanged = false;
+
+document.querySelectorAll('#edit-form input, #edit-form select, #edit-form textarea').forEach(function(element) {
+    element.addEventListener('change', function() {
+        formChanged = true;
+    });
+});
+
+window.addEventListener('beforeunload', function(e) {
+    if (formChanged) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+document.getElementById('edit-form').addEventListener('submit', function() {
+    formChanged = false;
+});
+</script>
+
 <style>
-    body {
-    background-color: #f8f9fa;
+.current-file {
+    margin-bottom: 0.5rem;
 }
 
-h1 {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-bottom: 30px;
+.current-file .btn {
+    font-size: 0.875rem;
 }
 
-.card {
-    border-radius: 0.5rem;
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.input-group-text {
+    background-color: var(--light-gray);
+    border-color: var(--medium-gray);
+}
+
+#amount-input.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.alert {
+    border-radius: 8px;
 }
 
 .card-header {
-    background: linear-gradient(45deg, #ffb700, #ff8c00);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 1.25rem;
+    background-color: white;
+    border-bottom: 1px solid var(--medium-gray);
 }
 
-.card-body {
-    padding: 1.5rem;  /* Ajustado para ser más compacto */
+.list-unstyled li {
+    padding: 0.25rem 0;
 }
 
-.form-control {
-    border-radius: 0.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
+.badge {
+    font-size: 0.75rem;
 }
 
-.form-label {
-    font-weight: bold;
-    color: #495057;
+/* Animaciones para estados */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.btn-primary {
-    background: linear-gradient(45deg, #007bff, #0056b3);
-    border: none;
-    border-radius: 0.5rem;
+.form-control.is-invalid {
+    animation: shake 0.5s ease-in-out;
 }
 
-.alert-danger ul {
-    margin: 0;
-    padding-left: 20px;
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
 }
 
-.alert-danger li {
-    margin-bottom: 5px;
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .d-flex.justify-content-between > div {
+        text-align: center;
+    }
 }
+
+/* Estados de hover */
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+/* Colores consistentes */
+.text-success { color: var(--success-color) !important; }
+.text-danger { color: var(--danger-color) !important; }
+.text-info { color: var(--accent-color) !important; }
+
+.bg-success { background-color: var(--success-color) !important; }
+.bg-danger { background-color: var(--danger-color) !important; }
+.bg-info { background-color: var(--accent-color) !important; }
+
+.btn-success { background-color: var(--success-color); border-color: var(--success-color); }
+.btn-danger { background-color: var(--danger-color); border-color: var(--danger-color); }
 </style>
 {% endblock %}

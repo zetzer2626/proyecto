@@ -1,12 +1,317 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Contacto - {{ object.nombre }}{% endblock %}
+
+{% block page_title %}Eliminar Contacto{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'contacto-list' %}">Contactos</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'contacto-detail' object.pk %}">{{ object.nombre }}</a></li>
+    <li class="breadcrumb-item active">Eliminar</li>
+{% endblock %}
 
 {% block content %}
-<h2>Eliminar Contacto</h2>
-<p>¿Estás seguro de que deseas eliminar el contacto <strong>{{ contacto.nombre }}</strong>?</p>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <h1 class="page-title text-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Eliminar Contacto
+            </h1>
+            <p class="page-subtitle">Esta acción eliminará permanentemente el contacto seleccionado</p>
+        </div>
+    </div>
+</div>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
-    <a href="{% url 'contacto-list' %}" class="btn btn-link">Cancelar</a>
-</form>
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Advertencia Principal -->
+        <div class="alert alert-danger fade-in" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">¡Atención! Acción Irreversible</h5>
+                    <p class="mb-0">
+                        Estás a punto de eliminar permanentemente el contacto 
+                        <strong>"{{ object.nombre }}"</strong>. Esta acción no se puede deshacer.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Contacto a Eliminar -->
+        <div class="card fade-in">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user me-2"></i>
+                    Información del Contacto a Eliminar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <strong class="text-muted">Nombre:</strong>
+                            <div class="mt-1">{{ object.nombre }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <strong class="text-muted">Tipo:</strong>
+                            <div class="mt-1">
+                                <span class="badge bg-primary">{{ object.get_tipo_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <strong class="text-muted">Teléfono:</strong>
+                            <div class="mt-1">
+                                <i class="fas fa-phone me-1"></i>
+                                {{ object.telefono }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <strong class="text-muted">Correo:</strong>
+                            <div class="mt-1">
+                                <i class="fas fa-envelope me-1"></i>
+                                {{ object.correo }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consecuencias de la Eliminación -->
+        <div class="card fade-in mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    ¿Qué sucederá al eliminar este contacto?
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger me-2"></i>
+                        Se eliminará toda la información de contacto (nombre, teléfono, correo, tipo)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-times text-danger me-2"></i>
+                        No podrás recuperar esta información una vez eliminada
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        Si este contacto está referenciado en proyectos u otros registros, podrían verse afectados
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        Considera exportar la información antes de eliminar si la necesitas para respaldo
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Formulario de Confirmación -->
+        <div class="card fade-in mt-3">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label" for="confirmDelete">
+                                <strong>Confirmo que entiendo las consecuencias y deseo eliminar este contacto permanentemente</strong>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{% url 'contacto-detail' object.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Cancelar y Volver
+                            </a>
+                            <a href="{% url 'contacto-list' %}" class="btn btn-outline-primary ms-2">
+                                <i class="fas fa-list me-2"></i>
+                                Ver Todos los Contactos
+                            </a>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-danger" id="deleteBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>
+                                Eliminar Contacto Definitivamente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Alternativas -->
+        <div class="card fade-in mt-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    ¿Estás seguro? Considera estas alternativas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-edit text-primary me-2"></i>Editar en su lugar</h6>
+                            <p class="small text-muted mb-2">
+                                Si la información está desactualizada, puedes editarla en lugar de eliminarla.
+                            </p>
+                            <a href="{% url 'contacto-update' object.pk %}" class="btn btn-sm btn-outline-primary">
+                                Editar Contacto
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alternative-option">
+                            <h6><i class="fas fa-download text-success me-2"></i>Exportar datos</h6>
+                            <p class="small text-muted mb-2">
+                                Guarda una copia de la información antes de eliminar.
+                            </p>
+                            <button class="btn btn-sm btn-outline-success" onclick="exportContactData()">
+                                Exportar Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    // Habilitar/deshabilitar botón de eliminar
+    confirmCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+        if (this.checked) {
+            deleteBtn.classList.remove('disabled');
+        } else {
+            deleteBtn.classList.add('disabled');
+        }
+    });
+    
+    // Confirmación adicional al enviar
+    deleteBtn.addEventListener('click', function(e) {
+        if (!confirmCheckbox.checked) {
+            e.preventDefault();
+            alert('Debes confirmar que entiendes las consecuencias antes de continuar.');
+            return false;
+        }
+        
+        const confirmed = confirm(
+            '¿Estás absolutamente seguro de que quieres eliminar el contacto "{{ object.nombre }}"?\n\n' +
+            'Esta acción NO SE PUEDE DESHACER.'
+        );
+        
+        if (!confirmed) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+
+function exportContactData() {
+    const contactData = {
+        nombre: "{{ object.nombre }}",
+        tipo: "{{ object.get_tipo_display }}",
+        telefono: "{{ object.telefono }}",
+        correo: "{{ object.correo }}"
+    };
+    
+    const dataStr = JSON.stringify(contactData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `contacto_{{ object.nombre|slugify }}_backup.json`;
+    link.click();
+    
+    // Mostrar mensaje de éxito
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-download me-2"></i>
+                Información del contacto exportada exitosamente
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Limpiar después de ocultar
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+
+<style>
+.info-item {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.alternative-option {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.alternative-option h6 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.card-header.bg-warning {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.card-header.bg-info {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.form-check-input:checked {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.alert-danger {
+    border-left: 4px solid var(--danger-color);
+}
+</style>
 {% endblock %}

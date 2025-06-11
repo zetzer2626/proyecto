@@ -1,235 +1,569 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        table {
-            font-size: 0.9rem;
-        }
-        td {
-            width: 13.5%;
-            padding: 10px;
-            vertical-align: top;
-            height: 80px;
-        }
-        .btn-sm {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.8rem;
-            min-width: 32px;
-            min-height: 32px;
-        }
-        .badge {
-            font-size: 0.8rem;
-            padding: 5px;
-        }
-        .modal-content {
-            font-size: 0.9rem;
-        }
-        .modal-header .btn-close {
-            font-size: 1.2rem;
-        }
-        .form-control {
-            font-size: 0.9rem;
-        }
-        .card-body {
-            font-size: 0.9rem;
-        }
-        .table-gradient {
-            background: linear-gradient(135deg, #6e7dff, #76e3f5);
-        }
-        .btn-outline-primary {
-            background-color: #6e7dff;
-            color: white;
-            border-color: #6e7dff;
-        }
-        .btn-outline-primary:hover {
-            background-color: #5a6fd9;
-        }
-        .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-        }
-        .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
-        }
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        .bg-gradient-light {
-            background: linear-gradient(135deg, #f7e4c4, #d7e6ff);
-        }
-    </style>
-</head>
-<body>
-    <div class="text-center">
-        <h1 class="mb-4 display-4 text-gradient">Calendario - {{ nombre_mes }} {{ anio }}</h1>
-    </div>
+{% extends 'base.html' %}
 
-    <div class="d-flex justify-content-between mb-4">
-        <a href="?anio={{ anio_anterior }}&mes={{ mes_anterior }}" class="btn btn-outline-primary btn-lg shadow-sm">
-            <i class="bi bi-arrow-left-circle"></i> Mes anterior
-        </a>
-        <a href="?anio={{ anio_siguiente }}&mes={{ mes_siguiente }}" class="btn btn-outline-primary btn-lg shadow-sm">
-            Mes siguiente <i class="bi bi-arrow-right-circle"></i>
-        </a>
-    </div>
+{% block title %}Calendario - Sistema de Gestión{% endblock %}
+{% block page_title %}Calendario de Actividades{% endblock %}
 
-    <div class="table-responsive">
-        <table class="table table-bordered text-center shadow-lg rounded w-100">
-            <thead class="table-gradient text-white">
-                <tr>
-                    <th>Lunes</th>
-                    <th>Martes</th>
-                    <th>Miércoles</th>
-                    <th>Jueves</th>
-                    <th>Viernes</th>
-                    <th class="text-primary">Sábado</th>
-                    <th class="text-danger">Domingo</th>
-                </tr>
-            </thead>
-            <tbody>
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-calendar-alt me-2"></i>Calendario
+            </h1>
+            <p class="page-subtitle">Gestiona tus eventos y actividades</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventoModal">
+                <i class="fas fa-plus me-2"></i>Nuevo Evento
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Navigation -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <a href="?anio={{ anio_anterior }}&mes={{ mes_anterior }}" class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-left me-1"></i>Anterior
+                </a>
+            </div>
+            
+            <div class="text-center">
+                <h3 class="mb-0 text-primary">{{ nombre_mes }} {{ anio }}</h3>
+                <small class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>
+                    {% now "l, d \d\e F \d\e Y" %}
+                </small>
+            </div>
+            
+            <div>
+                <a href="?anio={{ anio_siguiente }}&mes={{ mes_siguiente }}" class="btn btn-outline-primary">
+                    Siguiente<i class="fas fa-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Grid -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="calendar-grid">
+            <!-- Calendar Header -->
+            <div class="calendar-header">
+                <div class="calendar-day-header">Domingo</div>
+                <div class="calendar-day-header">Lunes</div>
+                <div class="calendar-day-header">Martes</div>
+                <div class="calendar-day-header">Miércoles</div>
+                <div class="calendar-day-header">Jueves</div>
+                <div class="calendar-day-header">Viernes</div>
+                <div class="calendar-day-header">Sábado</div>
+            </div>
+            
+            <!-- Calendar Body -->
+            <div class="calendar-body">
                 {% for semana in dias %}
-                    <tr>
-                        {% for dia in semana %}
-                            <td class="p-2 {% if dia.dia %}bg-white{% else %}bg-light{% endif %} align-top rounded">
-                                {% if dia.dia %}
-                                    <div class="fw-bold">{{ dia.dia }}</div>
-                                    <ul class="list-unstyled mt-2">
-                                        {% for evento in dia.eventos %}
-                                            <li class="mb-1">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-success text-white">{{ evento.titulo }}</span>
-
-                                                    <form method="post" style="display: inline;">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="evento_id" value="{{ evento.id }}">
-                                                        {% if evento.completado %}
-                                                            <button type="submit" name="desmarcar_ticket" class="btn btn-sm btn-warning" title="Trabajando">
-                                                                <i class="bi bi-hourglass-split"></i>
-                                                            </button>
-                                                        {% else %}
-                                                            <button type="submit" name="marcar_ticket" class="btn btn-sm btn-success" title="Completado">
-                                                                <i class="bi bi-check-circle"></i>
-                                                            </button>
-                                                        {% endif %}
-                                                    </form>
-
-                                                    <button class="btn btn-sm btn-warning ms-2" data-bs-toggle="modal" data-bs-target="#editarModal{{ evento.id }}">
-                                                        <i class="bi bi-pencil-fill"></i>
-                                                    </button>
-                                                    
-                                                    <button class="btn btn-sm btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ evento.id }}">
-                                                        <i class="bi bi-trash-fill"></i>
-                                                    </button>
-                                                </div>
-                                            </li>
-
-                                            <div class="modal fade" id="editarModal{{ evento.id }}" tabindex="-1" aria-labelledby="editarModalLabel{{ evento.id }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="editarModalLabel{{ evento.id }}">Editar evento</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form method="post">
-                                                                {% csrf_token %}
-                                                                <input type="hidden" name="evento_id" value="{{ evento.id }}">
-                                                                <div class="mb-3">
-                                                                    <label for="titulo{{ evento.id }}" class="form-label">Título:</label>
-                                                                    <input type="text" id="titulo{{ evento.id }}" name="titulo" value="{{ evento.titulo }}" class="form-control" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="descripcion{{ evento.id }}" class="form-label">Descripción:</label>
-                                                                    <textarea id="descripcion{{ evento.id }}" name="descripcion" class="form-control">{{ evento.descripcion }}</textarea>
-                                                                </div>
-                                                                <button type="submit" name="editar_evento" class="btn btn-primary">Guardar cambios</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="modal fade" id="eliminarModal{{ evento.id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ evento.id }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="eliminarModalLabel{{ evento.id }}">Eliminar evento</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>¿Estás seguro de que deseas eliminar este evento?</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <form method="post">
-                                                                {% csrf_token %}
-                                                                <input type="hidden" name="evento_id" value="{{ evento.id }}">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <button type="submit" name="eliminar_evento" class="btn btn-danger">Eliminar</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                    <div class="calendar-week">
+                        {% for dia_info in semana %}
+                            <div class="calendar-day {% if not dia_info.dia %}other-month{% endif %} {% if dia_info.dia == today.day and anio == today.year and mes == today.month %}today{% endif %}">
+                                {% if dia_info.dia %}
+                                    <div class="day-number">{{ dia_info.dia }}</div>
+                                    
+                                    <!-- Events for this day -->
+                                    <div class="day-events">
+                                        {% for evento in dia_info.eventos %}
+                                            <div class="event-item {% if evento.completado %}completed{% endif %}" 
+                                                 data-bs-toggle="modal" 
+                                                 data-bs-target="#eventoDetailModal"
+                                                 data-evento-id="{{ evento.id }}"
+                                                 data-evento-titulo="{{ evento.titulo }}"
+                                                 data-evento-descripcion="{{ evento.descripcion }}"
+                                                 data-evento-fecha="{{ evento.fecha }}"
+                                                 data-evento-completado="{{ evento.completado }}">
+                                                <div class="event-title">{{ evento.titulo|truncatechars:20 }}</div>
+                                                {% if evento.completado %}
+                                                    <i class="fas fa-check-circle event-status"></i>
+                                                {% else %}
+                                                    <i class="fas fa-clock event-status"></i>
+                                                {% endif %}
                                             </div>
                                         {% endfor %}
-                                    </ul>
+                                        
+                                        <!-- Add event button -->
+                                        {% if dia_info.eventos|length < 3 %}
+                                            <div class="add-event-btn" 
+                                                 data-bs-toggle="modal" 
+                                                 data-bs-target="#eventoModal"
+                                                 data-fecha="{{ anio }}-{{ mes|stringformat:'02d' }}-{{ dia_info.dia|stringformat:'02d' }}">
+                                                <i class="fas fa-plus"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
-                            </td>
+                            </div>
                         {% endfor %}
-                    </tr>
+                    </div>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="card mt-5 shadow-lg border-0">
-        <div class="card-body bg-gradient-light">
-            <h5 class="card-title text-center text-gradient">Agregar un nuevo evento</h5>
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="titulo" class="form-label">Título:</label>
-                    <input type="text" id="titulo" name="titulo" class="form-control form-control-sm shadow-sm" required>
-                </div>
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción:</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control form-control-sm shadow-sm"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="fecha" class="form-label">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control form-control-sm shadow-sm" required>
-                </div>
-                <button type="submit" name="agregar_evento" class="btn btn-success w-100 btn-lg shadow-sm">
-                    <i class="bi bi-check-circle-fill"></i> Agregar evento
-                </button>
-            </form>
+<!-- Eventos del mes actual -->
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>Eventos de {{ nombre_mes }}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% regroup eventos_mes by fecha as eventos_por_fecha %}
+                {% for grupo in eventos_por_fecha %}
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            {{ grupo.grouper|date:"d \d\e F" }}
+                        </h6>
+                        {% for evento in grupo.list %}
+                            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-start border-3 {% if evento.completado %}border-success bg-light{% else %}border-primary{% endif %}">
+                                <div>
+                                    <div class="fw-semibold">{{ evento.titulo }}</div>
+                                    {% if evento.descripcion %}
+                                        <small class="text-muted">{{ evento.descripcion|truncatechars:50 }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if evento.completado %}
+                                        <span class="badge bg-success">Completado</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pendiente</span>
+                                    {% endif %}
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#eventoDetailModal"
+                                                data-evento-id="{{ evento.id }}"
+                                                data-evento-titulo="{{ evento.titulo }}"
+                                                data-evento-descripcion="{{ evento.descripcion }}"
+                                                data-evento-fecha="{{ evento.fecha }}"
+                                                data-evento-completado="{{ evento.completado }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay eventos programados para este mes.</p>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventoModal">
+                            <i class="fas fa-plus me-2"></i>Crear Primer Evento
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     
-
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-primary btn-lg shadow-sm">
-            <i class="bi bi-house-door-fill"></i> Volver al inicio
-        </a>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Estadísticas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="stats-item">
+                            <h3 class="text-primary">{{ total_eventos }}</h3>
+                            <p class="text-muted mb-0">Total Eventos</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stats-item">
+                            <h3 class="text-success">{{ eventos_completados }}</h3>
+                            <p class="text-muted mb-0">Completados</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stats-item">
+                            <h3 class="text-warning">{{ eventos_pendientes }}</h3>
+                            <p class="text-muted mb-0">Pendientes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Progreso del Mes</span>
+                        <span>{{ porcentaje_completado }}%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: {{ porcentaje_completado }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Productividad este mes
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-</body>
-</html>
+<!-- Modal para crear/editar evento -->
+<div class="modal fade" id="eventoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>Nuevo Evento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="agregar_evento" value="1">
+                    
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título del Evento *</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required 
+                               placeholder="Ej: Reunión con cliente">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label">Fecha *</label>
+                        <input type="date" class="form-control" id="fecha" name="fecha" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
+                                  placeholder="Describe los detalles del evento..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Guardar Evento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver/editar evento existente -->
+<div class="modal fade" id="eventoDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-alt me-2"></i>Detalles del Evento
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="eventoDetailContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <div id="eventoActions">
+                    <!-- Action buttons will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Styles -->
+<style>
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--medium-gray);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.calendar-day-header {
+    padding: 1rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.calendar-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.calendar-week:last-child {
+    border-bottom: none;
+}
+
+.calendar-day {
+    min-height: 120px;
+    padding: 0.5rem;
+    border-right: 1px solid var(--medium-gray);
+    background-color: white;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.calendar-day:last-child {
+    border-right: none;
+}
+
+.calendar-day:hover {
+    background-color: var(--light-gray);
+}
+
+.calendar-day.other-month {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.calendar-day.today {
+    background-color: #e3f2fd;
+    border: 2px solid var(--accent-color);
+}
+
+.day-number {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.today .day-number {
+    color: var(--accent-color);
+}
+
+.day-events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.event-item {
+    background: linear-gradient(135deg, var(--accent-color), #5dade2);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.event-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.event-item.completed {
+    background: linear-gradient(135deg, var(--success-color), #58d68d);
+}
+
+.event-title {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.event-status {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.add-event-btn {
+    border: 2px dashed var(--medium-gray);
+    padding: 0.25rem;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--dark-gray);
+    transition: all 0.2s ease;
+}
+
+.add-event-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.stats-item {
+    padding: 1rem 0;
+}
+
+.stats-item h3 {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 80px;
+        padding: 0.25rem;
+    }
+    
+    .calendar-day-header {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .day-number {
+        font-size: 1rem;
+    }
+    
+    .event-item {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set today's date as default for new events
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha').value = today;
+    });
+    
+    // Handle add event button clicks
+    document.querySelectorAll('.add-event-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const fecha = this.getAttribute('data-fecha');
+            document.getElementById('fecha').value = fecha;
+        });
+    });
+    
+    // Handle event detail modal
+    document.getElementById('eventoDetailModal').addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const eventoId = button.getAttribute('data-evento-id');
+        const titulo = button.getAttribute('data-evento-titulo');
+        const descripcion = button.getAttribute('data-evento-descripcion');
+        const fecha = button.getAttribute('data-evento-fecha');
+        const completado = button.getAttribute('data-evento-completado') === 'True';
+        
+        // Populate modal content
+        const content = document.getElementById('eventoDetailContent');
+        content.innerHTML = `
+            <div class="mb-3">
+                <h5 class="text-primary">${titulo}</h5>
+                <p class="text-muted mb-1">
+                    <i class="fas fa-calendar me-1"></i>${fecha}
+                </p>
+                <span class="badge ${completado ? 'bg-success' : 'bg-warning'}">
+                    <i class="fas ${completado ? 'fa-check-circle' : 'fa-clock'} me-1"></i>
+                    ${completado ? 'Completado' : 'Pendiente'}
+                </span>
+            </div>
+            ${descripcion ? `<div class="mb-3"><p>${descripcion}</p></div>` : ''}
+        `;
+        
+        // Populate action buttons
+        const actions = document.getElementById('eventoActions');
+        actions.innerHTML = `
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="evento_id" value="${eventoId}">
+                <input type="hidden" name="${completado ? 'desmarcar_ticket' : 'marcar_ticket'}" value="1">
+                <button type="submit" class="btn btn-${completado ? 'warning' : 'success'} btn-sm">
+                    <i class="fas ${completado ? 'fa-undo' : 'fa-check'} me-1"></i>
+                    ${completado ? 'Marcar Pendiente' : 'Marcar Completado'}
+                </button>
+            </form>
+            <button type="button" class="btn btn-primary btn-sm" onclick="editarEvento(${eventoId}, '${titulo}', '${descripcion}', '${fecha}')">
+                <i class="fas fa-edit me-1"></i>Editar
+            </button>
+            <form method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este evento?')">
+                {% csrf_token %}
+                <input type="hidden" name="evento_id" value="${eventoId}">
+                <input type="hidden" name="eliminar_evento" value="1">
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash me-1"></i>Eliminar
+                </button>
+            </form>
+        `;
+    });
+    
+    // Edit event function
+    function editarEvento(id, titulo, descripcion, fecha) {
+        // Close detail modal
+        bootstrap.Modal.getInstance(document.getElementById('eventoDetailModal')).hide();
+        
+        // Open edit modal with pre-filled data
+        setTimeout(() => {
+            const modal = new bootstrap.Modal(document.getElementById('eventoModal'));
+            document.getElementById('titulo').value = titulo;
+            document.getElementById('descripcion').value = descripcion;
+            document.getElementById('fecha').value = fecha;
+            
+            // Change form to edit mode
+            const form = document.querySelector('#eventoModal form');
+            form.innerHTML += `<input type="hidden" name="editar_evento" value="1">`;
+            form.innerHTML += `<input type="hidden" name="evento_id" value="${id}">`;
+            
+            document.querySelector('#eventoModal .modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Evento';
+            
+            modal.show();
+        }, 300);
+    }
+    
+    // Reset modal when closed
+    document.getElementById('eventoModal').addEventListener('hidden.bs.modal', function() {
+        this.querySelector('form').reset();
+        this.querySelector('.modal-title').innerHTML = '<i class="fas fa-plus me-2"></i>Nuevo Evento';
+        // Remove edit-specific hidden inputs
+        this.querySelectorAll('input[name="editar_evento"], input[name="evento_id"]').forEach(input => {
+            if (input.name === 'editar_evento' || input.name === 'evento_id') {
+                input.remove();
+            }
+        });
+    });
+    
+    // Auto-refresh calendar every 5 minutes
+    setInterval(function() {
+        if (document.hidden) return; // Don't refresh if tab is not visible
+        location.reload();
+    }, 300000);
+</script>
+{% endblock %}

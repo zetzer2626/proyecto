@@ -1,60 +1,433 @@
-{% extends "base.html" %}
-{% load widget_tweaks %}
-{% load static %}
+{% extends 'base.html' %}
+
+{% block title %}Editar Enlace - {{ object.titulo }}{% endblock %}
+
+{% block page_title %}Editar Enlace{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'enlace_list' %}">Enlaces</a></li>
+    <li class="breadcrumb-item active">Editar: {{ object.titulo }}</li>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4 text-center text-primary fw-bold">Editar Enlace</h1>
-    <div class="card shadow-lg mx-auto" style="max-width: 500px; border-radius: 20px; border: 1px solid #ddd;">
-        <div class="card-body p-4">
-            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label for="id_titulo" class="form-label">
-                        <i class="fas fa-heading text-primary"></i> Título
-                    </label>
-                    {{ form.titulo|add_class:"form-control"}}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_description" class="form-label">
-                        <i class="fas fa-align-left text-success"></i> Descripción
-                    </label>
-                    {{ form.description|add_class:"form-control" }}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_link" class="form-label">
-                        <i class="fas fa-link text-info"></i> Enlace
-                    </label>
-                    {{ form.link|add_class:"form-control" }}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_documento_pdf" class="form-label">
-                        <i class="fas fa-file-pdf text-danger"></i> Subir Documento PDF
-                    </label>
-                    {{ form.documento_pdf|add_class:"form-control" }}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_avatar" class="form-label">
-                        <i class="fas fa-user-circle text-secondary"></i> Subir Avatar (Opcional)
-                    </label>
-                    {{ form.avatar|add_class:"form-control" }}
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Guardar Cambios
-                    </button>
-                    <a href="{% url 'enlace_list' %}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Volver
-                    </a>
-                </div>
-            </form>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-edit me-2"></i>
+                Editar Enlace: {{ object.titulo }}
+            </h1>
+            <p class="page-subtitle">Modifica la información del enlace seleccionado</p>
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-link me-2"></i>
+                    Información del Enlace
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="enlaceForm">
+                    {% csrf_token %}
+                    
+                    <!-- Información Básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.titulo.id_for_label }}" class="form-label">
+                                <i class="fas fa-heading me-1"></i>
+                                Título del Enlace *
+                            </label>
+                            {{ form.titulo }}
+                            {% if form.titulo.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.titulo.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>
+                                Descripción
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.description.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Contenido -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file me-2"></i>
+                                Contenido
+                            </h6>
+                        </div>
+                        
+                        <!-- Enlace Web -->
+                        <div class="col-md-6 mb-3">
+                            <div class="content-section">
+                                <h6 class="text-muted mb-2">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Enlace Web
+                                </h6>
+                                
+                                {% if object.link %}
+                                    <div class="current-content mb-2">
+                                        <small class="text-muted">Enlace actual:</small>
+                                        <div class="p-2 bg-light border rounded">
+                                            <a href="{{ object.link }}" target="_blank" class="text-break">
+                                                {{ object.link }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                <label for="{{ form.link.id_for_label }}" class="form-label">
+                                    {% if object.link %}Nuevo enlace:{% else %}Enlace web:{% endif %}
+                                </label>
+                                {{ form.link }}
+                                {% if form.link.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.link.errors %}
+                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Documento PDF -->
+                        <div class="col-md-6 mb-3">
+                            <div class="content-section">
+                                <h6 class="text-muted mb-2">
+                                    <i class="fas fa-file-pdf me-1"></i>
+                                    Documento PDF
+                                </h6>
+                                
+                                {% with pdf_exists=object.documento_pdf.name|default:"" %}
+                                    {% if pdf_exists %}
+                                        <div class="current-content mb-2">
+                                            <small class="text-muted">Archivo actual:</small>
+                                            <div class="p-2 bg-light border rounded">
+                                                <a href="{{ object.documento_pdf.url }}" target="_blank" class="text-decoration-none">
+                                                    <i class="fas fa-file-pdf text-danger me-1"></i>
+                                                    {{ object.documento_pdf.name|slice:"4:" }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                                
+                                <label for="{{ form.documento_pdf.id_for_label }}" class="form-label">
+                                    {% if object.documento_pdf.name|default:"" %}Reemplazar archivo:{% else %}Subir PDF:{% endif %}
+                                </label>
+                                {{ form.documento_pdf }}
+                                {% if form.documento_pdf.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.documento_pdf.errors %}
+                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if object.documento_pdf.name|default:"" %}
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Deja vacío para mantener el archivo actual
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar/Imagen -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-image me-2"></i>
+                                Imagen Representativa
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.avatar.id_for_label }}" class="form-label">
+                                <i class="fas fa-camera me-1"></i>
+                                {% if object.avatar.name|default:"" %}Cambiar imagen:{% else %}Subir imagen:{% endif %}
+                            </label>
+                            {{ form.avatar }}
+                            {% if form.avatar.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.avatar.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if object.avatar.name|default:"" %}
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Deja vacío para mantener la imagen actual
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="avatar-preview" id="avatarPreview">
+                                {% with avatar_exists=object.avatar.name|default:"" %}
+                                    {% if avatar_exists %}
+                                        <img src="{{ object.avatar.url }}" alt="{{ object.titulo }}" class="current-avatar">
+                                        <p class="text-success mt-2 mb-0 small">
+                                            <i class="fas fa-check me-1"></i>
+                                            Imagen actual
+                                        </p>
+                                    {% else %}
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                        <p class="text-muted mt-2 mb-0">Sin imagen</p>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Volver a Enlaces
+                                    </a>
+                                </div>
+                                <div>
+                                    <button type="reset" class="btn btn-outline-warning me-2">
+                                        <i class="fas fa-undo me-2"></i>
+                                        Restaurar
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-2"></i>
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista Previa Actual -->
+<div class="row mt-4">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-eye me-2"></i>
+                    Vista Previa Actual
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        {% with avatar_exists=object.avatar.name|default:"" %}
+                            {% if avatar_exists %}
+                                <img src="{{ object.avatar.url }}" alt="{{ object.titulo }}" class="img-fluid rounded mb-2" style="max-width: 80px;">
+                            {% else %}
+                                <div class="avatar-placeholder mb-2">
+                                    <i class="fas fa-link fa-2x"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-md-9">
+                        <h6 class="mb-1">{{ object.titulo }}</h6>
+                        <p class="text-muted small mb-2">
+                            {{ object.description|default:"Sin descripción" }}
+                        </p>
+                        <div class="d-flex gap-2">
+                            {% if object.link %}
+                                <a href="{{ object.link }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Ver Enlace
+                                </a>
+                            {% endif %}
+                            {% with pdf_exists=object.documento_pdf.name|default:"" %}
+                                {% if pdf_exists %}
+                                    <a href="{{ object.documento_pdf.url }}" target="_blank" class="btn btn-sm btn-success">
+                                        <i class="fas fa-file-pdf me-1"></i>
+                                        Ver PDF
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.getElementById('{{ form.avatar.id_for_label }}');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const linkInput = document.getElementById('{{ form.link.id_for_label }}');
+    const pdfInput = document.getElementById('{{ form.documento_pdf.id_for_label }}');
+    
+    // Preview de imagen nueva
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="current-avatar">
+                        <p class="text-warning mt-2 mb-0 small">
+                            <i class="fas fa-clock me-1"></i>
+                            Nueva imagen (sin guardar)
+                        </p>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Validación de URL
+    if (linkInput) {
+        linkInput.addEventListener('blur', function(e) {
+            const url = e.target.value;
+            if (url && !isValidURL(url)) {
+                e.target.classList.add('is-invalid');
+                showValidationMessage(e.target, 'Por favor, ingresa una URL válida');
+            } else {
+                e.target.classList.remove('is-invalid');
+                removeValidationMessage(e.target);
+            }
+        });
+    }
+    
+    // Validación de archivo PDF
+    if (pdfInput) {
+        pdfInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    e.target.classList.add('is-invalid');
+                    showValidationMessage(e.target, 'Solo se permiten archivos PDF');
+                    e.target.value = '';
+                } else if (file.size > 10 * 1024 * 1024) {
+                    e.target.classList.add('is-invalid');
+                    showValidationMessage(e.target, 'El archivo es demasiado grande (máx. 10MB)');
+                    e.target.value = '';
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    removeValidationMessage(e.target);
+                }
+            }
+        });
+    }
+});
+
+function isValidURL(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+function showValidationMessage(element, message) {
+    removeValidationMessage(element);
+    const feedback = document.createElement('div');
+    feedback.className = 'invalid-feedback custom-validation';
+    feedback.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+    element.parentNode.appendChild(feedback);
+}
+
+function removeValidationMessage(element) {
+    const existing = element.parentNode.querySelector('.custom-validation');
+    if (existing) {
+        existing.remove();
+    }
+}
+</script>
+
+<style>
+.content-section {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.current-content {
+    background-color: white;
+    border-radius: 6px;
+}
+
+.current-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--light-gray);
+}
+
+.avatar-preview {
+    min-height: 120px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--dark-gray);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.invalid-feedback {
+    display: block;
+}
+</style>
 {% endblock %}

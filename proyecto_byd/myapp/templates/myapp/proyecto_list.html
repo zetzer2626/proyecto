@@ -1,247 +1,1123 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Lista de Proyectos{% endblock %}
+{% block title %}Lista de Proyectos - Sistema de Gestión{% endblock %}
+
+{% block page_title %}Gestión de Proyectos{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
-
-    <h2 class="text-center mb-4 text-primary fw-bold">Gestión de Proyectos</h2>
-    <!-- Tarjetas de Resumen -->
-    <div class="row g-4 mb-5">
-        <!-- Total Proyectos -->
-        <div class="col-sm-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="totalProyectos">
-                <div class="card-body d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="bi bi-collection-fill fa-3x text-primary"></i>
-                    </div>
-                    <div>
-                        <h5 id="totalProyectos" class="text-primary fw-bold">Total Proyectos</h5>
-                        <p class="display-6 mb-0 text-primary">{{ total_proyectos }}</p>
-                        <small>Proyectos registrados</small>
-                    </div>
-                </div>
-            </div>
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-folder-open me-2"></i>Proyectos
+            </h1>
+            <p class="page-subtitle">Gestiona todos los proyectos del sistema</p>
         </div>
-        <!-- Proyectos Aprobados -->
-        <div class="col-sm-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosAprobados">
-                <div class="card-body d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="bi bi-check-circle-fill fa-3x text-success"></i>
-                    </div>
-                    <div>
-                        <h5 id="proyectosAprobados" class="text-success fw-bold">Aprobados</h5>
-                        <p class="display-6 mb-0 text-success">{{ total_aprobados }}</p>
-                        <small>Proyectos aprobados</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Proyectos No Concretados -->
-        <div class="col-sm-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosNoConcretados">
-                <div class="card-body d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="bi bi-x-circle-fill fa-3x text-danger"></i>
-                    </div>
-                    <div>
-                        <h5 id="proyectosNoConcretados" class="text-danger fw-bold">No Concretados</h5>
-                        <p class="display-6 mb-0 text-danger">{{ total_no_concretados }}</p>
-                        <small>Proyectos sin concretar</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Proyectos Ingresados -->
-        <div class="col-sm-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosIngresados">
-                <div class="card-body d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="bi bi-gear-fill fa-3x text-warning"></i>
-                    </div>
-                    <div>
-                        <h5 id="proyectosIngresados" class="text-warning fw-bold">Ingresados</h5>
-                        <p class="display-6 mb-0 text-warning">{{ total_ingresado }}</p>
-                        <small>Proyectos en ingreso</small>
-                    </div>
-                </div>
-            </div>
+        <div>
+            <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nuevo Proyecto
+            </a>
+            <a href="{% url 'exportar_excel' %}" class="btn btn-outline-success">
+                <i class="fas fa-download me-2"></i>Exportar Excel
+            </a>
         </div>
     </div>
-
-   <!-- Formulario de Búsqueda y Filtros -->
-<div class="bg-white bg-opacity-90 rounded-3 shadow-lg p-4 mb-5">
-    <form method="get" class="row gy-3 gx-4 align-items-center">
-        <!-- Campo de búsqueda -->
-        <div class="col-md-4">
-            <label for="search" class="form-label fw-bold">Buscar</label>
-            <input 
-                type="text" 
-                id="search" 
-                name="q" 
-                class="form-control border-primary" 
-                placeholder="Nombre, proyecto o dirección" 
-                value="{{ request.GET.q }}">
-        </div>
-
-        <!-- Filtro por estado -->
-        <div class="col-md-3">
-            <label for="estado" class="form-label fw-bold">Estado</label>
-            <select id="estado" name="estado" class="form-select border-primary">
-                <option value="">Todos los Estados</option>
-                {% for estado_key, estado_label in estados %}
-                    <option 
-                        value="{{ estado_key }}" 
-                        {% if request.GET.estado == estado_key %}selected{% endif %}>
-                        {{ estado_label }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Filtro por año -->
-        <div class="col-md-2">
-            <label for="año" class="form-label fw-bold">Año</label>
-            <input 
-                type="number" 
-                id="año" 
-                name="año" 
-                class="form-control border-primary" 
-                placeholder="Año" 
-                value="{{ request.GET.año }}">
-        </div>
-
-        <!-- Botones de acción -->
-        <div class="col-md-3">
-            <label class="form-label d-block fw-bold">&nbsp;</label> <!-- Espaciador para mantener alineación -->
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-                <a href="{% url 'proyecto-create' %}" class="btn btn-success d-flex align-items-center gap-2">
-                    <i class="fas fa-plus"></i> Nuevo Proyecto
-                </a>
-                <a href="{% url 'proyecto-list' %}" class="btn btn-secondary d-flex align-items-center gap-2">
-                    <i class="fas fa-eraser"></i> Limpiar Filtros
-                </a>
-                <a href="{% url 'exportar_excel' %}" class="btn btn-success">Exportar a Excel</a>
-            </div>
-        </div>
-    </form>
 </div>
 
+<!-- Tarjetas de estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_proyectos }}</div>
+            <div class="stats-label">Total Proyectos</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stats-card success">
+            <div class="stats-number">{{ total_aprobados }}</div>
+            <div class="stats-label">Aprobados</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stats-card warning">
+            <div class="stats-number">{{ total_observados }}</div>
+            <div class="stats-label">Observados</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stats-card danger">
+            <div class="stats-number">{{ total_no_concretados }}</div>
+            <div class="stats-label">No Concretados</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stats-card" style="background: linear-gradient(135deg, #9b59b6, #bb80c7);">
+            <div class="stats-number">{{ total_ingresados }}</div>
+            <div class="stats-label">Ingresados</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stats-card" style="background: linear-gradient(135deg, #34495e, #5d6d7e);">
+            <div class="stats-number">{{ proyectos|length }}</div>
+            <div class="stats-label">En Vista</div>
+        </div>
+    </div>
+</div>
 
+<!-- Filtros de búsqueda -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-filter me-2"></i>Filtros de Búsqueda
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="q" class="form-label">Búsqueda General</label>
+                <input type="text" class="form-control" id="q" name="q" 
+                       value="{{ request.GET.q }}" 
+                       placeholder="Nombre, proyecto, dirección, presupuesto...">
+            </div>
+            <div class="col-md-3">
+                <label for="estado" class="form-label">Estado del Proyecto</label>
+                <select class="form-control" id="estado" name="estado">
+                    <option value="">Todos los estados</option>
+                    <option value="no_concretado" {% if request.GET.estado == 'no_concretado' %}selected{% endif %}>No Concretado</option>
+                    <option value="trabajando" {% if request.GET.estado == 'trabajando' %}selected{% endif %}>Trabajar en Proyecto</option>
+                    <option value="ingreso_dom" {% if request.GET.estado == 'ingreso_dom' %}selected{% endif %}>Ingresado DOM</option>
+                    <option value="ingresado_sag" {% if request.GET.estado == 'ingresado_sag' %}selected{% endif %}>Ingresado SAG</option>
+                    <option value="ingresado_minvu" {% if request.GET.estado == 'ingresado_minvu' %}selected{% endif %}>Ingresado Minvu</option>
+                    <option value="ingresado_monumento" {% if request.GET.estado == 'ingresado_monumento' %}selected{% endif %}>Ingresado Monumento</option>
+                    <option value="observado" {% if request.GET.estado == 'observado' %}selected{% endif %}>Ingresado Observado</option>
+                    <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Ingresado Rechazado</option>
+                    <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
+                    <option value="realizado" {% if request.GET.estado == 'realizado' %}selected{% endif %}>Realizado</option>
+                    <option value="congelado" {% if request.GET.estado == 'congelado' %}selected{% endif %}>Congelado</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="año" class="form-label">Año</label>
+                <select class="form-control" id="año" name="año">
+                    <option value="">Todos los años</option>
+                    <option value="2020" {% if request.GET.año == '2020' %}selected{% endif %}>2020</option>
+                    <option value="2021" {% if request.GET.año == '2021' %}selected{% endif %}>2021</option>
+                    <option value="2022" {% if request.GET.año == '2022' %}selected{% endif %}>2022</option>
+                    <option value="2023" {% if request.GET.año == '2023' %}selected{% endif %}>2023</option>
+                    <option value="2024" {% if request.GET.año == '2024' %}selected{% endif %}>2024</option>
+                    <option value="2025" {% if request.GET.año == '2025' %}selected{% endif %}>2025</option>
+                    <option value="2026" {% if request.GET.año == '2026' %}selected{% endif %}>2026</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="proceso" class="form-label">Proceso</label>
+                <select class="form-control" id="proceso" name="proceso">
+                    <option value="">Todos</option>
+                    <option value="terminado" {% if request.GET.proceso == 'terminado' %}selected{% endif %}>Terminado</option>
+                    <option value="no aplica" {% if request.GET.proceso == 'no aplica' %}selected{% endif %}>No Aplica</option>
+                    <option value="pendiente" {% if request.GET.proceso == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        {% if request.GET.q or request.GET.estado or request.GET.año or request.GET.proceso %}
+        <div class="mt-2">
+            <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-times me-1"></i>Limpiar Filtros
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
 
-    <!-- Tabla de Proyectos -->
-    <div class="table-responsive">
-        <table id="example" class="table table-striped table-hover table-bordered w-100" style="width:100%">
-            <thead class="table-dark">
-                <tr>
-                    <th>Presup</th>
-                    <th>Año</th>
-                    <th>Nombre</th>
-                    <th>Proyecto</th>
-                    <th>Dirección</th>
-                    <th>Estado</th>
-                    <th>Detalle</th>
-                    <th>Kardex</th>
-                    <th>Enlace Presupuesto</th>
-                    <th>Drive</th>
-                    <th>Enlace Pago</th>
-                    <th>Proceso</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for proyecto in proyectos %}
-                <tr>
-                    <td><strong class="text-danger">{{ proyecto.presupuesto }}</strong></td>
-                    <td><strong class="text-center">{{ proyecto.año }}</strong></td>
-                    <td>{{ proyecto.nombre }}</td>
-                    <td>{{ proyecto.proyecto }}</td>
-                   <td>{{ proyecto.direccion }}</td>
-                    <td class="{% if proyecto.estado_proyecto == 'aprobado' %}text-success{% elif proyecto.estado_proyecto == 'no_concretado' %}text-danger{% elif proyecto.estado_proyecto == 'trabajando' %}text-warning{% elif proyecto.estado_proyecto == 'congelado' %}text-info{% else %}text-muted{% endif %}">
-                        <strong>{{ proyecto.get_estado_proyecto_display }}</strong>
-                    </td>
-                    <td><strong>{{ proyecto.detalle }}</strong></td>
-                    <td>{{ proyecto.kardex }}</td>
-                    <td>
-                        {% if proyecto.enlace_documento %}
-                            <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm">Presupuesto</a>
-                        {% else %}
-                            <span class="text-muted">Sin Link</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if proyecto.link_1 %}
-                            <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-outline-primary btn-sm">Documentos</a>
-                        {% else %}
-                            <span class="text-muted">Sin Link</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if proyecto.presupuesto_link %}
-                            <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-outline-primary btn-sm">Enlace Pago</a>
-                        {% else %}
-                            <span class="text-muted">Sin Link</span>
-                        {% endif %}
-                    </td>
-                
-
-                    <td class="{% if proyecto.proceso|lower == 'terminado' %}text-success{% elif proyecto.proceso|lower == 'no aplica' %}text-danger{% elif proyecto.proceso|lower == 'pendiente' %}text-warning{% else %}text-muted{% endif %}">
-                        <strong>{{ proyecto.proceso }}</strong>
-                    </td>
-                                    
-                        <!--<div class="progress-wrapper" 
-                             style="position: relative; width: 100%; height: 30px; background-color: #e5e5e5; border-radius: 50px; overflow: hidden; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);">
-                            <div class="progress-bar" 
-                                 style="width: {{ proyecto.calcular_porcentaje_completitud|floatformat:0 }}%; 
-                                        background-color: #ffeb3b; 
-                                        height: 100%; 
-                                        border-radius: 50px; 
-                                        box-shadow: inset 0px 4px 6px rgba(0,0,0,0.1); 
-                                        transition: width 0.75s ease-in-out;">
-                                <div class="progress-text" 
-                                     style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                            color: black; font-weight: 700; font-size: 18px; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">
-                                    {{ proyecto.calcular_porcentaje_completitud|floatformat:0 }}%
+<!-- Tabla de proyectos -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>Lista de Proyectos
+                {% if proyectos %}
+                    <span class="badge badge-custom">{{ proyectos|length }} de {{ page_obj.paginator.count }}</span>
+                {% endif %}
+            </h5>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if proyectos %}
+            <div class="table-responsive">
+                <table class="table table-professional mb-0">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="col-presupuesto">Presupuesto</th>
+                            <th class="col-año">Año</th>
+                            <th class="col-nombre">Nombre</th>
+                            <th class="col-proyecto">Proyecto</th>
+                            <th class="col-direccion">Dirección</th>
+                            <th class="col-estado">Estado</th>
+                            <th class="col-detalle">Detalle</th>
+                            <th class="col-kardex">Kardex</th>
+                            <th class="col-enlace">Enlace</th>
+                            <th class="col-presupuesto-link">Presupuesto</th>
+                            <th class="col-drive">Drive</th>
+                            <th class="col-pago">Enlace Pago</th>
+                            <th class="col-proceso">Proceso</th>
+                            <th class="col-acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proyecto in proyectos %}
+                        <tr class="table-row">
+                            <!-- Presupuesto -->
+                            <td class="cell-presupuesto">
+                                <div class="field-content">
+                                    <strong class="text-accent">{{ proyecto.presupuesto|default:"Sin asignar" }}</strong>
                                 </div>
-                            </div>
-                        </div>
-                    </td>!-->
-                    
-                    
-                    <td class="d-flex justify-content-start">
-                        <a href="{% url 'proyecto-detail' proyecto.pk %}" class="btn btn-sm btn-info">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn btn-sm btn-warning ms-2">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
-                        <a href="{% url 'proyecto-delete' proyecto.pk %}" class="btn btn-sm btn-danger ms-2">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="12" class="text-center text-muted">No hay proyectos que coincidan con la búsqueda.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            </td>
+                            
+                            <!-- Año -->
+                            <td class="cell-año">
+                                <div class="field-content text-center">
+                                    <span class="badge badge-year">{{ proyecto.año|default:"N/A" }}</span>
+                                </div>
+                            </td>
+                            
+                            <!-- Nombre -->
+                            <td class="cell-nombre">
+                                <div class="field-content">
+                                    <div class="name-container">
+                                        <strong class="client-name">{{ proyecto.nombre }}</strong>
+                                        {% if proyecto.telefono %}
+                                            <div class="contact-info">
+                                                <i class="fas fa-phone contact-icon"></i>
+                                                <span class="contact-text">{{ proyecto.telefono }}</span>
+                                            </div>
+                                        {% endif %}
+                                        {% if proyecto.correo %}
+                                            <div class="contact-info">
+                                                <i class="fas fa-envelope contact-icon"></i>
+                                                <span class="contact-text">{{ proyecto.correo|truncatechars:25 }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Proyecto -->
+                            <td class="cell-proyecto">
+                                <div class="field-content">
+                                    <div class="project-description" title="{{ proyecto.proyecto }}">
+                                        {{ proyecto.proyecto|default:"Sin descripción" }}
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Dirección -->
+                            <td class="cell-direccion">
+                                <div class="field-content">
+                                    <div class="address-container" title="{{ proyecto.direccion }}">
+                                        <i class="fas fa-map-marker-alt address-icon"></i>
+                                        <span class="address-text">{{ proyecto.direccion|default:"Sin dirección" }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Estado -->
+                            <td class="cell-estado">
+                                <div class="field-content text-center">
+                                    {% if proyecto.estado_proyecto == 'aprobado' %}
+                                        <span class="badge badge-success">{{ proyecto.get_estado_proyecto_display }}</span>
+                                    {% elif proyecto.estado_proyecto == 'observado' %}
+                                        <span class="badge badge-warning">{{ proyecto.get_estado_proyecto_display }}</span>
+                                    {% elif proyecto.estado_proyecto == 'no_concretado' %}
+                                        <span class="badge badge-danger">{{ proyecto.get_estado_proyecto_display }}</span>
+                                    {% elif proyecto.estado_proyecto == 'rechazado' %}
+                                        <span class="badge badge-dark">{{ proyecto.get_estado_proyecto_display }}</span>
+                                    {% elif 'ingresado' in proyecto.estado_proyecto or 'ingreso' in proyecto.estado_proyecto %}
+                                        <span class="badge badge-info">{{ proyecto.get_estado_proyecto_display }}</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">{{ proyecto.get_estado_proyecto_display|default:"Sin estado" }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Detalle -->
+                            <td class="cell-detalle">
+                                <div class="field-content">
+                                    {% if proyecto.detalle %}
+                                        <div class="detail-text" title="{{ proyecto.detalle }}">
+                                            {{ proyecto.detalle }}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted-custom">Sin detalle</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Kardex -->
+                            <td class="cell-kardex">
+                                <div class="field-content text-center">
+                                    {% if proyecto.kardex %}
+                                        <span class="badge badge-info">{{ proyecto.kardex }}</span>
+                                    {% else %}
+                                        <span class="text-muted-custom">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Enlace -->
+                            <td class="cell-enlace">
+                                <div class="field-content text-center">
+                                    {% if proyecto.link_1 %}
+                                        <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-action btn-primary-action" title="{{ proyecto.nombre_enlace_1|default:'Ver enlace' }}">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted-custom">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Presupuesto -->
+                            <td class="cell-presupuesto-link">
+                                <div class="field-content text-center">
+                                    {% if proyecto.presupuesto_link %}
+                                        <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-action btn-success-action" title="Ver presupuesto">
+                                            <i class="fas fa-dollar-sign"></i>
+                                        </a>
+                                    {% elif proyecto.documento_presupuesto_1 %}
+                                        <a href="{{ proyecto.documento_presupuesto_1.url }}" target="_blank" class="btn btn-action btn-success-action" title="Ver documento">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted-custom">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Drive -->
+                            <td class="cell-drive">
+                                <div class="field-content text-center">
+                                    {% if proyecto.enlace_documento %}
+                                        <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-action btn-info-action" title="Ver en Drive">
+                                            <i class="fab fa-google-drive"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted-custom">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Enlace Pago -->
+                            <td class="cell-pago">
+                                <div class="field-content text-center">
+                                    {% if proyecto.documento_presupuesto_2 %}
+                                        <a href="{{ proyecto.documento_presupuesto_2.url }}" target="_blank" class="btn btn-action btn-warning-action" title="Ver pago">
+                                            <i class="fas fa-receipt"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted-custom">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Proceso -->
+                            <td class="cell-proceso">
+                                <div class="field-content text-center">
+                                    {% if proyecto.proceso == 'terminado' %}
+                                        <span class="badge badge-success">{{ proyecto.get_proceso_display }}</span>
+                                    {% elif proyecto.proceso == 'pendiente' %}
+                                        <span class="badge badge-warning">{{ proyecto.get_proceso_display }}</span>
+                                    {% elif proyecto.proceso == 'no aplica' %}
+                                        <span class="badge badge-secondary">{{ proyecto.get_proceso_display }}</span>
+                                    {% else %}
+                                        <span class="badge badge-light">Sin proceso</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Acciones -->
+                            <td class="cell-acciones">
+                                <div class="field-content">
+                                    <div class="btn-group-actions" role="group">
+                                        <a href="{% url 'proyecto-detail' proyecto.pk %}" class="btn btn-action btn-primary-action" title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn btn-action btn-warning-action" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-action btn-danger-action" 
+                                                onclick="confirmarEliminacion({{ proyecto.pk }}, '{{ proyecto.nombre|escapejs }}')" 
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No se encontraron proyectos</h5>
+                <p class="text-muted">
+                    {% if request.GET.q or request.GET.estado or request.GET.año %}
+                        No hay proyectos que coincidan con los filtros aplicados.
+                    {% else %}
+                        Aún no hay proyectos registrados en el sistema.
+                    {% endif %}
+                </p>
+                <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Crear Primer Proyecto
+                </a>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<!-- Paginación -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Navegación de páginas" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar el proyecto <strong id="nombreProyecto"></strong>?</p>
+                <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" id="btnConfirmarEliminar" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmarEliminacion(proyectoId, nombreProyecto) {
+    document.getElementById('nombreProyecto').textContent = nombreProyecto;
+    document.getElementById('btnConfirmarEliminar').href = `/proyectos/${proyectoId}/eliminar/`;
+    new bootstrap.Modal(document.getElementById('modalEliminar')).show();
+}
+
+// Auto-submit del formulario de filtros cuando cambian los selects
+document.querySelectorAll('select[name="estado"], select[name="año"], select[name="proceso"]').forEach(function(select) {
+    select.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+
+// Limpiar búsqueda con Enter
+document.getElementById('q').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        this.form.submit();
+    }
+});
+</script>
 
 <style>
-         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-</style>
+/* Tabla profesional con colores del tema base */
+.table-professional {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
 
+.table-header {
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+}
+
+.table-header th {
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Columnas con anchos específicos */
+.col-presupuesto { width: 140px; min-width: 140px; }
+.col-año { width: 80px; min-width: 80px; }
+.col-nombre { width: 200px; min-width: 200px; }
+.col-proyecto { width: 220px; min-width: 220px; }
+.col-direccion { width: 200px; min-width: 200px; }
+.col-estado { width: 130px; min-width: 130px; }
+.col-detalle { width: 180px; min-width: 180px; }
+.col-kardex { width: 100px; min-width: 100px; }
+.col-enlace { width: 80px; min-width: 80px; }
+.col-presupuesto-link { width: 100px; min-width: 100px; }
+.col-drive { width: 80px; min-width: 80px; }
+.col-pago { width: 100px; min-width: 100px; }
+.col-proceso { width: 110px; min-width: 110px; }
+.col-acciones { width: 130px; min-width: 130px; }
+
+/* Filas de la tabla */
+.table-row {
+    border-bottom: 1px solid var(--medium-gray);
+    transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+/* Contenido de las celdas */
+.field-content {
+    padding: 0.75rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Nombres y contactos */
+.name-container {
+    width: 100%;
+}
+
+.client-name {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.15rem;
+    font-size: 0.8rem;
+}
+
+.contact-icon {
+    color: var(--dark-gray);
+    width: 12px;
+    margin-right: 0.5rem;
+}
+
+.contact-text {
+    color: var(--dark-gray);
+}
+
+/* Descripciones y direcciones */
+.project-description {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.address-container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.address-icon {
+    color: var(--accent-color);
+    margin-right: 0.5rem;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.address-text {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* Detalles */
+.detail-text {
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    max-height: 4em;
+    overflow: hidden;
+}
+
+/* Badges con colores del tema */
+.badge-custom {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.badge-year {
+    background-color: var(--medium-gray);
+    color: var(--text-dark);
+    padding: 0.4rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: var(--success-color);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-warning {
+    background-color: var(--warning-color);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-danger {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-info {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-secondary {
+    background-color: var(--dark-gray);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-dark {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-light {
+    background-color: var(--light-gray);
+    color: var(--text-dark);
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid var(--medium-gray);
+}
+
+/* Botones de acción */
+.btn-action {
+    padding: 0.5rem 0.7rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    margin: 0 0.1rem;
+}
+
+.btn-primary-action {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-primary-action:hover {
+    background-color: #2980b9;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-success-action {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success-action:hover {
+    background-color: #219a52;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.btn-warning-action {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.btn-warning-action:hover {
+    background-color: #e67e22;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.btn-danger-action {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger-action:hover {
+    background-color: #c0392b;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.btn-info-action {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-info-action:hover {
+    background-color: #2980b9;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+/* Grupo de botones de acciones */
+.btn-group-actions {
+    display: flex;
+    gap: 0.2rem;
+    justify-content: center;
+}
+
+/* Texto muted personalizado */
+.text-muted-custom {
+    color: var(--dark-gray);
+    font-size: 0.85rem;
+}
+
+.text-accent {
+    color: var(--accent-color);
+}
+
+/* Responsive design */
+.table-responsive {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Scroll horizontal suave */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--dark-gray);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    .table-header th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .field-content {
+        padding: 0.5rem;
+    }
+    
+    .client-name {
+        font-size: 0.9rem;
+    }
+    
+    .contact-info {
+        font-size: 0.75rem;
+    }
+    
+    .btn-action {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .btn-group-actions {
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+}
+
+/* Mejoras en la visualización */
+.table-professional td {
+    vertical-align: top;
+    border: none;
+    background-color: white;
+}
+
+/* Efectos hover mejorados */
+.table-row:hover .btn-action {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-action {
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+/* Tooltips personalizados */
+[title]:hover:after {
+    content: attr(title);
+    position: absolute;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 1000;
+    white-space: nowrap;
+    margin-top: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Espaciado mejorado */
+.card-body {
+    padding: 0 !important;
+}
+
+.table-professional {
+    margin-bottom: 0;
+}
+
+/* Estados de carga */
+.loading-row {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Mejoras en accesibilidad */
+.btn-action:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.table-professional th:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: -2px;
+}
+
+/* Print styles */
+@media print {
+    .btn-action, .btn-group-actions {
+        display: none !important;
+    }
+    
+    .table-professional {
+        font-size: 0.8rem;
+    }
+    
+    .table-header {
+        background: #333 !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.table-row {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estados de focus mejorados */
+.table-professional tr:focus-within {
+    background-color: rgba(52, 152, 219, 0.1);
+    outline: 2px solid var(--accent-color);
+    outline-offset: -2px;
+}
+
+/* Mejoras en la tipografía */
+.table-professional {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.4;
+}
+
+.client-name {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* Indicadores visuales */
+.field-content.has-content {
+    border-left: 3px solid var(--accent-color);
+    padding-left: 0.5rem;
+}
+
+.field-content.empty {
+    opacity: 0.6;
+}
+
+/* Mejoras en los badges */
+.badge-success, .badge-warning, .badge-danger, .badge-info, .badge-secondary, .badge-dark {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Efectos de hover en las filas */
+.table-row:hover {
+    transform: translateX(2px);
+    box-shadow: -3px 0 0 var(--accent-color);
+    transition: all 0.2s ease;
+}
+
+/* Indicador de estado activo */
+.table-row.active {
+    background-color: rgba(52, 152, 219, 0.15);
+    border-left: 4px solid var(--accent-color);
+}
+
+/* Mejoras en la scrollbar */
+.table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark-gray) var(--light-gray);
+}
+
+/* Estados de los botones */
+.btn-action:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Separadores visuales */
+.table-row:nth-child(5n) {
+    border-bottom: 2px solid var(--medium-gray);
+}
+
+/* Mejoras en la legibilidad */
+.table-professional {
+    color: var(--text-dark);
+}
+
+.table-professional td {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Estados de carga específicos */
+.loading-state {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-state::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Optimizaciones de rendimiento */
+.table-professional {
+    contain: layout style paint;
+    will-change: scroll-position;
+}
+
+.btn-action {
+    contain: layout;
+    will-change: transform;
+}
+
+/* Mejoras en contraste */
+.table-header th {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Responsive mejorado para tablets */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .col-proyecto { width: 180px; min-width: 180px; }
+    .col-direccion { width: 160px; min-width: 160px; }
+    .col-detalle { width: 150px; min-width: 150px; }
+    .col-nombre { width: 180px; min-width: 180px; }
+}
+
+/* Mejoras para pantallas pequeñas */
+@media (max-width: 480px) {
+    .table-header th {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.7rem;
+    }
+    
+    .field-content {
+        padding: 0.4rem;
+    }
+    
+    .btn-group-actions {
+        flex-wrap: wrap;
+    }
+    
+    .client-name {
+        font-size: 0.85rem;
+    }
+    
+    .contact-info {
+        font-size: 0.7rem;
+    }
+}
+
+/* Dark mode support (preparado para futuro) */
+@media (prefers-color-scheme: dark) {
+    .table-professional {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .table-row:hover {
+        background-color: rgba(52, 152, 219, 0.2);
+    }
+    
+    .table-professional td {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+}
+
+/* Mejoras en accesibilidad avanzada */
+@media (prefers-reduced-motion: reduce) {
+    .table-row {
+        animation: none;
+    }
+    
+    .btn-action {
+        transition: none;
+    }
+    
+    .table-row:hover {
+        transform: none;
+        transition: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .table-header {
+        background: #000 !important;
+        color: #fff !important;
+    }
+    
+    .badge-success { background-color: #008000 !important; }
+    .badge-warning { background-color: #ff8c00 !important; }
+    .badge-danger { background-color: #dc143c !important; }
+    .badge-info { background-color: #0066cc !important; }
+}
+
+/* Selección de texto mejorada */
+.table-professional ::selection {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.table-professional ::-moz-selection {
+    background-color: var(--accent-color);
+    color: white;
+}
+</style>
 {% endblock %}

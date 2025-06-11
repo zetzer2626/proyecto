@@ -1,123 +1,632 @@
 {% extends 'base.html' %}
-{% load static %}
-{% load humanize %}
 
-{% block title %}Detalle de Solicitud{% endblock %}
+{% block title %}{{ solicitud.nombre|default:"Solicitud" }} - Detalles{% endblock %}
+
+{% block page_title %}Detalles de Solicitud{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10 col-sm-12">
-            <div class="card shadow-lg border-0 rounded-3">
-                <!-- Encabezado con título de la solicitud -->
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h4 class="mb-0 font-weight-bold">Detalles de Solicitud #{{ solicitud.pk }}</h4>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-file-alt me-2"></i>{{ solicitud.nombre|default:"Solicitud sin nombre" }}
+            </h1>
+            <p class="page-subtitle">
+                <i class="fas fa-info-circle me-1"></i>
+                Solicitante: {{ solicitud.solicitante|default:"No especificado" }} | 
+                Documento: {{ solicitud.nombre_documento|default:"No especificado" }} |
+                <span class="badge {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}bg-success{% elif solicitud.fecha_solicitud %}bg-warning{% else %}bg-secondary{% endif %}">
+                    {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
+                        Completada
+                    {% elif solicitud.fecha_solicitud %}
+                        En Proceso
+                    {% else %}
+                        Pendiente
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'solicitud-update' solicitud.pk %}" class="btn btn-primary me-2">
+                <i class="fas fa-edit me-2"></i>Editar
+            </a>
+            <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información Principal -->
+    <div class="col-lg-8">
+        <!-- Información Básica -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Información de la Solicitud
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <label class="info-label">
+                                <i class="fas fa-user me-1"></i>Solicitante
+                            </label>
+                            <p class="info-value">{{ solicitud.solicitante|default:"No especificado" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <label class="info-label">
+                                <i class="fas fa-file-alt me-1"></i>Nombre del Documento
+                            </label>
+                            <p class="info-value">{{ solicitud.nombre_documento|default:"No especificado" }}</p>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Cuerpo de la tarjeta con la información -->
-                <div class="card-body px-4 py-5">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5><strong>Solicitante:</strong></h5>
-                            <p class="text-muted">{{ solicitud.solicitante }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h5><strong>Documento:</strong></h5>
-                            <p class="text-muted">{{ solicitud.nombre_documento }}</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <label class="info-label">
+                                <i class="fas fa-id-badge me-1"></i>Nombre del Cliente
+                            </label>
+                            <p class="info-value">{{ solicitud.nombre|default:"No especificado" }}</p>
                         </div>
                     </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5><strong>Nombre:</strong></h5>
-                            <p class="text-muted">{{ solicitud.nombre }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h5><strong>Dirección:</strong></h5>
-                            <p class="text-muted">{{ solicitud.direccion }}</p>
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <label class="info-label">
+                                <i class="fas fa-map-marker-alt me-1"></i>Dirección
+                            </label>
+                            <p class="info-value">{{ solicitud.direccion|default:"No especificada" }}</p>
                         </div>
                     </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5><strong>Fecha Solicitud:</strong></h5>
-                            {% if solicitud.fecha_solicitud %}
-                                <p class="text-muted">{{ solicitud.fecha_solicitud}}</p>
-                            {% else %}
-                                <p class="text-muted">No disponible</p>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <h5><strong>Fecha Recepción:</strong></h5>
-                            {% if solicitud.fecha_recepcion %}
-                                <p class="text-muted">{{ solicitud.fecha_recepcion}}</p>
-                            {% else %}
-                                <p class="text-muted">No disponible</p>
-                            {% endif %}
+                </div>
+                
+                {% if solicitud.descripcion %}
+                <div class="info-item">
+                    <label class="info-label">
+                        <i class="fas fa-align-left me-1"></i>Descripción
+                    </label>
+                    <div class="info-value">
+                        <div class="description-content p-3 bg-light rounded">
+                            {{ solicitud.descripcion|linebreaks }}
                         </div>
                     </div>
-
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h5><strong>Descripción:</strong></h5>
-                            <p class="text-muted">{{ solicitud.descripcion }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Fechas y Timeline -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar me-2"></i>Timeline de la Solicitud
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <!-- Fecha de Solicitud -->
+                    <div class="timeline-item {% if solicitud.fecha_solicitud %}completed{% else %}pending{% endif %}">
+                        <div class="timeline-marker">
+                            <i class="fas fa-{% if solicitud.fecha_solicitud %}check-circle text-success{% else %}clock text-muted{% endif %}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="timeline-title">Solicitud Creada</h6>
+                            <p class="timeline-date">
+                                {% if solicitud.fecha_solicitud %}
+                                    <i class="fas fa-calendar me-1"></i>{{ solicitud.fecha_solicitud }}
+                                    <span class="badge bg-success ms-2">Completado</span>
+                                {% else %}
+                                    <i class="fas fa-clock me-1"></i>Pendiente
+                                    <span class="badge bg-secondary ms-2">Sin fecha</span>
+                                {% endif %}
+                            </p>
+                            <small class="text-muted">Fecha en que se realizó la solicitud</small>
                         </div>
                     </div>
-
-                    <!-- Sección de enlaces con iconos y botones -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5><strong>Documento Solicitud:</strong></h5>
+                    
+                    <!-- Fecha de Recepción -->
+                    <div class="timeline-item {% if solicitud.fecha_recepcion %}completed{% elif solicitud.fecha_solicitud %}current{% else %}pending{% endif %}">
+                        <div class="timeline-marker">
+                            <i class="fas fa-{% if solicitud.fecha_recepcion %}check-circle text-success{% elif solicitud.fecha_solicitud %}clock text-warning{% else %}clock text-muted{% endif %}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="timeline-title">Solicitud Recibida</h6>
+                            <p class="timeline-date">
+                                {% if solicitud.fecha_recepcion %}
+                                    <i class="fas fa-calendar me-1"></i>{{ solicitud.fecha_recepcion }}
+                                    <span class="badge bg-success ms-2">Completado</span>
+                                {% elif solicitud.fecha_solicitud %}
+                                    <i class="fas fa-clock me-1"></i>En proceso
+                                    <span class="badge bg-warning ms-2">Pendiente</span>
+                                {% else %}
+                                    <i class="fas fa-clock me-1"></i>Esperando solicitud
+                                    <span class="badge bg-secondary ms-2">Pendiente</span>
+                                {% endif %}
+                            </p>
+                            <small class="text-muted">Fecha en que se recibió el documento</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Tiempo de procesamiento -->
+                    {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker">
+                            <i class="fas fa-flag-checkered text-success"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="timeline-title">Proceso Completado</h6>
+                            <p class="timeline-date">
+                                <i class="fas fa-clock me-1"></i>
+                                <!-- Aquí puedes agregar lógica para calcular días de diferencia -->
+                                Solicitud procesada exitosamente
+                                <span class="badge bg-success ms-2">Finalizado</span>
+                            </p>
+                            <small class="text-muted">La solicitud ha sido completada</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Documento Adjunto -->
+        {% if solicitud.documento_solicitud %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-paperclip me-2"></i>Documento Adjunto
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="document-preview bg-light rounded-3 p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="file-icon me-3">
+                                <i class="fas fa-file-pdf text-danger fs-1"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">{{ solicitud.documento_solicitud.name }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-paperclip me-1"></i>Documento adjunto
+                                </small>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <a href="{{ solicitud.documento_solicitud.url }}" target="_blank" 
+                               class="btn btn-outline-primary me-2">
+                                <i class="fas fa-eye me-1"></i>Ver
+                            </a>
+                            <a href="{{ solicitud.documento_solicitud.url }}" download 
+                               class="btn btn-outline-success">
+                                <i class="fas fa-download me-1"></i>Descargar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Enlace Externo -->
+        {% if solicitud.link_solicitud %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-external-link-alt me-2"></i>Enlace Relacionado
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="link-preview bg-light rounded-3 p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="link-icon me-3">
+                                <i class="fas fa-link text-primary fs-1"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Enlace de la Solicitud</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-external-link-alt me-1"></i>{{ solicitud.link_solicitud|truncatechars:50 }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="link-actions">
+                            <a href="{{ solicitud.link_solicitud }}" target="_blank" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-external-link-alt me-1"></i>Abrir Enlace
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Panel Lateral -->
+    <div class="col-lg-4">
+        <!-- Estado Actual -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>Estado Actual
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
+                    <div class="status-display bg-success text-white rounded-3 p-4 mb-3">
+                        <i class="fas fa-check-circle fs-1 mb-2"></i>
+                        <h5 class="mb-0">Completada</h5>
+                        <small class="opacity-75">Solicitud procesada</small>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    </div>
+                    <small class="text-success fw-semibold">✓ Proceso finalizado exitosamente</small>
+                {% elif solicitud.fecha_solicitud %}
+                    <div class="status-display bg-warning text-white rounded-3 p-4 mb-3">
+                        <i class="fas fa-clock fs-1 mb-2"></i>
+                        <h5 class="mb-0">En Proceso</h5>
+                        <small class="opacity-75">Esperando recepción</small>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 50%"></div>
+                    </div>
+                    <small class="text-warning fw-semibold">◐ En proceso de recepción</small>
+                {% else %}
+                    <div class="status-display bg-secondary text-white rounded-3 p-4 mb-3">
+                        <i class="fas fa-hourglass fs-1 mb-2"></i>
+                        <h5 class="mb-0">Pendiente</h5>
+                        <small class="opacity-75">Sin fecha de solicitud</small>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar bg-secondary" style="width: 10%"></div>
+                    </div>
+                    <small class="text-muted fw-semibold">○ Esperando inicio</small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Información Rápida -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info me-2"></i>Información Rápida
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="info-stats">
+                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                        <div class="stat-label">
+                            <i class="fas fa-user text-primary me-2"></i>Solicitante
+                        </div>
+                        <div class="stat-value fw-semibold">
+                            {{ solicitud.solicitante|default:"No especificado"|truncatechars:20 }}
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                        <div class="stat-label">
+                            <i class="fas fa-file-alt text-info me-2"></i>Documento
+                        </div>
+                        <div class="stat-value fw-semibold">
+                            {{ solicitud.nombre_documento|default:"No especificado"|truncatechars:20 }}
+                        </div>
+                    </div>
+                    
+                    {% if solicitud.fecha_solicitud %}
+                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                        <div class="stat-label">
+                            <i class="fas fa-calendar text-success me-2"></i>Solicitado
+                        </div>
+                        <div class="stat-value fw-semibold">
+                            {{ solicitud.fecha_solicitud }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if solicitud.fecha_recepcion %}
+                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                        <div class="stat-label">
+                            <i class="fas fa-calendar-check text-warning me-2"></i>Recibido
+                        </div>
+                        <div class="stat-value fw-semibold">
+                            {{ solicitud.fecha_recepcion }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                        <div class="stat-label">
+                            <i class="fas fa-paperclip text-secondary me-2"></i>Documento
+                        </div>
+                        <div class="stat-value fw-semibold">
                             {% if solicitud.documento_solicitud %}
-                                <a href="{{ solicitud.documento_solicitud.url }}" target="_blank" class="btn btn-outline-info btn-sm">
-                                    <i class="fas fa-file-alt"></i> Ver Documento
-                                </a>
+                                <span class="text-success">✓ Adjunto</span>
                             {% else %}
-                                <span class="text-muted">No disponible</span>
+                                <span class="text-muted">Sin archivo</span>
                             {% endif %}
                         </div>
-
-                        <div class="col-md-6">
-                            <h5><strong>Link Drive:</strong></h5>
+                    </div>
+                    
+                    <div class="stat-item d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                        <div class="stat-label">
+                            <i class="fas fa-link text-primary me-2"></i>Enlace
+                        </div>
+                        <div class="stat-value fw-semibold">
                             {% if solicitud.link_solicitud %}
-                                <a href="{{ solicitud.link_solicitud }}" target="_blank" class="btn btn-outline-success btn-sm">
-                                    <i class="fas fa-cloud-upload-alt"></i> Ver en Drive
-                                </a>
+                                <span class="text-success">✓ Disponible</span>
                             {% else %}
-                                <span class="text-muted">No disponible</span>
+                                <span class="text-muted">Sin enlace</span>
                             {% endif %}
                         </div>
                     </div>
-
-                    <!-- Estado de la solicitud con color dinámico -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5><strong>Estado:</strong></h5>
-                            {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
-                                <span class="badge bg-success text-white">Completada</span>
-                            {% elif solicitud.fecha_solicitud %}
-                                <span class="badge bg-warning text-dark">En Proceso</span>
-                            {% else %}
-                                <span class="badge bg-danger text-white">Pendiente</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Botón de regreso con icono y estilo -->
-                    <div class="text-center">
-                        <a href="{% url 'solicitud-list' %}" class="btn btn-secondary btn-lg rounded-pill px-4 py-2">
-                            <i class="fas fa-arrow-left mr-2"></i> Volver a la Lista
-                        </a>
-                        <a href="{% url 'solicitud-update' solicitud.pk %}" class="btn btn-sm btn-warning" title="Editar">
-                            <i class="fas fa-edit"></i>Editar
-                        </a>
-                        <a href="{% url 'solicitud-delete' solicitud.pk %}" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta solicitud?')">
-                            <i class="fas fa-trash"></i>Eliminar
-                        </a>
-                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Acciones -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs me-2"></i>Acciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'solicitud-update' solicitud.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Editar Solicitud
+                    </a>
+                    
+                    {% if solicitud.documento_solicitud %}
+                    <a href="{{ solicitud.documento_solicitud.url }}" target="_blank" class="btn btn-outline-info">
+                        <i class="fas fa-file-pdf me-2"></i>Ver Documento
+                    </a>
+                    {% endif %}
+                    
+                    {% if solicitud.link_solicitud %}
+                    <a href="{{ solicitud.link_solicitud }}" target="_blank" class="btn btn-outline-success">
+                        <i class="fas fa-external-link-alt me-2"></i>Abrir Enlace
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                    </a>
+                    
+                    <hr class="my-2">
+                    
+                    <a href="{% url 'solicitud-delete' solicitud.pk %}" class="btn btn-outline-danger"
+                       onclick="return confirm('¿Está seguro de que desea eliminar esta solicitud?')">
+                        <i class="fas fa-trash me-2"></i>Eliminar Solicitud
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    .info-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+    
+    .info-value {
+        margin-bottom: 0;
+        color: var(--text-dark);
+        font-size: 1rem;
+    }
+    
+    .description-content {
+        border-left: 4px solid var(--accent-color);
+        font-style: italic;
+    }
+    
+    /* Timeline Styles */
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--medium-gray);
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .timeline-item.completed::before {
+        background: var(--success-color);
+    }
+    
+    .timeline-item.current::before {
+        background: var(--warning-color);
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -2rem;
+        top: 0;
+        width: 2rem;
+        height: 2rem;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .timeline-content {
+        background: white;
+        border: 1px solid var(--medium-gray);
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .timeline-title {
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    
+    .timeline-date {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* Document and Link Preview */
+    .document-preview, .link-preview {
+        border: 1px solid var(--medium-gray);
+        transition: all 0.3s ease;
+    }
+    
+    .document-preview:hover, .link-preview:hover {
+        border-color: var(--accent-color);
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .file-icon, .link-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(145deg, #ffffff, #f1f3f4);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    /* Status Display */
+    .status-display {
+        background: linear-gradient(135deg, var(--success-color), #58d68d);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .status-display.bg-warning {
+        background: linear-gradient(135deg, var(--warning-color), #f7dc6f) !important;
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    }
+    
+    .status-display.bg-secondary {
+        background: linear-gradient(135deg, var(--dark-gray), #95a5a6) !important;
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Info Stats */
+    .stat-item {
+        transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover {
+        background-color: rgba(52, 152, 219, 0.05) !important;
+        transform: translateX(5px);
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--dark-gray);
+    }
+    
+    .stat-value {
+        font-size: 0.9rem;
+        color: var(--text-dark);
+    }
+    
+    /* Progress Animation */
+    .progress-bar {
+        transition: width 1s ease-in-out;
+    }
+    
+    /* Hover Effects */
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    /* Badge Styles */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+</style>
+
+<script>
+    // Animate progress bars on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(function(bar) {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+    });
+    
+    // Add animation to timeline items
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    timelineItems.forEach(function(item, index) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            item.style.transition = 'all 0.5s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateX(0)';
+        }, index * 200 + 300);
+    });
+    
+    // Add hover effects to action buttons
+    document.querySelectorAll('.btn').forEach(function(btn) {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Status indicator animation
+    const statusDisplay = document.querySelector('.status-display');
+    if (statusDisplay) {
+        statusDisplay.style.transform = 'scale(0.9)';
+        statusDisplay.style.opacity = '0';
+        
+        setTimeout(() => {
+            statusDisplay.style.transition = 'all 0.6s ease';
+            statusDisplay.style.transform = 'scale(1)';
+            statusDisplay.style.opacity = '1';
+        }, 200);
+    }
+    
+    console.log('Vista de detalles de solicitud cargada correctamente');
+</script>
 {% endblock %}

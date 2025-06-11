@@ -1,51 +1,510 @@
 {% extends 'base.html' %}
+
+{% block title %}Editar Listado - {{ object.nombre|default:object.presupuesto }}{% endblock %}
+
+{% block page_title %}Editar Listado{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'listado_list' %}">Listados</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'listado_detail' object.pk %}">{{ object.nombre|default:object.presupuesto }}</a></li>
+    <li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-lg">
-        <div class="card-header bg-warning text-white text-center">
-            <h2>Editar Listado</h2>
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_presupuesto" class="form-label">Presupuesto:</label>
-                        <input type="text" id="id_presupuesto" name="presupuesto" class="form-control" value="{{ listado.presupuesto }}" placeholder="Ingrese el presupuesto" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_año" class="form-label">Año:</label>
-                        <input type="text" id="id_año" name="año" class="form-control" value="{{ listado.año }}" placeholder="Ingrese el año" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_nombre" class="form-label">Nombre:</label>
-                        <input type="text" id="id_nombre" name="nombre" class="form-control" value="{{ listado.nombre }}" placeholder="Ingrese el Nombre" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="id_gestion" class="form-label">Gestión:</label>
-                    <textarea id="id_gestion" name="gestion" rows="3" class="form-control" placeholder="Describa la gestión" required>{{ listado.gestion }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="id_nota" class="form-label">Nota:</label>
-                    <textarea id="id_nota" name="nota" rows="3" class="form-control" placeholder="Describa la Nota" required>{{ listado.nota }}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_listado" class="form-label">URL del Pagos:</label>
-                        <input type="url" id="id_listado" name="listado" class="form-control" value="{{ listado.listado }}" placeholder="Ingrese la URL del listado">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_drive" class="form-label">URL de Google Drive:</label>
-                        <input type="url" id="id_drive" name="drive" class="form-control" value="{{ listado.drive }}" placeholder="Ingrese la URL del drive">
-                    </div>
-                </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-                    <a href="{% url 'listado_list' %}" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
+<div class="row">
+    <div class="col-12">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-edit me-2"></i>
+                Editar Listado: {{ object.nombre|default:object.presupuesto }}
+            </h1>
+            <p class="page-subtitle">Modifica la información del listado seleccionado</p>
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Información del Listado
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="listadoForm">
+                    {% csrf_token %}
+                    
+                    <!-- Información Básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Información Básica
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.presupuesto.id_for_label }}" class="form-label">
+                                <i class="fas fa-dollar-sign me-1"></i>
+                                Presupuesto
+                            </label>
+                            {{ form.presupuesto }}
+                            {% if form.presupuesto.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.presupuesto.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Valor actual: <strong>{{ object.presupuesto|default:"Sin presupuesto" }}</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.año.id_for_label }}" class="form-label">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Año
+                            </label>
+                            {{ form.año }}
+                            {% if form.año.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.año.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Valor actual: <strong>{{ object.año|default:"Sin año" }}</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                <i class="fas fa-tag me-1"></i>
+                                Nombre del Listado
+                            </label>
+                            {{ form.nombre }}
+                            {% if form.nombre.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.nombre.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Valor actual: <strong>{{ object.nombre|default:"Sin nombre" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gestión y Notas -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-cogs me-2"></i>
+                                Gestión y Notas
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.gestion.id_for_label }}" class="form-label">
+                                <i class="fas fa-tasks me-1"></i>
+                                Gestión *
+                            </label>
+                            {{ form.gestion }}
+                            {% if form.gestion.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.gestion.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Describe las gestiones realizadas o por realizar
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.nota.id_for_label }}" class="form-label">
+                                <i class="fas fa-sticky-note me-1"></i>
+                                Notas Adicionales *
+                            </label>
+                            {{ form.nota }}
+                            {% if form.nota.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.nota.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Observaciones, comentarios o información adicional
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enlaces Actuales vs Nuevos -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-link me-2"></i>
+                                Enlaces y Documentos
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="content-section">
+                                <h6 class="text-muted mb-2">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Enlace del Listado
+                                </h6>
+                                
+                                {% if object.listado %}
+                                    <div class="current-content mb-2">
+                                        <small class="text-muted">Enlace actual:</small>
+                                        <div class="p-2 bg-light border rounded">
+                                            <a href="{{ object.listado }}" target="_blank" class="text-break">
+                                                <i class="fas fa-external-link-alt me-1"></i>
+                                                {{ object.listado }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                <label for="{{ form.listado.id_for_label }}" class="form-label">
+                                    {% if object.listado %}Nuevo enlace:{% else %}Enlace del listado:{% endif %}
+                                </label>
+                                {{ form.listado }}
+                                {% if form.listado.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.listado.errors %}
+                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="content-section">
+                                <h6 class="text-muted mb-2">
+                                    <i class="fas fa-cloud me-1"></i>
+                                    Google Drive
+                                </h6>
+                                
+                                {% if object.drive %}
+                                    <div class="current-content mb-2">
+                                        <small class="text-muted">Drive actual:</small>
+                                        <div class="p-2 bg-light border rounded">
+                                            <a href="{{ object.drive }}" target="_blank" class="text-break">
+                                                <i class="fas fa-cloud me-1"></i>
+                                                {{ object.drive }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                <label for="{{ form.drive.id_for_label }}" class="form-label">
+                                    {% if object.drive %}Nuevo enlace Drive:{% else %}Enlace de Drive:{% endif %}
+                                </label>
+                                {{ form.drive }}
+                                {% if form.drive.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.drive.errors %}
+                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <a href="{% url 'listado_detail' object.pk %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Volver al Detalle
+                                    </a>
+                                    <a href="{% url 'listado_list' %}" class="btn btn-outline-primary ms-2">
+                                        <i class="fas fa-list me-2"></i>
+                                        Ver Todos los Listados
+                                    </a>
+                                </div>
+                                <div>
+                                    <button type="reset" class="btn btn-outline-warning me-2">
+                                        <i class="fas fa-undo me-2"></i>
+                                        Restaurar
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-2"></i>
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista Previa Actual -->
+<div class="row mt-4">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-eye me-2"></i>
+                    Vista Previa Actual
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="listado-icon mb-3">
+                            <i class="fas fa-list fa-3x text-primary"></i>
+                        </div>
+                        <small class="text-muted">
+                            {% if object.año %}{{ object.año }}{% else %}Sin año{% endif %}
+                        </small>
+                    </div>
+                    <div class="col-md-9">
+                        <h6 class="mb-1">
+                            {{ object.nombre|default:object.presupuesto|default:"Listado sin nombre" }}
+                        </h6>
+                        <p class="text-muted small mb-2">
+                            <strong>Presupuesto:</strong> {{ object.presupuesto|default:"No especificado" }}
+                        </p>
+                        <p class="text-muted small mb-3">
+                            <strong>Gestión:</strong> {{ object.gestion|truncatewords:15|default:"Sin gestión" }}
+                        </p>
+                        
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% if object.listado %}
+                                <a href="{{ object.listado }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Ver Listado
+                                </a>
+                            {% endif %}
+                            {% if object.drive %}
+                                <a href="{{ object.drive }}" target="_blank" class="btn btn-sm btn-success">
+                                    <i class="fas fa-cloud me-1"></i>
+                                    Abrir Drive
+                                </a>
+                            {% endif %}
+                            <button class="btn btn-sm btn-outline-secondary" onclick="copyInfo()">
+                                <i class="fas fa-copy me-1"></i>
+                                Copiar Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Historial de Cambios -->
+<div class="row mt-4">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Información de Cambios
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <i class="fas fa-info-circle text-info me-2"></i>
+                    Estás editando el listado creado el <strong>{{ object.id }}</strong> (ID: {{ object.pk }})
+                </p>
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Consejo:</strong> Los cambios se guardarán automáticamente al hacer clic en "Guardar Cambios". 
+                    Puedes usar "Restaurar" para volver a los valores originales.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const listadoInput = document.getElementById('{{ form.listado.id_for_label }}');
+    const driveInput = document.getElementById('{{ form.drive.id_for_label }}');
+    
+    // Validación de URL del listado
+    if (listadoInput) {
+        listadoInput.addEventListener('blur', function(e) {
+            const url = e.target.value;
+            if (url && !isValidURL(url)) {
+                e.target.classList.add('is-invalid');
+                showValidationMessage(e.target, 'Por favor, ingresa una URL válida');
+            } else {
+                e.target.classList.remove('is-invalid');
+                removeValidationMessage(e.target);
+            }
+        });
+    }
+    
+    // Validación de URL de Drive
+    if (driveInput) {
+        driveInput.addEventListener('blur', function(e) {
+            const url = e.target.value;
+            if (url && !isValidURL(url)) {
+                e.target.classList.add('is-invalid');
+                showValidationMessage(e.target, 'Por favor, ingresa una URL válida de Google Drive');
+            } else {
+                e.target.classList.remove('is-invalid');
+                removeValidationMessage(e.target);
+            }
+        });
+    }
+    
+    // Validación del formulario antes de enviar
+    document.getElementById('listadoForm').addEventListener('submit', function(e) {
+        const gestion = document.getElementById('{{ form.gestion.id_for_label }}').value.trim();
+        const nota = document.getElementById('{{ form.nota.id_for_label }}').value.trim();
+        
+        if (!gestion || !nota) {
+            e.preventDefault();
+            showToast('Los campos de Gestión y Notas son obligatorios', 'warning');
+        }
+    });
+});
+
+function copyInfo() {
+    const info = {
+        nombre: "{{ object.nombre|default:'Sin nombre' }}",
+        presupuesto: "{{ object.presupuesto|default:'Sin presupuesto' }}",
+        año: "{{ object.año|default:'Sin año' }}",
+        gestion: "{{ object.gestion|default:'Sin gestión' }}",
+        listado: "{{ object.listado|default:'' }}",
+        drive: "{{ object.drive|default:'' }}"
+    };
+    
+    const text = `Listado: ${info.nombre}
+Presupuesto: ${info.presupuesto}
+Año: ${info.año}
+Gestión: ${info.gestion}
+${info.listado ? 'Enlace: ' + info.listado : ''}
+${info.drive ? 'Drive: ' + info.drive : ''}`;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Información copiada al portapapeles', 'success');
+    }).catch(function(err) {
+        console.error('Error al copiar: ', err);
+        showToast('Error al copiar al portapapeles', 'danger');
+    });
+}
+
+function isValidURL(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+function showValidationMessage(element, message) {
+    removeValidationMessage(element);
+    const feedback = document.createElement('div');
+    feedback.className = 'invalid-feedback custom-validation';
+    feedback.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+    element.parentNode.appendChild(feedback);
+}
+
+function removeValidationMessage(element) {
+    const existing = element.parentNode.querySelector('.custom-validation');
+    if (existing) {
+        existing.remove();
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'times' : 'info-circle'} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+
+<style>
+.content-section {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.current-content {
+    background-color: white;
+    border-radius: 6px;
+}
+
+.listado-icon {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.invalid-feedback {
+    display: block;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card.border-warning {
+    border-width: 2px;
+}
+</style>
 {% endblock %}

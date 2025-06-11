@@ -1,63 +1,485 @@
 {% extends 'base.html' %}
 
-{% load humanize %}
-
-{% load static %}
+{% block title %}Lista de Insumos - Sistema de Gestión{% endblock %}
+{% block page_title %}Gestión de Insumos{% endblock %}
 
 {% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title"><i class="fas fa-boxes me-2"></i>Insumos</h1>
+            <p class="page-subtitle">Gestiona el inventario y solicitudes de insumos</p>
+        </div>
+        <div>
+            <a href="{% url 'insumo_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nuevo Insumo
+            </a>
+        </div>
+    </div>
+</div>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Listado de insumos</h1>
-    <a href="{% url 'insumo_create' %}" class="btn btn-primary mb-3">Crear Lista Insumo</a>
-
-    <div class="table-responsive">
-        <table id="example" class="table table-striped table-hover table-bordered" style="width:100%">
-            <thead class="table-dark">
-            <tr>  
-                <th>Solicitante</th>  
-                <th>Descripción</th>
-                <th>Fecha Solicitud</th>  
-                <th>Fecha Recepcion</th>  
-                <th>Valor Total</th>
-                <th>Transferencia</th>
-                <th>Factura</th>
-                <th>Acciones</th>  
-
-            </tr>  
-        </thead>  
-        <tbody>  
-            {% for insumo in insumos %}  
-                <tr>  
-                    <td>{{ insumo.solicitante }}</td>  
-                    <td>{{ insumo.descripcion|truncatewords:100 }}</td> <!-- Truncar para mostrar solo 10 palabras --> 
-                    <td>{{ insumo.fecha_solicitud }}</td> 
-                    <td>{{ insumo.fecha_recepcion }}</td> 
-                    <td>{{ insumo.valor_total|intcomma }}</td> 
-                    <td>
-                        {% if insumo.pago %}
-                            <a href="{{ insumo.pago.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Trasferencia</a>
-                        {% else %}
-                            <span class="text-muted">Sin Transferencia</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if insumo.factura %}
-                            <a href="{{ insumo.factura.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Factura</a>
-                        {% else %}
-                            <span class="text-muted">Sin Factura</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'insumo_detail' insumo.pk %}" class="btn btn-info btn-sm">Ver</a>
+<!-- Stats Cards Row -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ insumos.count }}</div>
+                    <div class="stats-label">
+                        <i class="fas fa-boxes me-1"></i>Total Insumos
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-boxes fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
     
-                        <a href="{% url 'insumo_delete' insumo.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
-                    </td>
-                </tr>  
-            {% empty %}  
-                <tr>  
-                    <td colspan="3">No hay insumos registrados.</td>  
-                </tr>  
-            {% endfor %}  
-        </tbody>  
-    </table>  
+    <div class="col-lg-3 col-md-6">
+        <div class="stats-card success">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">0</div>
+                    <div class="stats-label">
+                        <i class="fas fa-check-circle me-1"></i>Completados
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="stats-card warning">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">0</div>
+                    <div class="stats-label">
+                        <i class="fas fa-clock me-1"></i>Pendientes
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-clock fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="stats-card danger">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">${{ total_valor|floatformat:0|default:0 }}</div>
+                    <div class="stats-label">
+                        <i class="fas fa-dollar-sign me-1"></i>Valor Total
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-filter me-2"></i>Filtros y Búsqueda
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <label for="q" class="form-label">Buscar</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="q" name="q" 
+                           placeholder="Solicitante, descripción..." 
+                           value="{{ request.GET.q }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-control" id="estado" name="estado">
+                    <option value="">Todos los estados</option>
+                    <option value="completado" {% if request.GET.estado == 'completado' %}selected{% endif %}>Completado</option>
+                    <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>Buscar
+                    </button>
+                    <a href="{% url 'insumo_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>Limpiar
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Insumos Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-table me-2"></i>Lista de Insumos
+            <span class="badge bg-secondary ms-2">{{ insumos.count }} insumo{{ insumos.count|pluralize }}</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if insumos %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Solicitante</th>
+                            <th>Descripción</th>
+                            <th>Fecha Solicitud</th>
+                            <th>Fecha Recepción</th>
+                            <th>Valor Total</th>
+                            <th>Estado</th>
+                            <th>Documentos</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for insumo in insumos %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="avatar-circle bg-warning text-white">
+                                                {{ insumo.solicitante|first|upper|default:"?" }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">{{ insumo.solicitante|default:"Sin solicitante" }}</div>
+                                            <small class="text-muted">ID: {{ insumo.id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-truncate" style="max-width: 200px; display: inline-block;" 
+                                          title="{{ insumo.descripcion }}">
+                                        {{ insumo.descripcion|truncatechars:50 }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if insumo.fecha_solicitud %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-calendar me-1"></i>{{ insumo.fecha_solicitud }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">Sin fecha</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if insumo.fecha_recepcion %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-calendar-check me-1"></i>{{ insumo.fecha_recepcion }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">Sin fecha</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if insumo.valor_total %}
+                                        <span class="fw-bold text-success">
+                                            <i class="fas fa-dollar-sign me-1"></i>{{ insumo.valor_total|floatformat:0 }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">Sin valor</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if insumo.fecha_solicitud and insumo.fecha_recepcion %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Completado
+                                        </span>
+                                    {% elif insumo.fecha_solicitud and not insumo.fecha_recepcion %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>En Proceso
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Pendiente
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        {% if insumo.pago %}
+                                            <a href="{{ insumo.pago.url }}" class="btn btn-xs btn-outline-success" 
+                                               target="_blank" title="Comprobante de Pago">
+                                                <i class="fas fa-credit-card"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if insumo.factura %}
+                                            <a href="{{ insumo.factura.url }}" class="btn btn-xs btn-outline-primary" 
+                                               target="_blank" title="Factura">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if not insumo.pago and not insumo.factura %}
+                                            <span class="text-muted small">Sin docs</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'insumo_detail' insumo.pk %}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'insumo_edit' insumo.pk %}" 
+                                           class="btn btn-sm btn-outline-secondary" 
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-info dropdown-toggle" 
+                                                data-bs-toggle="dropdown" 
+                                                title="Más opciones">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="marcarCompletado({{ insumo.pk }})">
+                                                    <i class="fas fa-check me-2"></i>Marcar Completado
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="duplicarInsumo({{ insumo.pk }})">
+                                                    <i class="fas fa-copy me-2"></i>Duplicar
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" 
+                                                   href="{% url 'insumo_delete' insumo.pk %}"
+                                                   onclick="return confirm('¿Estás seguro de que deseas eliminar este insumo?')">
+                                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-boxes fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No se encontraron insumos</h5>
+                <p class="text-muted mb-4">No hay insumos que coincidan con tus criterios de búsqueda.</p>
+                <a href="{% url 'insumo_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Crear Primer Insumo
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Summary Panel -->
+{% if insumos %}
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución por Estado
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="d-flex align-items-center">
+                        <span class="badge bg-success me-2"></span>Completados
+                    </span>
+                    <span class="fw-semibold">{{ completados_count|default:0 }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="d-flex align-items-center">
+                        <span class="badge bg-warning me-2"></span>En Proceso
+                    </span>
+                    <span class="fw-semibold">{{ en_proceso_count|default:0 }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="d-flex align-items-center">
+                        <span class="badge bg-danger me-2"></span>Pendientes
+                    </span>
+                    <span class="fw-semibold">{{ pendientes_count|default:0 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calculator me-2"></i>Resumen Financiero
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-success">${{ total_valor|floatformat:0|default:0 }}</h4>
+                            <p class="text-muted mb-0">Valor Total</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-primary">${{ promedio_valor|floatformat:0|default:0 }}</h4>
+                        <p class="text-muted mb-0">Valor Promedio</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Basado en {{ insumos.count }} insumo{{ insumos.count|pluralize }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+    <div class="btn-group-vertical" role="group">
+        <a href="{% url 'insumo_create' %}" class="btn btn-primary btn-lg rounded-circle mb-2" 
+           title="Nuevo Insumo">
+            <i class="fas fa-plus"></i>
+        </a>
+        <button type="button" class="btn btn-success btn-lg rounded-circle" 
+                onclick="exportarDatos()" title="Exportar Datos">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.btn-xs {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.7rem;
+    border-radius: 0.2rem;
+}
+
+.btn-group .dropdown-toggle::after {
+    display: none;
+}
+
+.stats-card {
+    transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .btn-group-vertical {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-submit form on select change
+    document.getElementById('estado').addEventListener('change', function() {
+        this.form.submit();
+    });
+    
+    // Mark as completed function
+    function marcarCompletado(insumoId) {
+        if (confirm('¿Marcar este insumo como completado?')) {
+            // Implementation for marking as completed
+            // Could use AJAX or redirect to update view
+            fetch(`/insumo/${insumoId}/completar/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar el estado');
+            });
+        }
+    }
+    
+    // Duplicate insumo function
+    function duplicarInsumo(insumoId) {
+        if (confirm('¿Crear un nuevo insumo basado en este?')) {
+            window.location.href = `/insumo/nuevo/?duplicate=${insumoId}`;
+        }
+    }
+    
+    // Export data function
+    function exportarDatos() {
+        // Implementation for data export
+        alert('Función de exportación en desarrollo');
+    }
+    
+    // Search functionality
+    document.getElementById('q').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            this.form.submit();
+        }
+    });
+    
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Auto-refresh data every 5 minutes
+    setInterval(function() {
+        if (!document.hidden) {
+            // Could implement partial refresh here
+            console.log('Auto-refresh check...');
+        }
+    }, 300000);
+</script>
 {% endblock %}

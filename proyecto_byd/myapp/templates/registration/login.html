@@ -1,129 +1,452 @@
-<!-- base.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi ERP de Arquitectura</title>
-  
-  <!-- Cargar Bootstrap 5 desde un CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-  <!-- Fuentes Google -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema de Gestión de Proyectos</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --text-dark: #2c3e50;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 20px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-left {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #5dade2 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: rotate(0deg) translateX(0); }
+            50% { transform: rotate(180deg) translateX(20px); }
+        }
+
+        .login-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-right {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--dark-gray);
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-control {
+            border: 2px solid var(--medium-gray);
+            border-radius: 12px;
+            padding: 1rem 1rem 1rem 3rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+            background-color: white;
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #5dade2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .alert-danger {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        .register-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #2980b9;
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 12px;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 20px 10px;
+            }
+
+            .login-left {
+                padding: 2rem;
+                text-align: center;
+            }
+
+            .login-right {
+                padding: 2rem;
+            }
+
+            .login-title {
+                font-size: 1.5rem;
+            }
+
+            .login-subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-
-  {% load static %}
-  {% load widget_tweaks %}
-
-  {% block content %}
-    <div class="container d-flex justify-content-center align-items-center">
-      <div class="card shadow-lg">
-        <div class="card-body">
-          
-          <!-- Logo -->
-          <img src="{% static 'img/byd-logo.jpeg' %}" alt="Logo" class="logo">
-          
-          <!-- Subtítulo -->
-          <p class="text-center text-muted mb-4">El ERP de arquitectura para simplificar tu trabajo</p>
-
-          <h3 class="card-title text-center mb-4">Iniciar sesión</h3>
-
-          <form method="POST">
-            {% csrf_token %}
+    <div class="login-container">
+        <div class="row g-0 h-100">
+            <!-- Lado Izquierdo - Información -->
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="login-left h-100">
+                    <div>
+                        <div class="login-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h1 class="login-title">SGP</h1>
+                        <p class="login-subtitle">
+                            Sistema de Gestión de Proyectos<br>
+                            Administra tus proyectos, contactos, tramitaciones y más
+                        </p>
+                    </div>
+                </div>
+            </div>
             
-            <div class="mb-3">
-              {{ form.username.errors }}
-              <label for="id_username" class="form-label">Usuario</label>
-              {{ form.username|add_class:"form-control" }}
+            <!-- Lado Derecho - Formulario -->
+            <div class="col-lg-6">
+                <div class="login-right h-100">
+                    <div class="form-header">
+                        <h2>Iniciar Sesión</h2>
+                        <p>Accede a tu cuenta para continuar</p>
+                    </div>
+
+                    <!-- Mensajes de Error -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} fade-in" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Formulario de Login -->
+                    <form method="post" id="loginForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <i class="fas fa-user form-icon"></i>
+                            <input type="text" 
+                                   name="username" 
+                                   class="form-control" 
+                                   placeholder="Nombre de usuario"
+                                   value="{{ form.username.value|default:'' }}"
+                                   required
+                                   autofocus>
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.username.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <i class="fas fa-lock form-icon"></i>
+                            <input type="password" 
+                                   name="password" 
+                                   class="form-control" 
+                                   placeholder="Contraseña"
+                                   required>
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-login position-relative">
+                                <span class="btn-text">Iniciar Sesión</span>
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Redirigir después del login -->
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                        {% endif %}
+                    </form>
+
+                    <!-- Enlace de Registro -->
+                    <div class="register-link">
+                        <p class="mb-0">
+                            ¿No tienes una cuenta? 
+                            <a href="#">Regístrate aquí</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
-              {{ form.password.errors }}
-              <label for="id_password" class="form-label">Contraseña</label>
-              {{ form.password|add_class:"form-control" }}
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
-          </form>
-
-          <div class="text-center mt-3">
-            <p class="text-muted">¿No tienes cuenta? <a href="{% url 'register' %}" class="text-decoration-none">Regístrate aquí</a></p>
-            <p><a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a></p>
-          </div>
         </div>
-      </div>
     </div>
-  {% endblock %}
 
-  <style>
-    /* Estilo personalizado para el formulario de login */
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f7fc;
-    }
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const submitBtn = form.querySelector('.btn-login');
+            const loading = submitBtn.querySelector('.loading');
+            const btnText = submitBtn.querySelector('.btn-text');
 
-    .card {
-      border-radius: 15px;
-      overflow: hidden;
-    }
+            // Mostrar loading al enviar el formulario
+            form.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                loading.classList.add('show');
+                btnText.style.opacity = '0';
+            });
 
-    .card-body {
-      padding: 2rem;
-    }
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 300);
+                }, 5000);
+            });
 
-    .btn-primary {
-      background-color: #0062cc;
-      border-color: #0062cc;
-      transition: background-color 0.3s;
-    }
+            // Focus effect for form controls
+            const formControls = document.querySelectorAll('.form-control');
+            formControls.forEach(function(control) {
+                control.addEventListener('focus', function() {
+                    this.parentNode.querySelector('.form-icon').style.color = 'var(--accent-color)';
+                });
+                
+                control.addEventListener('blur', function() {
+                    this.parentNode.querySelector('.form-icon').style.color = 'var(--dark-gray)';
+                });
+            });
 
-    .btn-primary:hover {
-      background-color: #004085;
-      border-color: #003366;
-    }
-
-    .text-muted {
-      font-size: 0.9rem;
-    }
-
-    /* Estilo para el logo */
-    .logo {
-      width: 120px;
-      height: auto;
-      display: block;
-      margin: 0 auto 20px; /* Centra el logo */
-    }
-
-    /* Fondo de la página */
-    .container {
-      height: 100vh;
-    }
-
-    /* Estilo para la tarjeta de login */
-    .card {
-      max-width: 400px;
-      width: 100%;
-    }
-
-    .text-muted a {
-      color: #007bff;
-    }
-
-    .text-muted a:hover {
-      text-decoration: underline;
-    }
-
-    /* Estilo del subtítulo */
-    .text-muted {
-      font-size: 1rem;
-    }
-  </style>
-
-  <!-- Cargar el JS de Bootstrap al final del body para mejorar el rendimiento -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+            // Enter key handling
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    form.submit();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

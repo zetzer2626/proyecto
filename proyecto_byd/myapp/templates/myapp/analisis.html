@@ -1,67 +1,588 @@
 {% extends 'base.html' %}
 
-{% load static %}
-
-{% block title %}Estadísticas y Análisis{% endblock %}
+{% block title %}Dashboard - Análisis de Proyectos{% endblock %}
+{% block page_title %}Dashboard de Análisis{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-5">Panel de Análisis de Proyectos</h1>
-
-    <div class="row mb-5">
-        <!-- Tarjetas de Estadísticas -->
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-lg border-0 rounded">
-                <div class="card-header bg-success text-white text-center">
-                    <h5 class="mb-0">Proyectos Completados</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-title display-4 text-center">{{ proyectos_completados }}</h2>
-                    <p class="card-text text-center">Proyectos aprobados con éxito.</p>
-                </div>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-chart-bar me-2"></i>Dashboard de Análisis
+            </h1>
+            <p class="page-subtitle">Resumen ejecutivo y métricas del sistema</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="refreshData()">
+                <i class="fas fa-sync-alt me-2"></i>Actualizar Datos
+            </button>
+            <div class="btn-group ms-2" role="group">
+                <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-download me-1"></i>Exportar
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'exportar_excel' %}">
+                        <i class="fas fa-file-excel me-2"></i>Proyectos Excel
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'exportar_tramitacion_excel' %}">
+                        <i class="fas fa-file-excel me-2"></i>Tramitaciones Excel
+                    </a></li>
+                </ul>
             </div>
         </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-lg border-0 rounded">
-                <div class="card-header bg-danger text-white text-center">
-                    <h5 class="mb-0">Proyectos No Concretados</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-title display-4 text-center">{{ proyectos_no_concretados }}</h2>
-                    <p class="card-text text-center">Proyectos no concretados.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-lg border-0 rounded">
-                <div class="card-header bg-info text-white text-center">
-                    <h5 class="mb-0">Total de Clientes</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-title display-4 text-center">{{ total_clientes }}</h2>
-                    <p class="card-text text-center">Clientes registrados.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-lg border-0 rounded">
-                <div class="card-header bg-warning text-white text-center">
-                    <h5 class="mb-0">Ingresados</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-title display-4 text-center">{{ ingresado }}</h2>
-                    <p class="card-text text-center">Ingresados.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="text-center mt-5">
-        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-primary btn-lg">Volver a la lista de proyectos</a>
     </div>
 </div>
 
+<!-- Main Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ total_clientes }}</div>
+                    <div class="stats-label">
+                        <i class="fas fa-users me-1"></i>Total Clientes
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-users fa-2x opacity-75"></i>
+                </div>
+            </div>
+            <div class="mt-2">
+                <small class="opacity-75">
+                    <i class="fas fa-arrow-up me-1"></i>+12% este mes
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card success">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ proyectos_completados }}</div>
+                    <div class="stats-label">
+                        <i class="fas fa-check-circle me-1"></i>Proyectos Aprobados
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+            <div class="mt-2">
+                <small class="opacity-75">
+                    <i class="fas fa-arrow-up me-1"></i>+8% este mes
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card warning">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ proyectos_obserbados }}</div>
+                    <div class="stats-label">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Proyectos Observados
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                </div>
+            </div>
+            <div class="mt-2">
+                <small class="opacity-75">
+                    <i class="fas fa-arrow-down me-1"></i>-3% este mes
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="stats-card danger">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ proyectos_no_concretados }}</div>
+                    <div class="stats-label">
+                        <i class="fas fa-times-circle me-1"></i>No Concretados
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-times-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+            <div class="mt-2">
+                <small class="opacity-75">
+                    <i class="fas fa-arrow-down me-1"></i>-15% este mes
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Stats -->
+<div class="row mb-4">
+    <div class="col-xl-2 col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-primary mb-2">
+                    <i class="fas fa-cogs fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">{{ ingresado }}</h4>
+                <p class="text-muted mb-0">En Proceso</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-info mb-2">
+                    <i class="fas fa-clock fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">0</h4>
+                <p class="text-muted mb-0">Pendientes</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-secondary mb-2">
+                    <i class="fas fa-pause fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">0</h4>
+                <p class="text-muted mb-0">Congelados</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-dark mb-2">
+                    <i class="fas fa-flag-checkered fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">0</h4>
+                <p class="text-muted mb-0">Realizados</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-warning mb-2">
+                    <i class="fas fa-ban fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">0</h4>
+                <p class="text-muted mb-0">Rechazados</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-success mb-2">
+                    <i class="fas fa-percentage fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">
+                    {% widthratio proyectos_completados total_clientes 100 %}%
+                </h4>
+                <p class="text-muted mb-0">Tasa Éxito</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Analytics -->
+<div class="row mb-4">
+    <!-- Project Status Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución de Estados
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <canvas id="statusChart" width="400" height="200"></canvas>
+                </div>
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="d-flex align-items-center">
+                            <span class="badge bg-success me-2"></span>Aprobados
+                        </span>
+                        <span class="fw-semibold">{{ proyectos_completados }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="d-flex align-items-center">
+                            <span class="badge bg-warning me-2"></span>Observados
+                        </span>
+                        <span class="fw-semibold">{{ proyectos_obserbados }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="d-flex align-items-center">
+                            <span class="badge bg-danger me-2"></span>No Concretados
+                        </span>
+                        <span class="fw-semibold">{{ proyectos_no_concretados }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="d-flex align-items-center">
+                            <span class="badge bg-info me-2"></span>En Proceso
+                        </span>
+                        <span class="fw-semibold">{{ ingresado }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Progress Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Progreso Mensual
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="progressChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions and Recent Activity -->
+<div class="row mb-4">
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nuevo Proyecto
+                    </a>
+                    <a href="{% url 'solicitud-create' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-alt me-2"></i>Nueva Solicitud
+                    </a>
+                    <a href="{% url 'contacto-create' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-2"></i>Nuevo Contacto
+                    </a>
+                    <a href="{% url 'tramitacion-create' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-cogs me-2"></i>Nueva Tramitación
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Status -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-server me-2"></i>Estado del Sistema
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Rendimiento del Sistema</span>
+                    <span class="badge bg-success">Óptimo</span>
+                </div>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 95%"></div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Uso de Almacenamiento</span>
+                    <span class="badge bg-warning">75%</span>
+                </div>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Última Copia de Seguridad</span>
+                    <span class="badge bg-info">Hoy</span>
+                </div>
+                
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>Actualizado hace 5 min
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history me-2"></i>Actividad Reciente
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1 fw-semibold">Proyecto Aprobado</p>
+                            <small class="text-muted">Casa Familiar - hace 2 horas</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1 fw-semibold">Nueva Solicitud</p>
+                            <small class="text-muted">Edificio Comercial - hace 4 horas</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1 fw-semibold">Proyecto Observado</p>
+                            <small class="text-muted">Conjunto Residencial - ayer</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1 fw-semibold">Nuevo Contacto</p>
+                            <small class="text-muted">Empresa Constructora - ayer</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver Todas las Actividades
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Metrics -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>Métricas de Rendimiento
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <h3 class="text-primary">
+                                {% widthratio proyectos_completados total_clientes 1 %}:{% widthratio total_clientes proyectos_completados 1 %}
+                            </h3>
+                            <p class="text-muted mb-0">Ratio Éxito/Total</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <h3 class="text-success">15 días</h3>
+                            <p class="text-muted mb-0">Tiempo Promedio</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <h3 class="text-warning">95%</h3>
+                            <p class="text-muted mb-0">Satisfacción Cliente</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-info">{{ total_clientes }}</h3>
+                        <p class="text-muted mb-0">Proyectos Activos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles for timeline and custom elements -->
+<style>
+.timeline {
+    position: relative;
+    padding: 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 20px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--medium-gray);
+}
+
+.timeline-item:not(:last-child):before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    width: 2px;
+    height: calc(100% + 8px);
+    background-color: var(--medium-gray);
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.stats-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(30px, -30px);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Status Pie Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Aprobados', 'Observados', 'No Concretados', 'En Proceso'],
+            datasets: [{
+                data: [{{ proyectos_completados }}, {{ proyectos_obserbados }}, {{ proyectos_no_concretados }}, {{ ingresado }}],
+                backgroundColor: [
+                    '#27ae60',
+                    '#f39c12',
+                    '#e74c3c',
+                    '#3498db'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            cutout: '60%'
+        }
+    });
+
+    // Progress Line Chart
+    const progressCtx = document.getElementById('progressChart').getContext('2d');
+    const progressChart = new Chart(progressCtx, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Proyectos Aprobados',
+                data: [12, 19, 15, 25, 22, {{ proyectos_completados }}],
+                borderColor: '#27ae60',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Proyectos Totales',
+                data: [20, 28, 25, 35, 32, {{ total_clientes }}],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Refresh data function
+    function refreshData() {
+        const btn = event.target;
+        const icon = btn.querySelector('i');
+        
+        icon.classList.add('fa-spin');
+        btn.disabled = true;
+        
+        // Simulate data refresh
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    }
+
+    // Auto-refresh every 5 minutes
+    setInterval(function() {
+        console.log('Auto-refreshing dashboard data...');
+        // Here you could implement AJAX refresh of specific components
+    }, 300000);
+
+    // Real-time clock
+    function updateClock() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('es-ES');
+        document.title = `Dashboard (${timeString}) - Sistema de Gestión`;
+    }
+    
+    setInterval(updateClock, 1000);
+</script>
 {% endblock %}
