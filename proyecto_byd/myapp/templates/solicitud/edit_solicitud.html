@@ -1,946 +1,121 @@
 {% extends 'base.html' %}
 
-{% block title %}Editar Solicitud - {{ object.nombre }}{% endblock %}
+{% load static %}
 
-{% block page_title %}Editar Solicitud{% endblock %}
+{% block title %}Editar Solicitud{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="fas fa-edit me-2"></i>Editar Solicitud
-            </h1>
-            <p class="page-subtitle">
-                Modifica la información de la solicitud: <strong>{{ object.nombre|default:"Sin nombre" }}</strong>
-            </p>
-        </div>
-        <div>
-            <a href="{% url 'solicitud-detail' object.pk %}" class="btn btn-outline-info me-2">
-                <i class="fas fa-eye me-2"></i>Ver Detalles
-            </a>
-            <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-            </a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Tarjeta con sombra y bordes redondeados -->
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-gradient text-white text-center py-3" style="background: linear-gradient(45deg, #007bff, #6610f2);">
+                    <h4 class="mb-0 font-weight-bold">Editar Solicitud</h4>
+                </div>
+                <div class="card-body px-5">
+                    <p class="text-muted text-center mb-4">Modifique la información de la solicitud a continuación.</p>
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        
+                        <!-- Fila para los primeros campos en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.solicitante.id_for_label }}" class="form-label font-weight-bold">{{ form.solicitante.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-user text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        {{ form.solicitante }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.nombre_documento.id_for_label }}" class="form-label font-weight-bold">{{ form.nombre_documento.label }}</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light border-0">
+                                                <i class="fas fa-file-alt text-secondary"></i>
+                                            </span>
+                                        </div>
+                                        {{ form.nombre_documento }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fila para otros campos en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.nombre.id_for_label }}" class="form-label font-weight-bold">{{ form.nombre.label }}</label>
+                                    {{ form.nombre }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.direccion.id_for_label }}" class="form-label font-weight-bold">{{ form.direccion.label }}</label>
+                                    {{ form.direccion }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fila para fechas en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.fecha_solicitud.label }}</label>
+                                    {{ form.fecha_solicitud }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label font-weight-bold">{{ form.fecha_recepcion.label }}</label>
+                                    {{ form.fecha_recepcion }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campo de descripción en una sola fila completa -->
+                        <div class="form-group mb-3">
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label font-weight-bold">{{ form.descripcion.label }}</label>
+                            {{ form.descripcion }}
+                        </div>
+
+                        <!-- Fila para archivo y enlace en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.documento_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.documento_solicitud.label }}</label>
+                                    {{ form.documento_solicitud }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.link_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.link_solicitud.label }}</label>
+                                    {{ form.link_solicitud }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de envío centrado -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">
+                                <i class="fas fa-paper-plane mr-2"></i> Actualizar Solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<form method="post" enctype="multipart/form-data" id="solicitudEditForm">
-    {% csrf_token %}
-    
-    <div class="row">
-        <!-- Información Principal -->
-        <div class="col-lg-8">
-            <!-- Información Básica -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Información Básica
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.solicitante.id_for_label }}" class="form-label">
-                                    <i class="fas fa-user me-1"></i>Solicitante
-                                </label>
-                                {{ form.solicitante }}
-                                {% if form.solicitante.errors %}
-                                    <div class="text-danger small mt-1">{{ form.solicitante.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.nombre_documento.id_for_label }}" class="form-label">
-                                    <i class="fas fa-file-alt me-1"></i>Nombre del Documento
-                                </label>
-                                {{ form.nombre_documento }}
-                                {% if form.nombre_documento.errors %}
-                                    <div class="text-danger small mt-1">{{ form.nombre_documento.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.nombre.id_for_label }}" class="form-label">
-                                    <i class="fas fa-id-badge me-1"></i>Nombre del Cliente
-                                </label>
-                                {{ form.nombre }}
-                                {% if form.nombre.errors %}
-                                    <div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.direccion.id_for_label }}" class="form-label">
-                                    <i class="fas fa-map-marker-alt me-1"></i>Dirección
-                                </label>
-                                {{ form.direccion }}
-                                {% if form.direccion.errors %}
-                                    <div class="text-danger small mt-1">{{ form.direccion.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">
-                            <i class="fas fa-align-left me-1"></i>Descripción de la Solicitud
-                        </label>
-                        {{ form.descripcion }}
-                        {% if form.descripcion.errors %}
-                            <div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Fechas y Seguimiento -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-calendar me-2"></i>Fechas y Seguimiento
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label">
-                                    <i class="fas fa-calendar-plus me-1"></i>Fecha de Solicitud
-                                </label>
-                                {{ form.fecha_solicitud }}
-                                {% if form.fecha_solicitud.errors %}
-                                    <div class="text-danger small mt-1">{{ form.fecha_solicitud.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label">
-                                    <i class="fas fa-calendar-check me-1"></i>Fecha de Recepción
-                                </label>
-                                {{ form.fecha_recepcion }}
-                                {% if form.fecha_recepcion.errors %}
-                                    <div class="text-danger small mt-1">{{ form.fecha_recepcion.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% if object.fecha_solicitud and object.fecha_recepcion %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Tiempo de procesamiento:</strong> 
-                            <!-- Aquí puedes agregar lógica para calcular días entre fechas -->
-                            Solicitud procesada
-                        </div>
-                    {% elif object.fecha_solicitud %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-clock me-2"></i>
-                            <strong>Estado:</strong> Pendiente de recepción
-                        </div>
-                    {% else %}
-                        <div class="alert alert-secondary">
-                            <i class="fas fa-hourglass me-2"></i>
-                            <strong>Estado:</strong> Sin fecha de solicitud
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Panel Lateral -->
-        <div class="col-lg-4">
-            <!-- Estado de la Solicitud -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info me-2"></i>Estado de la Solicitud
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        {% if object.fecha_solicitud and object.fecha_recepcion %}
-                            <div class="status-badge bg-success text-white rounded-3 p-3 mb-2">
-                                <i class="fas fa-check-circle fs-1 mb-2"></i>
-                                <div class="fw-bold">Completada</div>
-                            </div>
-                            <small class="text-muted">Solicitud procesada exitosamente</small>
-                        {% elif object.fecha_solicitud %}
-                            <div class="status-badge bg-warning text-white rounded-3 p-3 mb-2">
-                                <i class="fas fa-clock fs-1 mb-2"></i>
-                                <div class="fw-bold">En Proceso</div>
-                            </div>
-                            <small class="text-muted">Esperando recepción</small>
-                        {% else %}
-                            <div class="status-badge bg-secondary text-white rounded-3 p-3 mb-2">
-                                <i class="fas fa-hourglass fs-1 mb-2"></i>
-                                <div class="fw-bold">Pendiente</div>
-                            </div>
-                            <small class="text-muted">Sin fecha de solicitud</small>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="small text-muted">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fas fa-user me-1"></i>Solicitante:</span>
-                            <strong>{{ object.solicitante|default:"No especificado" }}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fas fa-file me-1"></i>Documento:</span>
-                            <strong>{{ object.nombre_documento|default:"No especificado"|truncatechars:15 }}</strong>
-                        </div>
-                        {% if object.fecha_solicitud %}
-                        <div class="d-flex justify-content-between">
-                            <span><i class="fas fa-calendar me-1"></i>Solicitud:</span>
-                            <strong>{{ object.fecha_solicitud }}</strong>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Enlaces y Documentos -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-link me-2"></i>Documento y Enlaces
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="{{ form.link_solicitud.id_for_label }}" class="form-label">
-                            <i class="fas fa-external-link-alt me-1"></i>Enlace de la Solicitud
-                        </label>
-                        {{ form.link_solicitud }}
-                        {% if form.link_solicitud.errors %}
-                            <div class="text-danger small mt-1">{{ form.link_solicitud.errors.0 }}</div>
-                        {% endif %}
-                        {% if object.link_solicitud %}
-                            <div class="mt-2">
-                                <a href="{{ object.link_solicitud }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-external-link-alt me-1"></i>Abrir Enlace
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Acciones -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-cogs me-2"></i>Acciones
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="fas fa-save me-2"></i>Actualizar Solicitud
-                        </button>
-                        <a href="{% url 'solicitud-detail' object.pk %}" class="btn btn-outline-info">
-                            <i class="fas fa-eye me-2"></i>Ver Detalles
-                        </a>
-                        <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Cancelar
-                        </a>
-                        <hr class="my-2">
-                        <a href="{% url 'solicitud-delete' object.pk %}" class="btn btn-outline-danger" 
-                           onclick="return confirm('¿Está seguro de que desea eliminar esta solicitud?')">
-                            <i class="fas fa-trash me-2"></i>Eliminar Solicitud
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Documento de la Solicitud -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-file-upload me-2"></i>Documento de la Solicitud
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="document-upload-container">
-                        <label for="{{ form.documento_solicitud.id_for_label }}" class="form-label d-flex align-items-center justify-content-between">
-                            <span>
-                                <i class="fas fa-file-upload me-2 text-primary"></i>Documento de Solicitud
-                            </span>
-                            {% if object.documento_solicitud %}
-                                <span class="badge bg-success rounded-pill">
-                                    <i class="fas fa-check me-1"></i>Subido
-                                </span>
-                            {% else %}
-                                <span class="badge bg-light text-muted rounded-pill">
-                                    <i class="fas fa-upload me-1"></i>Pendiente
-                                </span>
-                            {% endif %}
-                        </label>
-                        
-                        {% if object.documento_solicitud %}
-                            <div class="file-display-container bg-light rounded-3 p-3 mb-3 border">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <div class="file-icon me-3">
-                                            <i class="fas fa-file-pdf text-danger fs-2"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark file-name">{{ object.documento_solicitud.name|default:"Documento_Solicitud.pdf" }}</div>
-                                            <small class="text-muted">
-                                                <i class="fas fa-check-circle me-1"></i>
-                                                Archivo actual
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="file-actions">
-                                        <a href="{{ object.documento_solicitud.url }}" target="_blank" 
-                                           class="btn btn-sm btn-outline-primary me-2" 
-                                           title="Ver archivo">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ object.documento_solicitud.url }}" download 
-                                           class="btn btn-sm btn-outline-success" 
-                                           title="Descargar">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        
-                        <div class="file-input-container">
-                            {{ form.documento_solicitud }}
-                            <div class="file-input-overlay" onclick="document.getElementById('{{ form.documento_solicitud.id_for_label }}').click();">
-                                <div class="text-center py-4">
-                                    <i class="fas fa-cloud-upload-alt fs-1 text-muted mb-2"></i>
-                                    <div class="fw-semibold text-dark">
-                                        {% if object.documento_solicitud %}
-                                            Reemplazar archivo
-                                        {% else %}
-                                            Seleccionar archivo
-                                        {% endif %}
-                                    </div>
-                                    <small class="text-muted">PDF, DOC, DOCX, JPG, PNG - Máximo 50MB</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {% if form.documento_solicitud.errors %}
-                            <div class="alert alert-danger mt-2 py-2">
-                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ form.documento_solicitud.errors.0 }}</small>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Botones de Acción Final -->
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>Actualizar Solicitud
-                        </button>
-                        <a href="{% url 'solicitud-detail' object.pk %}" class="btn btn-outline-info">
-                            <i class="fas fa-eye me-2"></i>Ver Detalles
-                        </a>
-                        <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4 text-end">
-                    <a href="{% url 'solicitud-delete' object.pk %}" class="btn btn-outline-danger" 
-                       onclick="return confirm('¿Está seguro de que desea eliminar esta solicitud? Esta acción no se puede deshacer.')">
-                        <i class="fas fa-trash me-2"></i>Eliminar Solicitud
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
-{% endblock %}
-
-{% block extra_js %}
-<style>
-    .form-control:focus {
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-    }
-    
-    .card-header .btn {
-        font-size: 0.875rem;
-    }
-    
-    .badge {
-        font-size: 0.7rem;
-    }
-    
-    .btn-sm {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.75rem;
-    }
-    
-    /* Status Badge */
-    .status-badge {
-        background: linear-gradient(135deg, var(--success-color), #58d68d);
-        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-    }
-    
-    .status-badge.bg-warning {
-        background: linear-gradient(135deg, var(--warning-color), #f7dc6f) !important;
-        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
-    }
-    
-    .status-badge.bg-secondary {
-        background: linear-gradient(135deg, var(--dark-gray), #95a5a6) !important;
-        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-    }
-
-    /* File Upload Styling */
-    .document-upload-container {
-        transition: all 0.3s ease;
-    }
-    
-    .file-input-container {
-        position: relative;
-    }
-
-    .file-input-container input[type="file"] {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-        z-index: 2;
-    }
-
-    .file-input-overlay {
-        border: 2px dashed var(--medium-gray);
-        border-radius: 12px;
-        background-color: var(--light-gray);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-height: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .file-input-overlay:hover {
-        border-color: var(--accent-color);
-        background-color: rgba(52, 152, 219, 0.05);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
-    }
-
-    .file-input-overlay:hover i {
-        color: var(--accent-color) !important;
-        transform: scale(1.1);
-    }
-
-    .file-display-container {
-        border: 1px solid var(--medium-gray) !important;
-        transition: all 0.3s ease;
-        background: linear-gradient(145deg, #ffffff, #f8f9fa) !important;
-    }
-
-    .file-display-container:hover {
-        border-color: var(--accent-color) !important;
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
-        transform: translateY(-1px);
-    }
-
-    .file-icon {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(145deg, #ffffff, #f1f3f4);
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .file-actions .btn {
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .file-actions .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .badge.rounded-pill {
-        font-size: 0.7rem;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-    }
-
-    .alert {
-        border-radius: 8px;
-        border: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .alert-danger {
-        background: linear-gradient(145deg, rgba(231, 76, 60, 0.1), rgba(231, 76, 60, 0.05));
-        color: var(--danger-color);
-        border-left: 4px solid var(--danger-color);
-    }
-
-    /* File name truncation */
-    .file-name {
-        max-width: 250px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .file-name:hover {
-        color: var(--accent-color) !important;
-    }
-    
-    /* Loading states */
-    .loading-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        z-index: 10;
-    }
-    
-    .spinner-border-sm {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-    
-    /* Animation for new file selection */
-    .file-selected {
-        animation: fileSelected 0.6s ease-out;
-    }
-    
-    @keyframes fileSelected {
-        0% {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-        50% {
-            transform: scale(1.02);
-        }
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-    
-    /* Drag and drop styling */
-    .file-input-overlay.drag-over {
-        border-color: var(--success-color);
-        background-color: rgba(40, 167, 69, 0.05);
-        transform: scale(1.02);
-    }
-</style>
-
-<script>
-    // Form validation and submission
-    document.getElementById('solicitudEditForm').addEventListener('submit', function(e) {
-        const submitBtn = document.getElementById('submitBtn');
-        const originalText = submitBtn.innerHTML;
-        
-        // Show loading state
-        submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Actualizando...';
-        submitBtn.disabled = true;
-        
-        // Re-enable after timeout (in case of errors)
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }, 10000);
-    });
-    
-    // File upload preview and validation
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) {
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            const container = this.closest('.file-input-container');
-            const overlay = container.querySelector('.file-input-overlay');
-            
-            if (file) {
-                // File size validation (50MB limit)
-                if (file.size > 50 * 1024 * 1024) {
-                    alert('El archivo es demasiado grande. El tamaño máximo es 50MB.');
-                    this.value = '';
-                    return;
-                }
-                
-                // Show loading state
-                overlay.innerHTML = `
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary mb-2" role="status"></div>
-                        <div class="fw-semibold text-dark">Procesando archivo...</div>
-                    </div>
-                `;
-                
-                // Simulate processing delay
-                setTimeout(() => {
-                    const fileName = file.name;
-                    const fileSize = formatFileSize(file.size);
-                    const fileIcon = getFileIcon(file.type, fileName);
-                    
-                    overlay.innerHTML = `
-                        <div class="text-center py-3">
-                            <i class="${fileIcon} fs-1 mb-2"></i>
-                            <div class="fw-semibold text-dark file-name" title="${fileName}">${fileName}</div>
-                            <small class="text-muted">${fileSize}</small>
-                            <div class="mt-2">
-                                <small class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>Archivo seleccionado
-                                </small>
-                            </div>
-                        </div>
-                    `;
-                    
-                    overlay.style.borderColor = 'var(--success-color)';
-                    overlay.style.backgroundColor = 'rgba(40, 167, 69, 0.05)';
-                    overlay.classList.add('file-selected');
-                    
-                    // Remove animation class after animation completes
-                    setTimeout(() => {
-                        overlay.classList.remove('file-selected');
-                    }, 600);
-                }, 500);
-                
-            } else {
-                // Reset overlay
-                resetFileOverlay(overlay);
-            }
-        });
-        
-        // Drag and drop functionality
-        const container = fileInput.closest('.file-input-container');
-        const overlay = container.querySelector('.file-input-overlay');
-        
-        overlay.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('drag-over');
-        });
-        
-        overlay.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-        });
-        
-        overlay.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                fileInput.dispatchEvent(new Event('change'));
-            }
-        });
-    }
-    
-    // Helper functions
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    function getFileIcon(fileType, fileName) {
-        const extension = fileName.split('.').pop().toLowerCase();
-        
-        if (fileType.includes('pdf') || extension === 'pdf') {
-            return 'fas fa-file-pdf text-danger';
-        } else if (fileType.includes('image') || ['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
-            return 'fas fa-file-image text-success';
-        } else if (fileType.includes('word') || ['doc', 'docx'].includes(extension)) {
-            return 'fas fa-file-word text-primary';
-        } else {
-            return 'fas fa-file text-muted';
-        }
-    }
-    
-    function resetFileOverlay(overlay) {
-        const isReplacement = overlay.closest('.document-upload-container').querySelector('.file-display-container');
-        
-        overlay.innerHTML = `
-            <div class="text-center py-4">
-                <i class="fas fa-cloud-upload-alt fs-1 text-muted mb-2"></i>
-                <div class="fw-semibold text-dark">
-                    ${isReplacement ? 'Reemplazar archivo' : 'Seleccionar archivo'}
-                </div>
-                <small class="text-muted">Arrastra y suelta o haz clic para seleccionar</small>
-            </div>
-        `;
-        
-        overlay.style.borderColor = 'var(--medium-gray)';
-        overlay.style.backgroundColor = 'var(--light-gray)';
-    }
-    
-    // Auto-save functionality
-    let hasChanges = false;
-    
-    document.getElementById('solicitudEditForm').addEventListener('input', function() {
-        hasChanges = true;
-    });
-    
-    // Warn before leaving page if there are unsaved changes
-    window.addEventListener('beforeunload', function(e) {
-        if (hasChanges) {
-            e.preventDefault();
-            e.returnValue = '';
-            return 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';
-        }
-    });
-    
-    // Remove warning when form is submitted
-    document.getElementById('solicitudEditForm').addEventListener('submit', function() {
-        hasChanges = false;
-    });
-    
-    // Date validation
-    const fechaSolicitud = document.getElementById('{{ form.fecha_solicitud.id_for_label }}');
-    const fechaRecepcion = document.getElementById('{{ form.fecha_recepcion.id_for_label }}');
-    
-    if (fechaSolicitud && fechaRecepcion) {
-        function validateDates() {
-            const solicitudDate = new Date(fechaSolicitud.value);
-            const recepcionDate = new Date(fechaRecepcion.value);
-            
-            if (fechaSolicitud.value && fechaRecepcion.value) {
-                if (recepcionDate < solicitudDate) {
-                    fechaRecepcion.setCustomValidity('La fecha de recepción no puede ser anterior a la fecha de solicitud');
-                    fechaRecepcion.classList.add('is-invalid');
-                } else {
-                    fechaRecepcion.setCustomValidity('');
-                    fechaRecepcion.classList.remove('is-invalid');
-                }
-            }
-        }
-        
-        fechaSolicitud.addEventListener('change', validateDates);
-        fechaRecepcion.addEventListener('change', validateDates);
-    }
-    
-    // Form field validation on blur
-    document.querySelectorAll('.form-control, .form-select').forEach(function(field) {
-        field.addEventListener('blur', function() {
-            if (this.hasAttribute('required') && !this.value.trim()) {
-                this.classList.add('is-invalid');
-            } else {
-                this.classList.remove('is-invalid');
-            }
-        });
-        
-        field.addEventListener('input', function() {
-            if (this.classList.contains('is-invalid') && this.value.trim()) {
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ctrl+S to save
-        if (e.ctrlKey && e.key === 's') {
-            e.preventDefault();
-            document.getElementById('submitBtn').click();
-        }
-        
-        // Escape to cancel/go back
-        if (e.key === 'Escape') {
-            if (confirm('¿Deseas salir sin guardar los cambios?')) {
-                window.location.href = "{% url 'solicitud-list' %}";
-            }
-        }
-    });
-    
-    // Auto-focus on first empty required field
-    document.addEventListener('DOMContentLoaded', function() {
-        const firstEmptyRequired = document.querySelector('input[required]:not([value]), textarea[required]:not([value])');
-        if (firstEmptyRequired && !firstEmptyRequired.value.trim()) {
-            firstEmptyRequired.focus();
-        }
-    });
-    
-    // Smart suggestions for solicitante field (if you have common requesters)
-    const solicitanteField = document.getElementById('{{ form.solicitante.id_for_label }}');
-    if (solicitanteField) {
-        const commonSolicitantes = [
-            'Cliente Particular',
-            'Empresa Constructora',
-            'Inmobiliaria',
-            'Arquitecto',
-            'Ingeniero',
-            'Notaría'
-        ];
-        
-        solicitanteField.addEventListener('input', function() {
-            const value = this.value.toLowerCase();
-            if (value.length > 1) {
-                const suggestions = commonSolicitantes.filter(s => 
-                    s.toLowerCase().includes(value)
-                );
-                
-                // You can implement a dropdown here if needed
-                console.log('Suggestions:', suggestions);
-            }
-        });
-    }
-    
-    // Status update animation
-    function updateStatusDisplay() {
-        const fechaSol = document.getElementById('{{ form.fecha_solicitud.id_for_label }}');
-        const fechaRec = document.getElementById('{{ form.fecha_recepcion.id_for_label }}');
-        
-        if (fechaSol && fechaRec) {
-            fechaSol.addEventListener('change', updateStatus);
-            fechaRec.addEventListener('change', updateStatus);
-        }
-        
-        function updateStatus() {
-            // You can add real-time status updates here
-            const statusSection = document.querySelector('.status-badge');
-            if (statusSection) {
-                statusSection.style.transform = 'scale(1.05)';
-                setTimeout(() => {
-                    statusSection.style.transform = 'scale(1)';
-                }, 200);
-            }
-        }
-    }
-    
-    updateStatusDisplay();
-    
-    // Notification system for better user feedback
-    function showNotification(message, type = 'info', duration = 3000) {
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type} position-fixed top-0 end-0 m-3 shadow-sm`;
-        notification.style.zIndex = '9999';
-        notification.style.minWidth = '300px';
-        notification.innerHTML = `
-            <div class="d-flex align-items-center">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-                <span>${message}</span>
-                <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Auto remove after duration
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, duration);
-        
-        return notification;
-    }
-    
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    
-    // Add visual feedback for form interactions
-    document.querySelectorAll('.form-control').forEach(function(field) {
-        field.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'translateY(-1px)';
-        });
-        
-        field.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'translateY(0)';
-        });
-    });
-    
-    // Character counter for description field
-    const descripcionField = document.getElementById('{{ form.descripcion.id_for_label }}');
-    if (descripcionField) {
-        const maxLength = descripcionField.getAttribute('maxlength') || 10000;
-        
-        // Create counter element
-        const counter = document.createElement('small');
-        counter.className = 'text-muted mt-1';
-        descripcionField.parentElement.appendChild(counter);
-        
-        function updateCounter() {
-            const remaining = maxLength - descripcionField.value.length;
-            counter.textContent = `${descripcionField.value.length}/${maxLength} caracteres`;
-            
-            if (remaining < 100) {
-                counter.className = 'text-warning mt-1';
-            } else if (remaining < 50) {
-                counter.className = 'text-danger mt-1';
-            } else {
-                counter.className = 'text-muted mt-1';
-            }
-        }
-        
-        descripcionField.addEventListener('input', updateCounter);
-        updateCounter(); // Initial count
-    }
-    
-    // Enhanced file validation with better error messages
-    function validateFile(file) {
-        const errors = [];
-        const maxSize = 50 * 1024 * 1024; // 50MB
-        const allowedTypes = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
-        
-        // Size validation
-        if (file.size > maxSize) {
-            errors.push(`El archivo es demasiado grande. Máximo 50MB permitido.`);
-        }
-        
-        // Type validation
-        const extension = file.name.split('.').pop().toLowerCase();
-        if (!allowedTypes.includes(extension)) {
-            errors.push(`Tipo de archivo no permitido. Formatos aceptados: ${allowedTypes.join(', ')}`);
-        }
-        
-        return errors;
-    }
-    
-    console.log('Sistema de solicitudes cargado correctamente');
-</script>
+<!-- Librería de Font Awesome para íconos -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}

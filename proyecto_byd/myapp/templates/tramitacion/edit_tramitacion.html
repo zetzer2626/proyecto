@@ -1,717 +1,122 @@
 {% extends 'base.html' %}
 
-{% block title %}Editar Tramitación - {{ object.nombre }}{% endblock %}
+{% load static %}
+{% load widget_tweaks %}
 
-{% block page_title %}Editar Tramitación{% endblock %}
+{% block title %}Editar Listado 2 Etapa{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="fas fa-edit me-2"></i>Editar Tramitación
-            </h1>
-            <p class="page-subtitle">
-                Modifica la información de la tramitación: <strong>{{ object.nombre }}</strong>
-            </p>
-        </div>
-        <div>
-            <a href="{% url 'tramitacion-detail' object.pk %}" class="btn btn-outline-info me-2">
-                <i class="fas fa-eye me-2"></i>Ver Detalles
-            </a>
-            <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-            </a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Tarjeta estilizada con sombras y bordes -->
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #4e73df, #6610f2);">
+                    <h4 class="mb-0 fw-bold">Editar Listado 2 Etapa</h4>
+                </div>
+                <div class="card-body px-5 py-4">
+                    <p class="text-muted text-center mb-4">Complete el formulario a continuación para registrar su trámite.</p>
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        
+                        <!-- Fila para los primeros campos en dos columnas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.presupuesto.id_for_label }}" class="form-label fw-bold">{{ form.presupuesto.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-0">
+                                            <i class="fas fa-user text-primary"></i>
+                                        </span>
+                                        {{ form.presupuesto|add_class:"form-control" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.año.id_for_label }}" class="form-label fw-bold">{{ form.año.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-0">
+                                            <i class="fas fa-file-alt text-primary"></i>
+                                        </span>
+                                        {{ form.año|add_class:"form-control" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold">{{ form.nombre.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-0">
+                                            <i class="fas fa-file-alt text-primary"></i>
+                                        </span>
+                                        {{ form.nombre|add_class:"form-control" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.direccion.id_for_label }}" class="form-label fw-bold">{{ form.direccion.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-0">
+                                            <i class="fas fa-file-alt text-primary"></i>
+                                        </span>
+                                        {{ form.direccion|add_class:"form-control" }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fila para fechas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label fw-bold">Fecha Entrega</label>
+                                    {{ form.fecha_recepcion|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.nota.id_for_label }}" class="form-label fw-bold">{{ form.nota.label }}</label>
+                            {{ form.nota|add_class:"form-control" }}
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">{{ form.descripcion.label }}</label>
+                            {{ form.descripcion|add_class:"form-control" }}
+                        </div>
+
+                        <!-- Fila para archivo y enlace -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.documento_tramitacion.id_for_label }}" class="form-label fw-bold">{{ form.documento_tramitacion.label }}</label>
+                                    {{ form.documento_tramitacion|add_class:"form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="{{ form.link_tramitacion.id_for_label }}" class="form-label fw-bold">{{ form.link_tramitacion.label }}</label>
+                                    {{ form.link_tramitacion|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de envío centrado -->
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                                <i class="fas fa-paper-plane me-2"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<form method="post" enctype="multipart/form-data" id="tramitacionEditForm">
-    {% csrf_token %}
-    
-    <div class="row">
-        <!-- Información Principal -->
-        <div class="col-lg-8">
-            <!-- Información Básica -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Información Básica
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.presupuesto.id_for_label }}" class="form-label required">
-                                    <i class="fas fa-dollar-sign me-1"></i>Presupuesto
-                                    <span class="text-danger">*</span>
-                                </label>
-                                {{ form.presupuesto }}
-                                {% if form.presupuesto.errors %}
-                                    <div class="text-danger small mt-1">{{ form.presupuesto.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.año.id_for_label }}" class="form-label required">
-                                    <i class="fas fa-calendar me-1"></i>Año
-                                    <span class="text-danger">*</span>
-                                </label>
-                                {{ form.año }}
-                                {% if form.año.errors %}
-                                    <div class="text-danger small mt-1">{{ form.año.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.nombre.id_for_label }}" class="form-label required">
-                                    <i class="fas fa-user me-1"></i>Nombre
-                                    <span class="text-danger">*</span>
-                                </label>
-                                {{ form.nombre }}
-                                {% if form.nombre.errors %}
-                                    <div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.direccion.id_for_label }}" class="form-label required">
-                                    <i class="fas fa-map-marker-alt me-1"></i>Dirección
-                                    <span class="text-danger">*</span>
-                                </label>
-                                {{ form.direccion }}
-                                {% if form.direccion.errors %}
-                                    <div class="text-danger small mt-1">{{ form.direccion.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">
-                            <i class="fas fa-align-left me-1"></i>Descripción
-                        </label>
-                        {{ form.descripcion }}
-                        {% if form.descripcion.errors %}
-                            <div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.nota.id_for_label }}" class="form-label">
-                            <i class="fas fa-sticky-note me-1"></i>Nota
-                        </label>
-                        {{ form.nota }}
-                        {% if form.nota.errors %}
-                            <div class="text-danger small mt-1">{{ form.nota.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Fechas y Seguimiento -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-calendar me-2"></i>Fechas y Seguimiento
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label">
-                                    <i class="fas fa-calendar-plus me-1"></i>Fecha de Solicitud
-                                </label>
-                                {{ form.fecha_solicitud }}
-                                {% if form.fecha_solicitud.errors %}
-                                    <div class="text-danger small mt-1">{{ form.fecha_solicitud.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label">
-                                    <i class="fas fa-calendar-check me-1"></i>Fecha de Recepción
-                                </label>
-                                {{ form.fecha_recepcion }}
-                                {% if form.fecha_recepcion.errors %}
-                                    <div class="text-danger small mt-1">{{ form.fecha_recepcion.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% if object.fecha_solicitud and object.fecha_recepcion %}
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>Estado:</strong> Tramitación completada
-                        </div>
-                    {% elif object.fecha_solicitud %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-clock me-2"></i>
-                            <strong>Estado:</strong> Pendiente de recepción
-                        </div>
-                    {% else %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Estado:</strong> Sin fecha de solicitud registrada
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Panel Lateral -->
-        <div class="col-lg-4">
-            <!-- Estado Actual -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info me-2"></i>Estado Actual
-                    </h5>
-                </div>
-                <div class="card-body text-center">
-                    {% if object.fecha_solicitud and object.fecha_recepcion %}
-                        <div class="status-display bg-success text-white rounded-3 p-4 mb-3">
-                            <i class="fas fa-check-circle fs-1 mb-2"></i>
-                            <h5 class="mb-0">Completada</h5>
-                            <small class="opacity-75">Tramitación procesada</small>
-                        </div>
-                    {% elif object.fecha_solicitud %}
-                        <div class="status-display bg-warning text-white rounded-3 p-4 mb-3">
-                            <i class="fas fa-clock fs-1 mb-2"></i>
-                            <h5 class="mb-0">En Proceso</h5>
-                            <small class="opacity-75">Esperando recepción</small>
-                        </div>
-                    {% else %}
-                        <div class="status-display bg-secondary text-white rounded-3 p-4 mb-3">
-                            <i class="fas fa-hourglass fs-1 mb-2"></i>
-                            <h5 class="mb-0">Pendiente</h5>
-                            <small class="opacity-75">Sin fecha de solicitud</small>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="small text-muted">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fas fa-dollar-sign me-1"></i>Presupuesto:</span>
-                            <strong>{{ object.presupuesto }}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="fas fa-calendar me-1"></i>Año:</span>
-                            <strong>{{ object.año }}</strong>
-                        </div>
-                        {% if object.fecha_solicitud %}
-                        <div class="d-flex justify-content-between">
-                            <span><i class="fas fa-calendar-plus me-1"></i>Solicitado:</span>
-                            <strong>{{ object.fecha_solicitud }}</strong>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Enlaces -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-link me-2"></i>Enlace Relacionado
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="{{ form.link_tramitacion.id_for_label }}" class="form-label">
-                            <i class="fas fa-external-link-alt me-1"></i>Enlace de Tramitación
-                        </label>
-                        {{ form.link_tramitacion }}
-                        {% if form.link_tramitacion.errors %}
-                            <div class="text-danger small mt-1">{{ form.link_tramitacion.errors.0 }}</div>
-                        {% endif %}
-                        {% if object.link_tramitacion %}
-                            <div class="mt-2">
-                                <a href="{{ object.link_tramitacion }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-external-link-alt me-1"></i>Abrir Enlace
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Acciones -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-cogs me-2"></i>Acciones
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="fas fa-save me-2"></i>Actualizar Tramitación
-                        </button>
-                        <a href="{% url 'tramitacion-detail' object.pk %}" class="btn btn-outline-info">
-                            <i class="fas fa-eye me-2"></i>Ver Detalles
-                        </a>
-                        <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Cancelar
-                        </a>
-                        <hr class="my-2">
-                        <a href="{% url 'tramitacion-delete' object.pk %}" class="btn btn-outline-danger" 
-                           onclick="return confirm('¿Está seguro de que desea eliminar esta tramitación?')">
-                            <i class="fas fa-trash me-2"></i>Eliminar Tramitación
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Documento de Tramitación -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-file-upload me-2"></i>Documento de Tramitación
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="document-upload-container">
-                        <label for="{{ form.documento_tramitacion.id_for_label }}" class="form-label d-flex align-items-center justify-content-between">
-                            <span>
-                                <i class="fas fa-file-upload me-2 text-primary"></i>Documento de Tramitación
-                            </span>
-                            {% if object.documento_tramitacion %}
-                                <span class="badge bg-success rounded-pill">
-                                    <i class="fas fa-check me-1"></i>Subido
-                                </span>
-                            {% else %}
-                                <span class="badge bg-light text-muted rounded-pill">
-                                    <i class="fas fa-upload me-1"></i>Pendiente
-                                </span>
-                            {% endif %}
-                        </label>
-                        
-                        {% if object.documento_tramitacion %}
-                            <div class="file-display-container bg-light rounded-3 p-3 mb-3 border">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <div class="file-icon me-3">
-                                            <i class="fas fa-file-pdf text-danger fs-2"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark file-name">{{ object.documento_tramitacion.name|default:"Documento_Tramitacion.pdf" }}</div>
-                                            <small class="text-muted">
-                                                <i class="fas fa-check-circle me-1"></i>
-                                                Archivo actual
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="file-actions">
-                                        <a href="{{ object.documento_tramitacion.url }}" target="_blank" 
-                                           class="btn btn-sm btn-outline-primary me-2" 
-                                           title="Ver archivo">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ object.documento_tramitacion.url }}" download 
-                                           class="btn btn-sm btn-outline-success" 
-                                           title="Descargar">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        
-                        <div class="file-input-container">
-                            {{ form.documento_tramitacion }}
-                            <div class="file-input-overlay" onclick="document.getElementById('{{ form.documento_tramitacion.id_for_label }}').click();">
-                                <div class="text-center py-4">
-                                    <i class="fas fa-cloud-upload-alt fs-1 text-muted mb-2"></i>
-                                    <div class="fw-semibold text-dark">
-                                        {% if object.documento_tramitacion %}
-                                            Reemplazar archivo
-                                        {% else %}
-                                            Seleccionar archivo
-                                        {% endif %}
-                                    </div>
-                                    <small class="text-muted">PDF, DOC, DOCX - Máximo 50MB</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {% if form.documento_tramitacion.errors %}
-                            <div class="alert alert-danger mt-2 py-2">
-                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ form.documento_tramitacion.errors.0 }}</small>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Botones de Acción Final -->
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>Actualizar Tramitación
-                        </button>
-                        <a href="{% url 'tramitacion-detail' object.pk %}" class="btn btn-outline-info">
-                            <i class="fas fa-eye me-2"></i>Ver Detalles
-                        </a>
-                        <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4 text-end">
-                    <a href="{% url 'tramitacion-delete' object.pk %}" class="btn btn-outline-danger" 
-                       onclick="return confirm('¿Está seguro de que desea eliminar esta tramitación? Esta acción no se puede deshacer.')">
-                        <i class="fas fa-trash me-2"></i>Eliminar Tramitación
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
-{% endblock %}
-
-{% block extra_js %}
-<style>
-    .form-control:focus {
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-    }
-    
-    .required::after {
-        content: " *";
-        color: var(--danger-color);
-    }
-    
-    /* Status Badge */
-    .status-display {
-        background: linear-gradient(135deg, var(--success-color), #58d68d);
-        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-    }
-    
-    .status-display.bg-warning {
-        background: linear-gradient(135deg, var(--warning-color), #f7dc6f) !important;
-        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
-    }
-    
-    .status-display.bg-secondary {
-        background: linear-gradient(135deg, var(--dark-gray), #95a5a6) !important;
-        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-    }
-
-    /* File Upload Styling */
-    .document-upload-container {
-        transition: all 0.3s ease;
-    }
-    
-    .file-input-container {
-        position: relative;
-    }
-
-    .file-input-container input[type="file"] {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-        z-index: 2;
-    }
-
-    .file-input-overlay {
-        border: 2px dashed var(--medium-gray);
-        border-radius: 12px;
-        background-color: var(--light-gray);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-height: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .file-input-overlay:hover {
-        border-color: var(--accent-color);
-        background-color: rgba(52, 152, 219, 0.05);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
-    }
-
-    .file-input-overlay:hover i {
-        color: var(--accent-color) !important;
-        transform: scale(1.1);
-    }
-
-    .file-display-container {
-        border: 1px solid var(--medium-gray) !important;
-        transition: all 0.3s ease;
-        background: linear-gradient(145deg, #ffffff, #f8f9fa) !important;
-    }
-
-    .file-display-container:hover {
-        border-color: var(--accent-color) !important;
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
-        transform: translateY(-1px);
-    }
-
-    .file-icon {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(145deg, #ffffff, #f1f3f4);
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .file-actions .btn {
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .file-actions .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .file-name {
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .file-name:hover {
-        color: var(--accent-color) !important;
-    }
-</style>
-
-<script>
-    // Form validation and submission
-    document.getElementById('tramitacionEditForm').addEventListener('submit', function(e) {
-        const requiredFields = this.querySelectorAll('[required]');
-        let hasErrors = false;
-        
-        requiredFields.forEach(function(field) {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                hasErrors = true;
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
-        
-        if (hasErrors) {
-            e.preventDefault();
-            alert('Por favor, complete todos los campos requeridos.');
-            
-            // Scroll to first error
-            const firstError = this.querySelector('.is-invalid');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstError.focus();
-            }
-        } else {
-            // Show loading state
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Actualizando...';
-            submitBtn.disabled = true;
-            
-            // Re-enable after timeout
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }, 10000);
-        }
-    });
-    
-    // File upload functionality
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) {
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            const container = this.closest('.file-input-container');
-            const overlay = container.querySelector('.file-input-overlay');
-            
-            if (file) {
-                // File size validation (50MB limit)
-                if (file.size > 50 * 1024 * 1024) {
-                    alert('El archivo es demasiado grande. El tamaño máximo es 50MB.');
-                    this.value = '';
-                    return;
-                }
-                
-                // Show loading state
-                overlay.innerHTML = `
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary mb-2" role="status"></div>
-                        <div class="fw-semibold text-dark">Procesando archivo...</div>
-                    </div>
-                `;
-                
-                // Simulate processing delay
-                setTimeout(() => {
-                    const fileName = file.name;
-                    const fileSize = formatFileSize(file.size);
-                    const fileIcon = getFileIcon(file.type, fileName);
-                    
-                    overlay.innerHTML = `
-                        <div class="text-center py-3">
-                            <i class="${fileIcon} fs-1 mb-2"></i>
-                            <div class="fw-semibold text-dark" title="${fileName}">${fileName}</div>
-                            <small class="text-muted">${fileSize}</small>
-                            <div class="mt-2">
-                                <small class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>Archivo seleccionado
-                                </small>
-                            </div>
-                        </div>
-                    `;
-                    
-                    overlay.style.borderColor = 'var(--success-color)';
-                    overlay.style.backgroundColor = 'rgba(40, 167, 69, 0.05)';
-                }, 500);
-                
-            } else {
-                resetFileOverlay(overlay);
-            }
-        });
-        
-        // Drag and drop functionality
-        const container = fileInput.closest('.file-input-container');
-        const overlay = container.querySelector('.file-input-overlay');
-        
-        overlay.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('drag-over');
-        });
-        
-        overlay.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-        });
-        
-        overlay.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                fileInput.dispatchEvent(new Event('change'));
-            }
-        });
-    }
-    
-    // Helper functions
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    function getFileIcon(fileType, fileName) {
-        const extension = fileName.split('.').pop().toLowerCase();
-        
-        if (fileType.includes('pdf') || extension === 'pdf') {
-            return 'fas fa-file-pdf text-danger';
-        } else if (fileType.includes('word') || ['doc', 'docx'].includes(extension)) {
-            return 'fas fa-file-word text-primary';
-        } else {
-            return 'fas fa-file text-muted';
-        }
-    }
-    
-    function resetFileOverlay(overlay) {
-        const isReplacement = overlay.closest('.document-upload-container').querySelector('.file-display-container');
-        
-        overlay.innerHTML = `
-            <div class="text-center py-4">
-                <i class="fas fa-cloud-upload-alt fs-1 text-muted mb-2"></i>
-                <div class="fw-semibold text-dark">
-                    ${isReplacement ? 'Reemplazar archivo' : 'Seleccionar archivo'}
-                </div>
-                <small class="text-muted">Arrastra y suelta o haz clic para seleccionar</small>
-            </div>
-        `;
-        
-        overlay.style.borderColor = 'var(--medium-gray)';
-        overlay.style.backgroundColor = 'var(--light-gray)';
-    }
-    
-    // Date validation
-    const fechaSolicitud = document.getElementById('{{ form.fecha_solicitud.id_for_label }}');
-    const fechaRecepcion = document.getElementById('{{ form.fecha_recepcion.id_for_label }}');
-    
-    if (fechaSolicitud && fechaRecepcion) {
-        function validateDates() {
-            const solicitudDate = new Date(fechaSolicitud.value);
-            const recepcionDate = new Date(fechaRecepcion.value);
-            
-            if (fechaSolicitud.value && fechaRecepcion.value) {
-                if (recepcionDate < solicitudDate) {
-                    fechaRecepcion.setCustomValidity('La fecha de recepción no puede ser anterior a la fecha de solicitud');
-                    fechaRecepcion.classList.add('is-invalid');
-                } else {
-                    fechaRecepcion.setCustomValidity('');
-                    fechaRecepcion.classList.remove('is-invalid');
-                }
-            }
-        }
-        
-        fechaSolicitud.addEventListener('change', validateDates);
-        fechaRecepcion.addEventListener('change', validateDates);
-    }
-    
-    // Auto-save functionality
-    let hasChanges = false;
-    
-    document.getElementById('tramitacionEditForm').addEventListener('input', function() {
-        hasChanges = true;
-    });
-    
-    // Warn before leaving page
-    window.addEventListener('beforeunload', function(e) {
-        if (hasChanges) {
-            e.preventDefault();
-            e.returnValue = '';
-            return 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';
-        }
-    });
-    
-    // Remove warning when form is submitted
-    document.getElementById('tramitacionEditForm').addEventListener('submit', function() {
-        hasChanges = false;
-    });
-    
-    console.log('Sistema de edición de tramitaciones cargado correctamente');
-</script>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}

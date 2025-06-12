@@ -1,414 +1,126 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}  
 
-{% block title %}Lista de Contactos - Sistema de Gestión{% endblock %}
-{% block page_title %}Gestión de Contactos{% endblock %}
+{% load static %}  
 
-{% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title"><i class="fas fa-users me-2"></i>Contactos</h1>
-            <p class="page-subtitle">Gestiona tu directorio de contactos</p>
-        </div>
-        <div>
-            <a href="{% url 'contacto-create' %}" class="btn btn-primary">
-                <i class="fas fa-user-plus me-2"></i>Nuevo Contacto
-            </a>
-        </div>
-    </div>
-</div>
+{% block content %}  
+<div class="container my-5">  
+    <h2 class="text-center mb-4">Libreta de Contactos</h2>  
 
-<!-- Stats Cards Row -->
-<div class="row mb-4">
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card">
-            <div class="stats-number">{{ total_contactos }}</div>
-            <div class="stats-label">
-                <i class="fas fa-users me-1"></i>Total Contactos
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card success">
-            <div class="stats-number">{{ total_clientes }}</div>
-            <div class="stats-label">
-                <i class="fas fa-handshake me-1"></i>Clientes
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card warning">
-            <div class="stats-number">{{ total_profesionales }}</div>
-            <div class="stats-label">
-                <i class="fas fa-user-tie me-1"></i>Profesionales
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card danger">
-            <div class="stats-number">{{ total_otros }}</div>
-            <div class="stats-label">
-                <i class="fas fa-user-friends me-1"></i>Otros
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Resumen de contactos en tarjetas -->  
+    <div class="row mb-4">  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-people-fill fs-2 text-primary"></i>  
+                    <h5 class="card-title mt-3">Total Contactos</h5>  
+                    <p class="card-text fs-2 text-primary">{{ total_contactos }}</p>  
+                </div>  
+            </div>  
+        </div>  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-person-fill fs-2 text-success"></i>  
+                    <h5 class="card-title mt-3">Clientes</h5>  
+                    <p class="card-text fs-2 text-success">{{ total_clientes }}</p>  
+                </div>  
+            </div>  
+        </div>  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-briefcase-fill fs-2 text-warning"></i>  
+                    <h5 class="card-title mt-3">Profesionales</h5>  
+                    <p class="card-text fs-2 text-warning">{{ total_profesionales }}</p>  
+                </div>  
+            </div>  
+        </div>  
+        <div class="col-md-3">  
+            <div class="card shadow-lg rounded-3">  
+                <div class="card-body text-center">  
+                    <i class="bi bi-box-seam fs-2 text-info"></i>  
+                    <h5 class="card-title mt-3">Otros</h5>  
+                    <p class="card-text fs-2 text-info">{{ total_otros }}</p>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
 
-<!-- Filters and Search -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-filter me-2"></i>Filtros y Búsqueda
-        </h5>
-    </div>
-    <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-6">
-                <label for="q" class="form-label">Buscar</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input type="text" class="form-control" id="q" name="q" 
-                           placeholder="Nombre, correo, teléfono..." 
-                           value="{{ request.GET.q }}">
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label for="tipo" class="form-label">Tipo de Contacto</label>
-                <select class="form-control" id="tipo" name="tipo">
-                    <option value="">Todos los tipos</option>
-                    <option value="CLIENTE" {% if request.GET.tipo == 'CLIENTE' %}selected{% endif %}>Cliente</option>
-                    <option value="CLIENTE PROYECTO" {% if request.GET.tipo == 'CLIENTE PROYECTO' %}selected{% endif %}>Cliente Proyecto</option>
-                    <option value="CLIENTE LOTE" {% if request.GET.tipo == 'CLIENTE LOTE' %}selected{% endif %}>Cliente Lote</option>
-                    <option value="PROFESIONAL" {% if request.GET.tipo == 'PROFESIONAL' %}selected{% endif %}>Profesional</option>
-                    <option value="ENTIDAD" {% if request.GET.tipo == 'ENTIDAD' %}selected{% endif %}>Entidad</option>
-                    <option value="OTROS" {% if request.GET.tipo == 'OTROS' %}selected{% endif %}>Otros</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-1"></i>Buscar
-                    </button>
-                    <a href="{% url 'contacto-list' %}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times me-1"></i>Limpiar
-                    </a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+    <!-- Barra de búsqueda y filtro -->  
+    <div class="card shadow-sm mb-4">  
+        <form method="get" class="row align-items-center">  
+            <div class="col-md-5 form-group input-group mb-3">  
+                <span class="input-group-text"><i class="bi bi-search"></i></span>  
+                <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, correo o teléfono" value="{{ request.GET.q }}">  
+            </div>  
+            
+            <div class="col-md-4 form-group mb-3">  
+                <select name="tipo" class="form-select">  
+                    <option value="">Filtrar por tipo</option>  
+                    <option value="CLIENTE" {% if request.GET.tipo == "CLIENTE" %}selected{% endif %}>Cliente</option>  
+                    <option value="CLIENTE PROYECTO" {% if request.GET.tipo == "CLIENTE PROYECTO" %}selected{% endif %}>Cliente Proyecto</option>  
+                    <option value="CLIENTE LOTE" {% if request.GET.tipo == "CLIENTE LOTE" %}selected{% endif %}>Cliente Lote</option>  
+                    <option value="PROFESIONAL" {% if request.GET.tipo == "PROFESIONAL" %}selected{% endif %}>Profesional</option>  
+                    <option value="ENTIDAD" {% if request.GET.tipo == "ENTIDAD" %}selected{% endif %}>Entidad</option>  
+                    <option value="OTROS" {% if request.GET.tipo == "OTROS" %}selected{% endif %}>Otros</option>  
+                </select>  
+            </div>  
+            
+            <div class="col-md-3 form-group d-grid mb-3">  
+                <button type="submit" class="btn btn-primary btn-sm">  
+                    <i class="bi bi-search"></i> Buscar  
+                </button>  
+            </div>  
+            
+            <div class="col-md-3 form-group d-grid mb-3">  
+                <a href="{% url 'contacto-create' %}" class="btn btn-success btn-sm">  
+                    <i class="bi bi-person-plus"></i> Agregar  
+                </a>  
+            </div>  
+        </form>  
+    </div>  
 
-<!-- Contactos Table -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-table me-2"></i>Directorio de Contactos
-            <span class="badge bg-secondary ms-2">{{ contactos.count }} contacto{{ contactos.count|pluralize }}</span>
-        </h5>
-    </div>
-    <div class="card-body p-0">
-        {% if contactos %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Tipo</th>
-                            <th>Teléfono</th>
-                            <th>Correo</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for contacto in contactos %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <div class="avatar-circle bg-primary text-white">
-                                                {{ contacto.nombre|first|upper }}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold">{{ contacto.nombre }}</div>
-                                            <small class="text-muted">ID: {{ contacto.id }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if contacto.tipo == 'CLIENTE' %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-handshake me-1"></i>Cliente
-                                        </span>
-                                    {% elif contacto.tipo == 'CLIENTE PROYECTO' %}
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-project-diagram me-1"></i>Cliente Proyecto
-                                        </span>
-                                    {% elif contacto.tipo == 'CLIENTE LOTE' %}
-                                        <span class="badge bg-primary">
-                                            <i class="fas fa-map me-1"></i>Cliente Lote
-                                        </span>
-                                    {% elif contacto.tipo == 'PROFESIONAL' %}
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-user-tie me-1"></i>Profesional
-                                        </span>
-                                    {% elif contacto.tipo == 'ENTIDAD' %}
-                                        <span class="badge bg-secondary">
-                                            <i class="fas fa-building me-1"></i>Entidad
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-light text-dark">
-                                            <i class="fas fa-user me-1"></i>Otros
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if contacto.telefono %}
-                                        <a href="tel:{{ contacto.telefono }}" class="text-decoration-none">
-                                            <i class="fas fa-phone me-1 text-success"></i>{{ contacto.telefono }}
-                                        </a>
-                                    {% else %}
-                                        <span class="text-muted">Sin teléfono</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if contacto.correo %}
-                                        <a href="mailto:{{ contacto.correo }}" class="text-decoration-none">
-                                            <i class="fas fa-envelope me-1 text-primary"></i>{{ contacto.correo }}
-                                        </a>
-                                    {% else %}
-                                        <span class="text-muted">Sin correo</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <a href="{% url 'contacto-detail' contacto.pk %}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{% url 'contacto-update' contacto.pk %}" 
-                                           class="btn btn-sm btn-outline-secondary" 
-                                           title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-info dropdown-toggle" 
-                                                data-bs-toggle="dropdown" 
-                                                title="Más opciones">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            {% if contacto.telefono %}
-                                                <li>
-                                                    <a class="dropdown-item" href="tel:{{ contacto.telefono }}">
-                                                        <i class="fas fa-phone me-2"></i>Llamar
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            {% if contacto.correo %}
-                                                <li>
-                                                    <a class="dropdown-item" href="mailto:{{ contacto.correo }}">
-                                                        <i class="fas fa-envelope me-2"></i>Enviar Email
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" 
-                                                   href="{% url 'contacto-delete' contacto.pk %}"
-                                                   onclick="return confirm('¿Estás seguro de que deseas eliminar este contacto?')">
-                                                    <i class="fas fa-trash me-2"></i>Eliminar
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No se encontraron contactos</h5>
-                <p class="text-muted mb-4">No hay contactos que coincidan con tus criterios de búsqueda.</p>
-                <a href="{% url 'contacto-create' %}" class="btn btn-primary">
-                    <i class="fas fa-user-plus me-2"></i>Agregar Primer Contacto
-                </a>
-            </div>
-        {% endif %}
-    </div>
-</div>
+    <!-- Tabla de Contactos -->  
+    <table id="example" class="table table-striped" style="width:100%">  
+        <thead class="table-dark">  
+            <tr>  
+                <th>Nombre</th>  
+                <th>Tipo</th>  
+                <th>Teléfono</th>  
+                <th>Correo</th>  
+                <th>Acciones</th>  
+            </tr>  
+        </thead>  
+        <tbody>  
+            {% for contacto in contactos %}  
+                <tr>  
+                    <td><strong>{{ contacto.nombre }}</strong></td>  
+                    <td>{{ contacto.tipo }}</td>  <!-- Corrige aquí a get_tipo_display -->  
+                    <td>{{ contacto.telefono }}</td>  
+                    <td>{{ contacto.correo }}</td>  
+                    <td>  
+                        <a href="{% url 'contacto-detail' contacto.pk %}" class="btn btn-info btn-sm">  
+                            <i class="bi bi-eye"></i> 
+                        </a>  
+                        <a href="{% url 'contacto-delete' contacto.pk %}" class="btn btn-danger btn-sm">  
+                            <i class="bi bi-trash"></i> Eliminar  
+                        </a>  
+                    </td>  
+                </tr>  
+            {% empty %}  
+                <tr>  
+                    <td colspan="5" class="text-center">No hay contactos que coincidan con la búsqueda.</td>  
+                </tr>  
+            {% endfor %}  
+        </tbody>  
+    </table>  
+</div>  
 
-<!-- Quick Add Contact Modal (Optional) -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
-    <button type="button" class="btn btn-primary btn-lg rounded-circle" 
-            data-bs-toggle="modal" data-bs-target="#quickAddModal"
-            title="Agregar contacto rápido">
-        <i class="fas fa-plus"></i>
-    </button>
-</div>
-
-<!-- Quick Add Modal -->
-<div class="modal fade" id="quickAddModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-user-plus me-2"></i>Agregar Contacto Rápido
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post" action="{% url 'contacto-create' %}" id="quickAddForm">
-                <div class="modal-body">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Nombre *</label>
-                        <input type="text" class="form-control" name="nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tipo *</label>
-                        <select class="form-control" name="tipo" required>
-                            <option value="">Seleccionar tipo</option>
-                            <option value="CLIENTE">Cliente</option>
-                            <option value="CLIENTE PROYECTO">Cliente Proyecto</option>
-                            <option value="CLIENTE LOTE">Cliente Lote</option>
-                            <option value="PROFESIONAL">Profesional</option>
-                            <option value="ENTIDAD">Entidad</option>
-                            <option value="OTROS">Otros</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" name="telefono">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Correo</label>
-                        <input type="email" class="form-control" name="correo">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i>Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Custom Styles -->
-<style>
-.avatar-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-.table tbody tr:hover {
-    background-color: rgba(52, 152, 219, 0.05);
-}
-
-.btn-group .dropdown-toggle::after {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .table-responsive {
-        font-size: 0.9rem;
-    }
-    
-    .btn-group {
-        flex-direction: column;
-    }
-    
-    .btn-group .btn {
-        border-radius: 0.25rem !important;
-        margin-bottom: 2px;
-    }
-}
-
-.stats-card {
-    transition: transform 0.2s ease;
-}
-
-.stats-card:hover {
-    transform: translateY(-2px);
-}
-</style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Auto-submit form on select change
-    document.getElementById('tipo').addEventListener('change', function() {
-        this.form.submit();
-    });
-    
-    // Search functionality
-    document.getElementById('q').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            this.form.submit();
-        }
-    });
-    
-    // Quick add form validation
-    document.getElementById('quickAddForm').addEventListener('submit', function(e) {
-        const nombre = this.querySelector('input[name="nombre"]').value.trim();
-        const tipo = this.querySelector('select[name="tipo"]').value;
-        
-        if (!nombre || !tipo) {
-            e.preventDefault();
-            alert('Por favor, complete los campos requeridos (Nombre y Tipo).');
-        }
-    });
-    
-    // Contact actions
-    function callContact(phone) {
-        window.location.href = 'tel:' + phone;
-    }
-    
-    function emailContact(email) {
-        window.location.href = 'mailto:' + email;
-    }
-    
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    
-    // Confirm delete actions
-    document.querySelectorAll('.text-danger').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este contacto?')) {
-                e.preventDefault();
-            }
-        });
-    });
-    
-    // Export functionality (future implementation)
-    function exportContacts() {
-        // This could be implemented to export contacts to CSV/Excel
-        alert('Función de exportación en desarrollo');
-    }
-    
-    // Bulk actions (future implementation)
-    function selectAllContacts() {
-        const checkboxes = document.querySelectorAll('input[name="selected_contacts"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = !checkbox.checked;
-        });
-    }
-</script>
+<style>  
+/* Botones pequeños */  
+.btn-sm {  
+    font-size: 0.8rem;  
+    padding: 0.4rem 0.7rem;  
+}  
+</style>  
 {% endblock %}

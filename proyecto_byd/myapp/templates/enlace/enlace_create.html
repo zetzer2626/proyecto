@@ -1,421 +1,60 @@
-{% extends 'base.html' %}
-
-{% block title %}Crear Nuevo Enlace{% endblock %}
-
-{% block page_title %}Crear Enlace{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{% url 'enlace_list' %}">Enlaces</a></li>
-    <li class="breadcrumb-item active">Nuevo Enlace</li>
-{% endblock %}
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-plus me-2"></i>
-                Crear Nuevo Enlace
-            </h1>
-            <p class="page-subtitle">Agrega un nuevo enlace web o documento PDF a tu colección</p>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-8 col-md-10 mx-auto">
-        <div class="card fade-in">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-link me-2"></i>
-                    Información del Enlace
-                </h5>
-            </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data" id="enlaceForm">
-                    {% csrf_token %}
-                    
-                    <!-- Información Básica -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-info-circle me-2"></i>
-                                Información Básica
-                            </h6>
-                        </div>
-                        
-                        <div class="col-12 mb-3">
-                            <label for="{{ form.titulo.id_for_label }}" class="form-label">
-                                <i class="fas fa-heading me-1"></i>
-                                Título del Enlace *
-                            </label>
-                            {{ form.titulo }}
-                            {% if form.titulo.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.titulo.errors %}
-                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-lightbulb me-1"></i>
-                                Usa un título descriptivo que identifique claramente el contenido
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">
-                                <i class="fas fa-align-left me-1"></i>
-                                Descripción
-                            </label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.description.errors %}
-                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Describe brevemente el contenido del enlace o documento
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Contenido -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-file me-2"></i>
-                                Contenido (Elige una o ambas opciones)
-                            </h6>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <div class="content-option">
-                                <label for="{{ form.link.id_for_label }}" class="form-label">
-                                    <i class="fas fa-external-link-alt me-1"></i>
-                                    Enlace Web
-                                </label>
-                                {{ form.link }}
-                                {% if form.link.errors %}
-                                    <div class="text-danger small mt-1">
-                                        {% for error in form.link.errors %}
-                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                <div class="form-text">
-                                    <i class="fas fa-globe me-1"></i>
-                                    URL completa (ej: https://ejemplo.com)
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <div class="content-option">
-                                <label for="{{ form.documento_pdf.id_for_label }}" class="form-label">
-                                    <i class="fas fa-file-pdf me-1"></i>
-                                    Documento PDF
-                                </label>
-                                {{ form.documento_pdf }}
-                                {% if form.documento_pdf.errors %}
-                                    <div class="text-danger small mt-1">
-                                        {% for error in form.documento_pdf.errors %}
-                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                <div class="form-text">
-                                    <i class="fas fa-upload me-1"></i>
-                                    Solo archivos PDF (máx. 10MB)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Avatar/Imagen -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-image me-2"></i>
-                                Imagen Representativa (Opcional)
-                            </h6>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.avatar.id_for_label }}" class="form-label">
-                                <i class="fas fa-camera me-1"></i>
-                                Avatar o Imagen
-                            </label>
-                            {{ form.avatar }}
-                            {% if form.avatar.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.avatar.errors %}
-                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Imagen representativa (JPG, PNG, GIF)
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="avatar-preview" id="avatarPreview">
-                                <i class="fas fa-image fa-3x text-muted"></i>
-                                <p class="text-muted mt-2 mb-0">Vista previa de la imagen</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Validación de Errores Generales -->
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Errores en el formulario:</strong>
-                            <ul class="mb-0 mt-2">
-                                {% for error in form.non_field_errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                    
-                    <!-- Botones de Acción -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>
-                                        Volver a Enlaces
-                                    </a>
-                                </div>
-                                <div>
-                                    <button type="reset" class="btn btn-outline-warning me-2">
-                                        <i class="fas fa-undo me-2"></i>
-                                        Limpiar Formulario
-                                    </button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-save me-2"></i>
-                                        Crear Enlace
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Ayuda -->
-<div class="row mt-4">
-    <div class="col-lg-8 col-md-10 mx-auto">
-        <div class="card border-info">
-            <div class="card-header bg-info text-white">
-                <h6 class="card-title mb-0">
-                    <i class="fas fa-question-circle me-2"></i>
-                    Ayuda y Consejos
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6><i class="fas fa-lightbulb text-warning me-2"></i>Consejos para Enlaces</h6>
-                        <ul class="small text-muted">
-                            <li>Usa títulos descriptivos y únicos</li>
-                            <li>Verifica que las URLs funcionen correctamente</li>
-                            <li>Incluye descripciones para facilitar la búsqueda</li>
-                            <li>Puedes agregar tanto enlace como PDF</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h6><i class="fas fa-file-pdf text-danger me-2"></i>Sobre los PDFs</h6>
-                        <ul class="small text-muted">
-                            <li>Tamaño máximo: 10MB por archivo</li>
-                            <li>Solo se permiten archivos PDF</li>
-                            <li>Los archivos se almacenan de forma segura</li>
-                            <li>Puedes reemplazar el archivo editando el enlace</li>
-                        </ul>
-                    </div>
+<div class="container mt-4">
+    <h1 class="mb-4 text-center text-primary fw-bold">Crear Nuevo Enlace</h1>
+    <div class="card shadow-lg mx-auto" style="max-width: 500px; border-radius: 20px; border: 1px solid #ddd;">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_titulo" class="form-label">
+                        <i class="fas fa-heading text-primary"></i> Título
+                    </label>
+                    {{ form.titulo|add_class:"form-control"}}
                 </div>
-            </div>
+                
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">
+                        <i class="fas fa-align-left text-success"></i> Descripción
+                    </label>
+                    {{ form.description|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_link" class="form-label">
+                        <i class="fas fa-link text-info"></i> Enlace
+                    </label>
+                    {{ form.link|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_documento_pdf" class="form-label">
+                        <i class="fas fa-file-pdf text-danger"></i> Subir Documento PDF
+                    </label>
+                    {{ form.documento_pdf|add_class:"form-control" }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_avatar" class="form-label">
+                        <i class="fas fa-user-circle text-secondary"></i> Subir Avatar (Opcional)
+                    </label>
+                    {{ form.avatar|add_class:"form-control" }}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i> Crear
+                    </button>
+                    <a href="{% url 'enlace_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const avatarInput = document.getElementById('{{ form.avatar.id_for_label }}');
-    const avatarPreview = document.getElementById('avatarPreview');
-    const linkInput = document.getElementById('{{ form.link.id_for_label }}');
-    const pdfInput = document.getElementById('{{ form.documento_pdf.id_for_label }}');
-    
-    // Preview de imagen
-    if (avatarInput) {
-        avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    avatarPreview.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview" class="img-fluid rounded" style="max-width: 150px; max-height: 150px;">
-                        <p class="text-success mt-2 mb-0 small">
-                            <i class="fas fa-check me-1"></i>
-                            Imagen cargada: ${file.name}
-                        </p>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-    
-    // Validación de URL
-    if (linkInput) {
-        linkInput.addEventListener('blur', function(e) {
-            const url = e.target.value;
-            if (url && !isValidURL(url)) {
-                e.target.classList.add('is-invalid');
-                showValidationMessage(e.target, 'Por favor, ingresa una URL válida (ej: https://ejemplo.com)');
-            } else {
-                e.target.classList.remove('is-invalid');
-                removeValidationMessage(e.target);
-            }
-        });
-    }
-    
-    // Validación de archivo PDF
-    if (pdfInput) {
-        pdfInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.type !== 'application/pdf') {
-                    e.target.classList.add('is-invalid');
-                    showValidationMessage(e.target, 'Solo se permiten archivos PDF');
-                    e.target.value = '';
-                } else if (file.size > 10 * 1024 * 1024) { // 10MB
-                    e.target.classList.add('is-invalid');
-                    showValidationMessage(e.target, 'El archivo es demasiado grande (máx. 10MB)');
-                    e.target.value = '';
-                } else {
-                    e.target.classList.remove('is-invalid');
-                    removeValidationMessage(e.target);
-                }
-            }
-        });
-    }
-    
-    // Validar que al menos un campo de contenido esté lleno
-    document.getElementById('enlaceForm').addEventListener('submit', function(e) {
-        const link = linkInput ? linkInput.value.trim() : '';
-        const pdf = pdfInput ? pdfInput.files.length > 0 : false;
-        
-        if (!link && !pdf) {
-            e.preventDefault();
-            showToast('Debes proporcionar al menos un enlace web o un documento PDF', 'warning');
-        }
-    });
-});
-
-function isValidURL(string) {
-    try {
-        new URL(string);
-        return true;
-    } catch (_) {
-        return false;
-    }
-}
-
-function showValidationMessage(element, message) {
-    removeValidationMessage(element);
-    const feedback = document.createElement('div');
-    feedback.className = 'invalid-feedback custom-validation';
-    feedback.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
-    element.parentNode.appendChild(feedback);
-}
-
-function removeValidationMessage(element) {
-    const existing = element.parentNode.querySelector('.custom-validation');
-    if (existing) {
-        existing.remove();
-    }
-}
-
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
-    toast.style.zIndex = '9999';
-    toast.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-                ${message}
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    `;
-    document.body.appendChild(toast);
-    
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    
-    toast.addEventListener('hidden.bs.toast', function() {
-        document.body.removeChild(toast);
-    });
-}
-</script>
-
-<style>
-.content-option {
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    transition: border-color 0.3s ease;
-}
-
-.content-option:hover {
-    border-color: var(--accent-color);
-}
-
-.avatar-preview {
-    min-height: 150px;
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #f8f9fa;
-    transition: border-color 0.3s ease;
-}
-
-.avatar-preview:hover {
-    border-color: var(--accent-color);
-}
-
-.form-control.is-invalid {
-    border-color: var(--danger-color);
-}
-
-.invalid-feedback {
-    display: block;
-}
-
-.card.border-info {
-    border-width: 2px;
-}
-
-.card-header.bg-info {
-    background-color: var(--accent-color) !important;
-}
-</style>
 {% endblock %}

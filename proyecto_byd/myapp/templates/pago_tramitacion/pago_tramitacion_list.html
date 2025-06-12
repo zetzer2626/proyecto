@@ -1,377 +1,172 @@
 {% extends 'base.html' %}
-
-{% block title %}Ingresos y Egresos - Sistema de Gestión{% endblock %}
-{% block page_title %}Gestión Financiera{% endblock %}
-
+{% load static %}
+{% load humanize %}
 {% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title"><i class="fas fa-dollar-sign me-2"></i>Ingresos y Egresos</h1>
-            <p class="page-subtitle">Control financiero y flujo de caja</p>
-        </div>
-        <div>
-            <a href="{% url 'pago_tramitacion_create' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Nuevo Movimiento
-            </a>
-        </div>
-    </div>
-</div>
+<div class="container mt-4">
+    <h1 class="mb-4">Pagos Ingresos y Egresos</h1>
 
-<!-- Financial Summary Cards -->
-<div class="row mb-4">
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card success">
-            <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                    <div class="stats-number">${{ total_ingresos_filtrados|floatformat:0 }}</div>
-                    <div class="stats-label">
-                        <i class="fas fa-arrow-up me-1"></i>Ingresos
-                    </div>
+    <!-- Filtros y Botones -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <!-- Formulario de filtro -->
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control"
+                           value="{{ request.GET.fecha_inicio }}">
                 </div>
-                <div class="ms-3">
-                    <i class="fas fa-plus-circle fa-2x opacity-75"></i>
+                <div class="col-md-4">
+                    <label for="fecha_fin" class="form-label">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control"
+                           value="{{ request.GET.fecha_fin }}">
                 </div>
-            </div>
+                <div class="col-md-4">
+                    <label for="tipo_pago" class="form-label">Tipo de Pago</label>
+                    <select name="tipo_pago" id="tipo_pago" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="ingreso" {% if request.GET.tipo_pago == 'ingreso' %}selected{% endif %}>Ingreso</option>
+                        <option value="egreso" {% if request.GET.tipo_pago == 'egreso' %}selected{% endif %}>Egreso</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
         </div>
-    </div>
-    
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card danger">
-            <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                    <div class="stats-number">${{ total_egresos_filtrados|floatformat:0 }}</div>
-                    <div class="stats-label">
-                        <i class="fas fa-arrow-down me-1"></i>Egresos
-                    </div>
-                </div>
-                <div class="ms-3">
-                    <i class="fas fa-minus-circle fa-2x opacity-75"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card {% if saldo_filtrado >= 0 %}primary{% else %}warning{% endif %}">
-            <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                    <div class="stats-number">${{ saldo_filtrado|floatformat:0 }}</div>
-                    <div class="stats-label">
-                        <i class="fas fa-balance-scale me-1"></i>Saldo
-                    </div>
-                </div>
-                <div class="ms-3">
-                    <i class="fas fa-calculator fa-2x opacity-75"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-lg-3 col-md-6">
-        <div class="stats-card">
-            <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                    <div class="stats-number">{{ pagos.count }}</div>
-                    <div class="stats-label">
-                        <i class="fas fa-list me-1"></i>Movimientos
-                    </div>
-                </div>
-                <div class="ms-3">
-                    <i class="fas fa-chart-line fa-2x opacity-75"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Filters -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-filter me-2"></i>Filtros
-        </h5>
+        <div class="col-md-4">
+            <!-- Botones de acción -->
+            <div class="d-flex flex-column align-items-end">
+                <a href="{% url 'pago_tramitacion_create' %}" class="btn btn-success mb-2 w-100">
+                    <i class="bi bi-plus-circle"></i> Crear Nuevo Pago
+                </a>
+                <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-arrow-clockwise"></i> Restablecer Filtros
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-3">
-                <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
-                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" 
-                       value="{{ request.GET.fecha_inicio }}">
-            </div>
-            <div class="col-md-3">
-                <label for="fecha_fin" class="form-label">Fecha Fin</label>
-                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" 
-                       value="{{ request.GET.fecha_fin }}">
-            </div>
-            <div class="col-md-3">
-                <label for="tipo_pago" class="form-label">Tipo de Movimiento</label>
-                <select class="form-control" id="tipo_pago" name="tipo_pago">
-                    <option value="">Todos</option>
-                    <option value="ingreso" {% if request.GET.tipo_pago == 'ingreso' %}selected{% endif %}>Ingresos</option>
-                    <option value="egreso" {% if request.GET.tipo_pago == 'egreso' %}selected{% endif %}>Egresos</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-1"></i>Filtrar
-                    </button>
-                    <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times me-1"></i>Limpiar
-                    </a>
+
+    <!-- Mostrar los totales -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Ingresos</h5>
+                    <p class="card-text">{{ total_ingresos_filtrados|intcomma }}</p>
                 </div>
             </div>
-        </form>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
-                </h5>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Egresos</h5>
+                    <p class="card-text">{{ total_egresos_filtrados|intcomma }}</p>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <a href="{% url 'pago_tramitacion_create' %}?tipo=ingreso" class="btn btn-success w-100 mb-2">
-                            <i class="fas fa-plus-circle me-2"></i>Registrar Ingreso
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a href="{% url 'pago_tramitacion_create' %}?tipo=egreso" class="btn btn-danger w-100 mb-2">
-                            <i class="fas fa-minus-circle me-2"></i>Registrar Egreso
-                        </a>
-                    </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Saldo</h5>
+                    <p class="card-text">{{ saldo_filtrado|intcomma }}</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Payments Table -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-table me-2"></i>Movimientos Financieros
-        </h5>
-    </div>
-    <div class="card-body p-0">
-        {% if pagos %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Tipo</th>
-                            <th>Origen</th>
-                            <th>Nombre</th>
-                            <th>Gestión</th>
-                            <th>Ingreso</th>
-                            <th>Egreso</th>
-                            <th>Documentos</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pago in pagos %}
-                            <tr>
-                                <td>
-                                    {% if pago.fecha %}
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-calendar me-1"></i>{{ pago.fecha|date:"d/m/Y" }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted">Sin fecha</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if pago.tipo_pago == 'ingreso' %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-plus me-1"></i>Ingreso
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-minus me-1"></i>Egreso
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <span class="text-truncate" style="max-width: 120px; display: inline-block;" 
-                                          title="{{ pago.origen }}">
-                                        {{ pago.origen|default:"Sin especificar" }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="fw-semibold">{{ pago.nombre|default:"Sin nombre" }}</div>
-                                </td>
-                                <td>
-                                    <span class="text-truncate" style="max-width: 150px; display: inline-block;" 
-                                          title="{{ pago.gestion }}">
-                                        {{ pago.gestion|truncatechars:30 }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {% if pago.ingreso %}
-                                        <span class="text-success fw-bold">
-                                            <i class="fas fa-plus me-1"></i>${{ pago.ingreso|floatformat:0 }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted">-</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if pago.egreso %}
-                                        <span class="text-danger fw-bold">
-                                            <i class="fas fa-minus me-1"></i>${{ pago.egreso|floatformat:0 }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted">-</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-1">
-                                        {% if pago.transferencia %}
-                                            <a href="{{ pago.transferencia.url }}" class="btn btn-xs btn-outline-primary" 
-                                               target="_blank" title="Transferencia">
-                                                <i class="fas fa-exchange-alt"></i>
-                                            </a>
-                                        {% endif %}
-                                        {% if pago.boletabyd %}
-                                            <a href="{{ pago.boletabyd.url }}" class="btn btn-xs btn-outline-success" 
-                                               target="_blank" title="Boleta">
-                                                <i class="fas fa-receipt"></i>
-                                            </a>
-                                        {% endif %}
-                                        {% if pago.facturabyd %}
-                                            <a href="{{ pago.facturabyd.url }}" class="btn btn-xs btn-outline-warning" 
-                                               target="_blank" title="Factura">
-                                                <i class="fas fa-file-invoice"></i>
-                                            </a>
-                                        {% endif %}
-                                        {% if not pago.transferencia and not pago.boletabyd and not pago.facturabyd %}
-                                            <span class="text-muted small">Sin docs</span>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <a href="{% url 'pago_tramitacion_detail' pago.pk %}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{% url 'pago_tramitacion_edit' pago.pk %}" 
-                                           class="btn btn-sm btn-outline-secondary" 
-                                           title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{% url 'pago_tramitacion_delete' pago.pk %}" 
-                                           class="btn btn-sm btn-outline-danger" 
-                                           title="Eliminar"
-                                           onclick="return confirm('¿Estás seguro de que deseas eliminar este movimiento?')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr class="table-secondary">
-                            <td colspan="5" class="fw-bold text-end">TOTALES:</td>
-                            <td class="fw-bold text-success">
-                                <i class="fas fa-plus me-1"></i>${{ total_ingresos_filtrados|floatformat:0 }}
-                            </td>
-                            <td class="fw-bold text-danger">
-                                <i class="fas fa-minus me-1"></i>${{ total_egresos_filtrados|floatformat:0 }}
-                            </td>
-                            <td class="fw-bold {% if saldo_filtrado >= 0 %}text-primary{% else %}text-warning{% endif %}">
-                                SALDO: ${{ saldo_filtrado|floatformat:0 }}
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-dollar-sign fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No se encontraron movimientos</h5>
-                <p class="text-muted mb-4">No hay movimientos financieros registrados.</p>
-                <div class="d-flex justify-content-center gap-2">
-                    <a href="{% url 'pago_tramitacion_create' %}?tipo=ingreso" class="btn btn-success">
-                        <i class="fas fa-plus me-2"></i>Primer Ingreso
-                    </a>
-                    <a href="{% url 'pago_tramitacion_create' %}?tipo=egreso" class="btn btn-danger">
-                        <i class="fas fa-minus me-2"></i>Primer Egreso
-                    </a>
-                </div>
-            </div>
-        {% endif %}
+    <!-- Tabla de pagos -->
+    <div class="table-responsive">
+        <table id="example" class="table table-striped table-hover table-bordered" style="width:100%">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo de Pago</th>
+                    <th>Fecha</th>
+                    <th>Origen</th>
+                    <th>Nombre</th>
+                    <th>Gestion</th>
+                    <th>Ingreso</th>
+                    <th>Egreso</th>
+                    <th>Transferencia</th>
+                    <th>Boleta BYD</th>
+                    <th>Factura o Boleta</th>
+                    <th>Aciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos %}
+                <tr>
+                    <td>
+                        <span class="badge {% if pago.tipo_pago == 'ingreso' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ pago.tipo_pago|capfirst }}
+                        </span>
+                    </td>
+                    <td>{{ pago.fecha }}</td>
+                    <td><strong>{{ pago.origen }}</strong></td>
+                    <td>{{ pago.nombre }}</td>
+                    <td>{{ pago.gestion }}</td>
+                    <td>
+                        <span class="badge bg-success">
+                            {{ pago.ingreso|intcomma }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger">
+                            {{ pago.egreso|intcomma }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if pago.transferencia %}
+                            <a href="{{ pago.transferencia.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Comprobante</a>
+                        {% else %}
+                            <span class="text-muted">Sin Documento</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pago.boletabyd %}
+                            <a href="{{ pago.boletabyd.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Comprobante</a>
+                        {% else %}
+                            <span class="text-muted">Sin Documento</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pago.facturabyd %}
+                            <a href="{{ pago.facturabyd.url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Comprobante</a>
+                        {% else %}
+                            <span class="text-muted">Sin Documento</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'pago_tramitacion_edit' pago.pk %}" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'pago_tramitacion_delete' pago.pk %}" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta solicitud?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            <a href="{% url 'pago_tramitacion_detail' pago.pk %}" class="btn btn-sm btn-info" title="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay pagos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
 <style>
-.btn-xs {
-    padding: 0.125rem 0.25rem;
-    font-size: 0.7rem;
-    border-radius: 0.2rem;
+    .badge.bg-success {
+    background-color: #28a745;
 }
 
-.table tfoot td {
-    border-top: 2px solid #dee2e6;
-    font-weight: 600;
-}
-
-.stats-card .stats-number {
-    font-size: 1.8rem;
-}
-
-@media (max-width: 768px) {
-    .stats-card .stats-number {
-        font-size: 1.5rem;
-    }
+.badge.bg-danger {
+    background-color: #dc3545;
 }
 </style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Auto-submit form on select change
-    document.getElementById('tipo_pago').addEventListener('change', function() {
-        this.form.submit();
-    });
-    
-    // Set default dates (last 30 days)
-    document.addEventListener('DOMContentLoaded', function() {
-        const fechaInicio = document.getElementById('fecha_inicio');
-        const fechaFin = document.getElementById('fecha_fin');
-        
-        if (!fechaInicio.value) {
-            const fecha30DiasAtras = new Date();
-            fecha30DiasAtras.setDate(fecha30DiasAtras.getDate() - 30);
-            fechaInicio.value = fecha30DiasAtras.toISOString().split('T')[0];
-        }
-        
-        if (!fechaFin.value) {
-            const hoy = new Date();
-            fechaFin.value = hoy.toISOString().split('T')[0];
-        }
-    });
-    
-    // Format numbers with thousands separator
-    function formatearNumero(numero) {
-        return new Intl.NumberFormat('es-CL', {
-            style: 'currency',
-            currency: 'CLP'
-        }).format(numero);
-    }
-</script>
 {% endblock %}

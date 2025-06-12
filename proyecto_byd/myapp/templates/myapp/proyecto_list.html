@@ -1,1544 +1,411 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Lista de Proyectos - Sistema de Gestión{% endblock %}
-
-{% block page_title %}Gestión de Proyectos{% endblock %}
+{% block title %}Lista de Proyectos{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="fas fa-folder-open me-2"></i>Proyectos
-            </h1>
-            <p class="page-subtitle">Gestiona todos los proyectos del sistema</p>
-        </div>
-        <div>
-            <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Nuevo Proyecto
-            </a>
-            <a href="{% url 'exportar_excel' %}" class="btn btn-outline-success">
-                <i class="fas fa-download me-2"></i>Exportar Excel
-            </a>
-        </div>
-    </div>
-</div>
+<div class="container-fluid py-4">
 
-<!-- Tarjetas de estadísticas -->
-<div class="row mb-4">
-    <div class="col-md-2">
-        <div class="stats-card">
-            <div class="stats-number">{{ total_proyectos }}</div>
-            <div class="stats-label">Total Proyectos</div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="stats-card success">
-            <div class="stats-number">{{ total_aprobados }}</div>
-            <div class="stats-label">Aprobados</div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="stats-card warning">
-            <div class="stats-number">{{ total_observados }}</div>
-            <div class="stats-label">Observados</div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="stats-card danger">
-            <div class="stats-number">{{ total_no_concretados }}</div>
-            <div class="stats-label">No Concretados</div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="stats-card" style="background: linear-gradient(135deg, #9b59b6, #bb80c7);">
-            <div class="stats-number">{{ total_ingresados }}</div>
-            <div class="stats-label">Ingresados</div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="stats-card" style="background: linear-gradient(135deg, #34495e, #5d6d7e);">
-            <div class="stats-number">{{ proyectos|length }}</div>
-            <div class="stats-label">En Vista</div>
-        </div>
-    </div>
-</div>
-
-<!-- Filtros de búsqueda -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-filter me-2"></i>Filtros de Búsqueda
-        </h5>
-    </div>
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-4">
-                <label for="q" class="form-label">Búsqueda General</label>
-                <input type="text" class="form-control" id="q" name="q" 
-                       value="{{ request.GET.q }}" 
-                       placeholder="Nombre, proyecto, dirección, presupuesto...">
-            </div>
-            <div class="col-md-3">
-                <label for="estado" class="form-label">Estado del Proyecto</label>
-                <select class="form-control" id="estado" name="estado">
-                    <option value="">Todos los estados</option>
-                    <option value="no_concretado" {% if request.GET.estado == 'no_concretado' %}selected{% endif %}>No Concretado</option>
-                    <option value="trabajando" {% if request.GET.estado == 'trabajando' %}selected{% endif %}>Trabajar en Proyecto</option>
-                    <option value="ingreso_dom" {% if request.GET.estado == 'ingreso_dom' %}selected{% endif %}>Ingresado DOM</option>
-                    <option value="ingresado_sag" {% if request.GET.estado == 'ingresado_sag' %}selected{% endif %}>Ingresado SAG</option>
-                    <option value="ingresado_minvu" {% if request.GET.estado == 'ingresado_minvu' %}selected{% endif %}>Ingresado Minvu</option>
-                    <option value="ingresado_monumento" {% if request.GET.estado == 'ingresado_monumento' %}selected{% endif %}>Ingresado Monumento</option>
-                    <option value="observado" {% if request.GET.estado == 'observado' %}selected{% endif %}>Ingresado Observado</option>
-                    <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Ingresado Rechazado</option>
-                    <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
-                    <option value="realizado" {% if request.GET.estado == 'realizado' %}selected{% endif %}>Realizado</option>
-                    <option value="congelado" {% if request.GET.estado == 'congelado' %}selected{% endif %}>Congelado</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="año" class="form-label">Año</label>
-                <select class="form-control" id="año" name="año">
-                    <option value="">Todos los años</option>
-                    <option value="2020" {% if request.GET.año == '2020' %}selected{% endif %}>2020</option>
-                    <option value="2021" {% if request.GET.año == '2021' %}selected{% endif %}>2021</option>
-                    <option value="2022" {% if request.GET.año == '2022' %}selected{% endif %}>2022</option>
-                    <option value="2023" {% if request.GET.año == '2023' %}selected{% endif %}>2023</option>
-                    <option value="2024" {% if request.GET.año == '2024' %}selected{% endif %}>2024</option>
-                    <option value="2025" {% if request.GET.año == '2025' %}selected{% endif %}>2025</option>
-                    <option value="2026" {% if request.GET.año == '2026' %}selected{% endif %}>2026</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="proceso" class="form-label">Proceso</label>
-                <select class="form-control" id="proceso" name="proceso">
-                    <option value="">Todos</option>
-                    <option value="terminado" {% if request.GET.proceso == 'terminado' %}selected{% endif %}>Terminado</option>
-                    <option value="no aplica" {% if request.GET.proceso == 'no aplica' %}selected{% endif %}>No Aplica</option>
-                    <option value="pendiente" {% if request.GET.proceso == 'pendiente' %}selected{% endif %}>Pendiente</option>
-                </select>
-            </div>
-            <div class="col-md-1">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i>
-                    </button>
+    <h2 class="text-center mb-4 text-primary fw-bold">Gestión de Proyectos</h2>
+    
+    <!-- Tarjetas de Resumen (más compactas) -->
+    <div class="row g-3 mb-4">
+        <!-- Total Proyectos -->
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="totalProyectos">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="bi bi-collection-fill fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 id="totalProyectos" class="text-primary fw-bold mb-1">Total</h6>
+                        <p class="h4 mb-0 text-primary">{{ total_proyectos }}</p>
+                        <small class="text-muted">Proyectos</small>
+                    </div>
                 </div>
             </div>
-        </form>
-        
-        {% if request.GET.q or request.GET.estado or request.GET.año or request.GET.proceso %}
-        <div class="mt-2">
-            <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary btn-sm">
-                <i class="fas fa-times me-1"></i>Limpiar Filtros
-            </a>
         </div>
-        {% endif %}
+        <!-- Proyectos Aprobados -->
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosAprobados">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="bi bi-check-circle-fill fa-2x text-success"></i>
+                    </div>
+                    <div>
+                        <h6 id="proyectosAprobados" class="text-success fw-bold mb-1">Aprobados</h6>
+                        <p class="h4 mb-0 text-success">{{ total_aprobados }}</p>
+                        <small class="text-muted">Proyectos</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Proyectos No Concretados -->
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosNoConcretados">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="bi bi-x-circle-fill fa-2x text-danger"></i>
+                    </div>
+                    <div>
+                        <h6 id="proyectosNoConcretados" class="text-danger fw-bold mb-1">No Concretados</h6>
+                        <p class="h4 mb-0 text-danger">{{ total_no_concretados }}</p>
+                        <small class="text-muted">Proyectos</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Proyectos Trabajando -->
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosTrabajando">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="bi bi-gear-fill fa-2x text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 id="proyectosTrabajando" class="text-warning fw-bold mb-1">Trabajando</h6>
+                        <p class="h4 mb-0 text-warning">{{ total_trabajando }}</p>
+                        <small class="text-muted">En desarrollo</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- Tabla de proyectos mejorada -->
-<div class="table-container">
-    <div class="table-header-section">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="table-title">
-                <i class="fas fa-list me-2"></i>Lista de Proyectos
-                {% if proyectos %}
-                    <span class="count-badge">{{ proyectos|length }} de {{ page_obj.paginator.count }}</span>
-                {% endif %}
-            </h5>
-            <div class="table-controls">
-                <button class="btn btn-sm btn-outline-primary" onclick="toggleFullscreen()">
-                    <i class="fas fa-expand"></i>
+   <!-- Formulario de Búsqueda y Filtros (más compacto) -->
+<div class="bg-white bg-opacity-90 rounded-3 shadow-lg p-3 mb-4">
+    <form method="get" class="row gy-2 gx-3 align-items-end">
+        <!-- Campo de búsqueda -->
+        <div class="col-lg-3 col-md-4">
+            <label for="search" class="form-label fw-bold small">Buscar</label>
+            <input 
+                type="text" 
+                id="search" 
+                name="q" 
+                class="form-control form-control-sm border-primary" 
+                placeholder="Nombre, proyecto, dirección..." 
+                value="{{ request.GET.q }}">
+        </div>
+
+        <!-- Filtro por estado del proyecto -->
+        <div class="col-lg-2 col-md-4">
+            <label for="estado" class="form-label fw-bold small">Estado</label>
+            <select id="estado" name="estado" class="form-select form-select-sm border-primary">
+                <option value="">Todos los Estados</option>
+                <option value="no_concretado" {% if request.GET.estado == 'no_concretado' %}selected{% endif %}>No Concretado</option>
+                <option value="trabajando" {% if request.GET.estado == 'trabajando' %}selected{% endif %}>Trabajar en Proyecto</option>
+                <option value="ingreso_dom" {% if request.GET.estado == 'ingreso_dom' %}selected{% endif %}>Ingresado DOM</option>
+                <option value="ingresado_sag" {% if request.GET.estado == 'ingresado_sag' %}selected{% endif %}>Ingresado SAG</option>
+                <option value="ingresado_minvu" {% if request.GET.estado == 'ingresado_minvu' %}selected{% endif %}>Ingresado Minvu</option>
+                <option value="ingresado_monumento" {% if request.GET.estado == 'ingresado_monumento' %}selected{% endif %}>Ingresado Monumento</option>
+                <option value="observado" {% if request.GET.estado == 'observado' %}selected{% endif %}>Ingresado Observado</option>
+                <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Ingresado Rechazado</option>
+                <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
+                <option value="realizado" {% if request.GET.estado == 'realizado' %}selected{% endif %}>Realizado</option>
+                <option value="congelado" {% if request.GET.estado == 'congelado' %}selected{% endif %}>Congelado</option>
+            </select>
+        </div>
+
+        <!-- Filtro por proceso -->
+        <div class="col-lg-2 col-md-4">
+            <label for="proceso" class="form-label fw-bold small">Proceso</label>
+            <select id="proceso" name="proceso" class="form-select form-select-sm border-success">
+                <option value="">Todos los Procesos</option>
+                <option value="terminado" {% if request.GET.proceso == 'terminado' %}selected{% endif %}>Terminado</option>
+                <option value="no aplica" {% if request.GET.proceso == 'no aplica' %}selected{% endif %}>No Aplica</option>
+                <option value="pendiente" {% if request.GET.proceso == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            </select>
+        </div>
+
+        <!-- Filtro por año -->
+        <div class="col-lg-1 col-md-3">
+            <label for="año" class="form-label fw-bold small">Año</label>
+            <input 
+                type="number" 
+                id="año" 
+                name="año" 
+                class="form-control form-control-sm border-warning" 
+                placeholder="Año" 
+                value="{{ request.GET.año }}">
+        </div>
+
+        <!-- Botones de acción (reorganizados) -->
+        <div class="col-lg-4 col-md-8">
+            <div class="d-flex flex-wrap gap-1">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-search"></i> Buscar
                 </button>
-                <button class="btn btn-sm btn-outline-primary" onclick="exportTable()">
-                    <i class="fas fa-print"></i>
-                </button>
+                <a href="{% url 'proyecto-create' %}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus"></i> Nuevo
+                </a>
+                <a href="{% url 'proyecto-list' %}" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-eraser"></i> Limpiar
+                </a>
+                <a href="{% url 'exportar_excel' %}" class="btn btn-info btn-sm">
+                    <i class="fas fa-file-excel"></i> Excel
+                </a>
             </div>
         </div>
-    </div>
-
-    {% if proyectos %}
-        <div class="table-wrapper">
-            <table class="grid-table">
-                <thead class="grid-header">
-                    <tr>
-                        <th class="col-presupuesto" data-sort="presupuesto">
-                            <div class="header-content">
-                                <span>Presupuesto</span>
-                                <i class="fas fa-sort sort-icon"></i>
-                            </div>
-                        </th>
-                        <th class="col-año" data-sort="año">
-                            <div class="header-content">
-                                <span>Año</span>
-                                <i class="fas fa-sort sort-icon"></i>
-                            </div>
-                        </th>
-                        <th class="col-nombre" data-sort="nombre">
-                            <div class="header-content">
-                                <span>Cliente</span>
-                                <i class="fas fa-sort sort-icon"></i>
-                            </div>
-                        </th>
-                        <th class="col-proyecto">
-                            <div class="header-content">
-                                <span>Proyecto</span>
-                            </div>
-                        </th>
-                        <th class="col-direccion">
-                            <div class="header-content">
-                                <span>Dirección</span>
-                            </div>
-                        </th>
-                        <th class="col-estado" data-sort="estado">
-                            <div class="header-content">
-                                <span>Estado</span>
-                                <i class="fas fa-sort sort-icon"></i>
-                            </div>
-                        </th>
-                        <th class="col-detalle">
-                            <div class="header-content">
-                                <span>Detalle</span>
-                            </div>
-                        </th>
-                        <th class="col-kardex">
-                            <div class="header-content">
-                                <span>Kardex</span>
-                            </div>
-                        </th>
-                        <th class="col-enlaces">
-                            <div class="header-content">
-                                <span>Enlaces</span>
-                            </div>
-                        </th>
-                        <th class="col-proceso" data-sort="proceso">
-                            <div class="header-content">
-                                <span>Proceso</span>
-                                <i class="fas fa-sort sort-icon"></i>
-                            </div>
-                        </th>
-                        <th class="col-acciones">
-                            <div class="header-content">
-                                <span>Acciones</span>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="grid-body">
-                    {% for proyecto in proyectos %}
-                    <tr class="grid-row" data-id="{{ proyecto.pk }}">
-                        <!-- Presupuesto -->
-                        <td class="cell-presupuesto">
-                            <div class="cell-content">
-                                <span class="presupuesto-code">{{ proyecto.presupuesto|default:"Sin asignar" }}</span>
-                            </div>
-                        </td>
-                        
-                        <!-- Año -->
-                        <td class="cell-año">
-                            <div class="cell-content text-center">
-                                <span class="year-badge">{{ proyecto.año|default:"N/A" }}</span>
-                            </div>
-                        </td>
-                        
-                        <!-- Cliente -->
-                        <td class="cell-nombre">
-                            <div class="cell-content">
-                                <div class="client-info">
-                                    <div class="client-name">{{ proyecto.nombre }}</div>
-                                    {% if proyecto.telefono or proyecto.correo %}
-                                        <div class="client-contact">
-                                            {% if proyecto.telefono %}
-                                                <span class="contact-item">
-                                                    <i class="fas fa-phone"></i>
-                                                    {{ proyecto.telefono }}
-                                                </span>
-                                            {% endif %}
-                                            {% if proyecto.correo %}
-                                                <span class="contact-item">
-                                                    <i class="fas fa-envelope"></i>
-                                                    {{ proyecto.correo|truncatechars:20 }}
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </td>
-                        
-                        <!-- Proyecto -->
-                        <td class="cell-proyecto">
-                            <div class="cell-content">
-                                <div class="project-desc" title="{{ proyecto.proyecto }}">
-                                    {{ proyecto.proyecto|default:"Sin descripción"|truncatechars:80 }}
-                                </div>
-                            </div>
-                        </td>
-                        
-                        <!-- Dirección -->
-                        <td class="cell-direccion">
-                            <div class="cell-content">
-                                <div class="address-info" title="{{ proyecto.direccion }}">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ proyecto.direccion|default:"Sin dirección"|truncatechars:60 }}</span>
-                                </div>
-                            </div>
-                        </td>
-                        
-                        <!-- Estado -->
-                        <td class="cell-estado">
-                            <div class="cell-content text-center">
-                                {% if proyecto.estado_proyecto == 'aprobado' %}
-                                    <span class="status-badge status-success">{{ proyecto.get_estado_proyecto_display }}</span>
-                                {% elif proyecto.estado_proyecto == 'observado' %}
-                                    <span class="status-badge status-warning">{{ proyecto.get_estado_proyecto_display }}</span>
-                                {% elif proyecto.estado_proyecto == 'no_concretado' %}
-                                    <span class="status-badge status-danger">{{ proyecto.get_estado_proyecto_display }}</span>
-                                {% elif proyecto.estado_proyecto == 'rechazado' %}
-                                    <span class="status-badge status-dark">{{ proyecto.get_estado_proyecto_display }}</span>
-                                {% elif 'ingresado' in proyecto.estado_proyecto or 'ingreso' in proyecto.estado_proyecto %}
-                                    <span class="status-badge status-info">{{ proyecto.get_estado_proyecto_display }}</span>
-                                {% else %}
-                                    <span class="status-badge status-secondary">{{ proyecto.get_estado_proyecto_display|default:"Sin estado" }}</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        
-                        <!-- Detalle -->
-                        <td class="cell-detalle">
-                            <div class="cell-content">
-                                {% if proyecto.detalle %}
-                                    <div class="detail-text" title="{{ proyecto.detalle }}">
-                                        {{ proyecto.detalle|truncatechars:60 }}
-                                    </div>
-                                {% else %}
-                                    <span class="empty-field">Sin detalle</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        
-                        <!-- Kardex -->
-                        <td class="cell-kardex">
-                            <div class="cell-content text-center">
-                                {% if proyecto.kardex %}
-                                    <span class="kardex-code">{{ proyecto.kardex }}</span>
-                                {% else %}
-                                    <span class="empty-field">-</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        
-                        <!-- Enlaces -->
-                        <td class="cell-enlaces">
-                            <div class="cell-content">
-                                <div class="link-group">
-                                    {% if proyecto.link_1 %}
-                                        <a href="{{ proyecto.link_1 }}" target="_blank" class="link-btn link-primary" title="{{ proyecto.nombre_enlace_1|default:'Ver enlace' }}">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if proyecto.presupuesto_link %}
-                                        <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="link-btn link-success" title="Ver presupuesto">
-                                            <i class="fas fa-dollar-sign"></i>
-                                        </a>
-                                    {% elif proyecto.documento_presupuesto_1 %}
-                                        <a href="{{ proyecto.documento_presupuesto_1.url }}" target="_blank" class="link-btn link-success" title="Ver documento">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if proyecto.enlace_documento %}
-                                        <a href="{{ proyecto.enlace_documento }}" target="_blank" class="link-btn link-info" title="Ver en Drive">
-                                            <i class="fab fa-google-drive"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if proyecto.documento_presupuesto_2 %}
-                                        <a href="{{ proyecto.documento_presupuesto_2.url }}" target="_blank" class="link-btn link-warning" title="Ver pago">
-                                            <i class="fas fa-receipt"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if not proyecto.link_1 and not proyecto.presupuesto_link and not proyecto.documento_presupuesto_1 and not proyecto.enlace_documento and not proyecto.documento_presupuesto_2 %}
-                                        <span class="empty-field">Sin enlaces</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </td>
-                        
-                        <!-- Proceso -->
-                        <td class="cell-proceso">
-                            <div class="cell-content text-center">
-                                {% if proyecto.proceso == 'terminado' %}
-                                    <span class="process-badge process-success">{{ proyecto.get_proceso_display }}</span>
-                                {% elif proyecto.proceso == 'pendiente' %}
-                                    <span class="process-badge process-warning">{{ proyecto.get_proceso_display }}</span>
-                                {% elif proyecto.proceso == 'no aplica' %}
-                                    <span class="process-badge process-secondary">{{ proyecto.get_proceso_display }}</span>
-                                {% else %}
-                                    <span class="process-badge process-default">Sin proceso</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        
-                        <!-- Acciones -->
-                        <td class="cell-acciones">
-                            <div class="cell-content">
-                                <div class="action-buttons">
-                                    <a href="{% url 'proyecto-detail' proyecto.pk %}" class="action-btn btn-view" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{% url 'proyecto-update' proyecto.pk %}" class="action-btn btn-edit" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="action-btn btn-delete" 
-                                            onclick="confirmarEliminacion({{ proyecto.pk }}, '{{ proyecto.nombre|escapejs }}')" 
-                                            title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="fas fa-folder-open"></i>
-            </div>
-            <h5>No se encontraron proyectos</h5>
-            <p>
-                {% if request.GET.q or request.GET.estado or request.GET.año %}
-                    No hay proyectos que coincidan con los filtros aplicados.
-                {% else %}
-                    Aún no hay proyectos registrados en el sistema.
-                {% endif %}
-            </p>
-            <a href="{% url 'proyecto-create' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Crear Primer Proyecto
-            </a>
-        </div>
-    {% endif %}
+    </form>
 </div>
 
-<!-- Paginación -->
-{% if page_obj.has_other_pages %}
-<nav aria-label="Navegación de páginas" class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-            </li>
-        {% endif %}
-
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?{% for key, value in current_filters.items %}{% if value %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
-
-<!-- Modal de confirmación para eliminar -->
-<div class="modal fade" id="modalEliminar" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro de que desea eliminar el proyecto <strong id="nombreProyecto"></strong>?</p>
-                <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Esta acción no se puede deshacer.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <a href="#" id="btnConfirmarEliminar" class="btn btn-danger">Eliminar</a>
-            </div>
-        </div>
+    <!-- Tabla de Proyectos Optimizada -->
+    <div class="table-responsive">
+        <table id="example" class="table table-striped table-hover table-bordered" style="font-size: 0.85rem;">
+            <thead class="table-dark">
+                <tr>
+                    <th style="min-width: 80px;">Presup</th>
+                    <th style="min-width: 60px;">Año</th>
+                    <th style="min-width: 120px;">Nombre</th>
+                    <th style="min-width: 150px;">Proyecto</th>
+                    <th style="min-width: 120px;">Dirección</th>
+                    <th style="min-width: 100px;">Estado</th>
+                    <th style="min-width: 100px;">Detalle</th>
+                    <th style="min-width: 80px;">Kardex</th>
+                    <th style="min-width: 90px;">Presup.</th>
+                    <th style="min-width: 90px;">Drive</th>
+                    <th style="min-width: 90px;">Pago</th>
+                    <th style="min-width: 90px;">Proceso</th>
+                    <th style="min-width: 120px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+                    <td><span class="badge bg-danger">{{ proyecto.presupuesto }}</span></td>
+                    <td class="text-center"><strong>{{ proyecto.año }}</strong></td>
+                    <td>
+                        <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
+                            {{ proyecto.nombre }}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
+                            {{ proyecto.proyecto }}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
+                            {{ proyecto.direccion }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge {% if proyecto.estado_proyecto == 'aprobado' %}bg-success{% elif proyecto.estado_proyecto == 'no_concretado' %}bg-danger{% elif proyecto.estado_proyecto == 'trabajando' %}bg-warning{% elif proyecto.estado_proyecto == 'congelado' %}bg-info{% else %}bg-secondary{% endif %}">
+                            {{ proyecto.get_estado_proyecto_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="max-width: 100px; word-wrap: break-word; white-space: normal;">
+                            {{ proyecto.detalle }}
+                        </div>
+                    </td>
+                    <td class="text-center">{{ proyecto.kardex }}</td>
+                    <td class="text-center">
+                        {% if proyecto.enlace_documento %}
+                            <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Presupuesto">
+                                <i class="fas fa-file-alt"></i>
+                            </a>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if proyecto.link_1 %}
+                            <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Documentos">
+                                <i class="fas fa-folder"></i>
+                            </a>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if proyecto.presupuesto_link %}
+                            <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-outline-success btn-sm" title="Enlace de Pago">
+                                <i class="fas fa-credit-card"></i>
+                            </a>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <span class="badge {% if proyecto.proceso|lower == 'terminado' %}bg-success{% elif proyecto.proceso|lower == 'no aplica' %}bg-danger{% elif proyecto.proceso|lower == 'pendiente' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ proyecto.proceso }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons d-flex gap-1 justify-content-center">
+                            <a href="{% url 'proyecto-detail' proyecto.pk %}" class="btn-action btn-view" title="Ver Detalles" data-bs-toggle="tooltip">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn-action btn-edit" title="Editar Proyecto" data-bs-toggle="tooltip">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'proyecto-delete' proyecto.pk %}" class="btn-action btn-delete" title="Eliminar Proyecto" data-bs-toggle="tooltip" onclick="return confirm('¿Estás seguro de eliminar este proyecto?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="13" class="text-center text-muted py-4">
+                        <i class="fas fa-search fa-2x mb-2"></i>
+                        <br>No hay proyectos que coincidan con la búsqueda.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Estilos CSS para la tabla cuadriculada -->
 <style>
-:root {
-    --grid-border-color: #b8c5d1;
-    --grid-header-bg: #2c3e50;
-    --grid-header-text: #ffffff;
-    --grid-row-hover: rgba(52, 152, 219, 0.08);
-    --grid-cell-padding: 8px;
-    --grid-border-width: 2px;
-    --grid-inner-border: 1px solid #d1d9e0;
-    --grid-outer-border: 2px solid #94a3b8;
-}
-
-.table-container {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    overflow: hidden;
-    margin-bottom: 2rem;
-    border: var(--grid-outer-border);
-}
-
-.table-header-section {
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 3px solid var(--grid-border-color);
-}
-
-.table-title {
-    color: var(--primary-color);
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.count-badge {
-    background: var(--accent-color);
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.table-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.table-wrapper {
-    overflow-x: auto;
-    overflow-y: visible;
-}
-
-.grid-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    min-width: 1200px;
-    border: 2px solid #4a5568;
-}
-
-/* Header de la tabla */
-.grid-header {
-    background: var(--grid-header-bg);
-    color: var(--grid-header-text);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.grid-header th {
-    padding: 10px 6px;
-    border: 2px solid #1a252f;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.3px;
-    position: relative;
-    background: linear-gradient(180deg, #34495e 0%, #2c3e50 100%);
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-/* Eliminamos efectos que pueden ocultar bordes */
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.header-content:hover {
-    background-color: rgba(255,255,255,0.1);
-}
-
-.sort-icon {
-    opacity: 0.6;
-    font-size: 0.7rem;
-    transition: opacity 0.2s ease;
-}
-
-.header-content:hover .sort-icon {
-    opacity: 1;
-}
-
-/* Cuerpo de la tabla */
-.grid-body tr {
-    transition: background-color 0.2s ease;
-}
-
-.grid-body tr:hover {
-    background-color: var(--grid-row-hover);
-}
-
-.grid-body tr:nth-child(even) {
-    background-color: rgba(248, 249, 250, 0.7);
-}
-
-.grid-body tr:nth-child(even):hover {
-    background-color: var(--grid-row-hover);
-}
-
-.grid-body td {
-    padding: 6px;
-    border: 2px solid #4a5568;
-    vertical-align: top;
-    background-color: inherit;
-    position: relative;
-}
-
-/* Separadores visuales adicionales cada 5 filas */
-.grid-body tr:nth-child(5n) td {
-    border-bottom-width: 3px;
-    border-bottom-color: #2d3748;
-}
-
-.cell-content {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    min-height: 50px;
-    position: relative;
-}
-
-/* Anchos optimizados de columnas para sidebar colapsado */
-.col-presupuesto { width: 110px; min-width: 110px; }
-.col-año { width: 70px; min-width: 70px; }
-.col-nombre { width: 180px; min-width: 180px; }
-.col-proyecto { width: 200px; min-width: 200px; }
-.col-direccion { width: 160px; min-width: 160px; }
-.col-estado { width: 110px; min-width: 110px; }
-.col-detalle { width: 150px; min-width: 150px; }
-.col-kardex { width: 80px; min-width: 80px; }
-.col-enlaces { width: 120px; min-width: 120px; }
-.col-proceso { width: 90px; min-width: 90px; }
-.col-acciones { width: 100px; min-width: 100px; }
-
-/* Contenido específico de celdas optimizado */
-.presupuesto-code {
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    color: var(--accent-color);
-    font-size: 0.8rem;
-}
-
-.year-badge {
-    background: var(--medium-gray);
-    color: var(--text-dark);
-    padding: 0.3rem 0.6rem;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.client-info {
-    width: 100%;
-}
-
-.client-name {
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 0.2rem;
-    font-size: 0.85rem;
-    line-height: 1.2;
-}
-
-.client-contact {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-}
-
-.contact-item {
-    font-size: 0.7rem;
-    color: var(--dark-gray);
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.contact-item i {
-    width: 10px;
-    color: var(--accent-color);
-    flex-shrink: 0;
-}
-
-.project-desc {
-    color: var(--text-dark);
-    line-height: 1.3;
-    word-wrap: break-word;
-    font-size: 0.8rem;
-}
-
-.address-info {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.4rem;
-    color: var(--text-dark);
-    line-height: 1.3;
-    font-size: 0.8rem;
-}
-
-.address-info i {
-    color: var(--accent-color);
-    margin-top: 0.1rem;
-    flex-shrink: 0;
-    font-size: 0.75rem;
-}
-
-.detail-text {
-    color: var(--text-dark);
-    line-height: 1.3;
-    word-wrap: break-word;
-    font-size: 0.8rem;
-}
-
-.kardex-code {
-    font-family: 'Courier New', monospace;
-    background: var(--light-gray);
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-.empty-field {
-    color: var(--dark-gray);
-    font-style: italic;
-    font-size: 0.75rem;
-}
-
-/* Badges de estado optimizados */
-.status-badge {
-    padding: 0.3rem 0.6rem;
-    border-radius: 15px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    border: none;
-    display: inline-block;
-    text-align: center;
-}
-
-.status-success {
-    background: var(--success-color);
-    color: white;
-}
-
-.status-warning {
-    background: var(--warning-color);
-    color: white;
-}
-
-.status-danger {
-    background: var(--danger-color);
-    color: white;
-}
-
-.status-info {
-    background: var(--accent-color);
-    color: white;
-}
-
-.status-secondary {
-    background: var(--dark-gray);
-    color: white;
-}
-
-.status-dark {
-    background: var(--secondary-color);
-    color: white;
-}
-
-/* Badges de proceso optimizados */
-.process-badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    text-transform: capitalize;
-    display: inline-block;
-}
-
-.process-success {
-    background: rgba(39, 174, 96, 0.1);
-    color: var(--success-color);
-    border: 1px solid rgba(39, 174, 96, 0.3);
-}
-
-.process-warning {
-    background: rgba(243, 156, 18, 0.1);
-    color: var(--warning-color);
-    border: 1px solid rgba(243, 156, 18, 0.3);
-}
-
-.process-secondary {
-    background: rgba(108, 117, 125, 0.1);
-    color: var(--dark-gray);
-    border: 1px solid rgba(108, 117, 125, 0.3);
-}
-
-.process-default {
-    background: var(--light-gray);
-    color: var(--dark-gray);
-    border: 1px solid var(--medium-gray);
-}
-
-/* Grupo de enlaces compacto */
-.link-group {
-    display: flex;
-    gap: 0.2rem;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.link-btn {
-    padding: 0.3rem 0.4rem;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    height: 26px;
-    border: none;
-    font-size: 0.75rem;
-}
-
-.link-primary {
-    background: var(--accent-color);
-    color: white;
-}
-
-.link-primary:hover {
-    background: #2980b9;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
-}
-
-.link-success {
-    background: var(--success-color);
-    color: white;
-}
-
-.link-success:hover {
-    background: #219a52;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3);
-}
-
-.link-info {
-    background: var(--accent-color);
-    color: white;
-}
-
-.link-info:hover {
-    background: #2980b9;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
-}
-
-.link-warning {
-    background: var(--warning-color);
-    color: white;
-}
-
-.link-warning:hover {
-    background: #e67e22;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(243, 156, 18, 0.3);
-}
-
-/* Botones de acción compactos */
-.action-buttons {
-    display: flex;
-    gap: 0.2rem;
-    justify-content: center;
-}
-
-.action-btn {
-    padding: 0.3rem 0.4rem;
-    border-radius: 4px;
-    border: none;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    height: 26px;
-    cursor: pointer;
-    font-size: 0.75rem;
-}
-
-.btn-view {
-    background: var(--accent-color);
-    color: white;
-}
-
-.btn-view:hover {
-    background: #2980b9;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
-}
-
-.btn-edit {
-    background: var(--warning-color);
-    color: white;
-}
-
-.btn-edit:hover {
-    background: #e67e22;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(243, 156, 18, 0.3);
-}
-
-.btn-delete {
-    background: var(--danger-color);
-    color: white;
-}
-
-.btn-delete:hover {
-    background: #c0392b;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
-}
-
-/* Estado vacío */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--dark-gray);
-}
-
-.empty-icon {
-    font-size: 4rem;
-    color: var(--medium-gray);
-    margin-bottom: 1.5rem;
-}
-
-.empty-state h5 {
-    color: var(--text-dark);
-    margin-bottom: 1rem;
-}
-
-.empty-state p {
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-}
-
-/* Scrollbar personalizada con bordes más marcados */
-.table-wrapper::-webkit-scrollbar {
-    height: 12px;
-    border: 1px solid var(--grid-border-color);
-}
-
-.table-wrapper::-webkit-scrollbar-track {
-    background: var(--light-gray);
-    border-radius: 0;
-    border: 1px solid var(--grid-border-color);
-}
-
-.table-wrapper::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, var(--dark-gray), var(--primary-color));
-    border-radius: 0;
-    border: 1px solid var(--grid-border-color);
-}
-
-.table-wrapper::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-}
-
-/* Responsive optimizado para sidebar colapsado */
-@media (min-width: 768px) and (max-width: 1400px) {
-    .grid-table {
-        min-width: 1150px;
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
     }
     
-    .col-proyecto { width: 180px; min-width: 180px; }
-    .col-direccion { width: 140px; min-width: 140px; }
-    .col-detalle { width: 130px; min-width: 130px; }
-    .col-nombre { width: 160px; min-width: 160px; }
-    
-    .client-name {
-        font-size: 0.8rem;
+    /* Optimizaciones para la tabla */
+    .table td, .table th {
+        vertical-align: top;
+        padding: 0.5rem 0.25rem;
+        word-wrap: break-word;
     }
     
-    .contact-item {
-        font-size: 0.65rem;
-    }
-}
-
-/* Ajustes específicos cuando el sidebar está colapsado */
-.main-content.sidebar-collapsed .grid-table {
-    min-width: 1100px;
-}
-
-.main-content.sidebar-collapsed .col-presupuesto { width: 100px; min-width: 100px; }
-.main-content.sidebar-collapsed .col-año { width: 65px; min-width: 65px; }
-.main-content.sidebar-collapsed .col-nombre { width: 170px; min-width: 170px; }
-.main-content.sidebar-collapsed .col-proyecto { width: 190px; min-width: 190px; }
-.main-content.sidebar-collapsed .col-direccion { width: 150px; min-width: 150px; }
-.main-content.sidebar-collapsed .col-estado { width: 105px; min-width: 105px; }
-.main-content.sidebar-collapsed .col-detalle { width: 140px; min-width: 140px; }
-.main-content.sidebar-collapsed .col-kardex { width: 75px; min-width: 75px; }
-.main-content.sidebar-collapsed .col-enlaces { width: 110px; min-width: 110px; }
-.main-content.sidebar-collapsed .col-proceso { width: 85px; min-width: 85px; }
-.main-content.sidebar-collapsed .col-acciones { width: 95px; min-width: 95px; }
-
-/* Truncamiento inteligente de texto */
-.project-desc,
-.detail-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    max-height: 2.6em;
-}
-
-.address-info span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 140px;
-}
-
-.presupuesto-code {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Optimización del espaciado vertical */
-.grid-body tr:nth-child(5n) td {
-    border-bottom-width: 3px;
-    border-bottom-color: #2d3748;
-}
-
-/* Mejoras para pantallas grandes con sidebar colapsado */
-@media (min-width: 1600px) {
-    .main-content.sidebar-collapsed .grid-table {
-        min-width: 1300px;
+    /* Permitir que las celdas se expandan verticalmente */
+    .table td div {
+        line-height: 1.3;
     }
     
-    .main-content.sidebar-collapsed .col-nombre { width: 200px; min-width: 200px; }
-    .main-content.sidebar-collapsed .col-proyecto { width: 220px; min-width: 220px; }
-    .main-content.sidebar-collapsed .col-direccion { width: 180px; min-width: 180px; }
-    .main-content.sidebar-collapsed .col-detalle { width: 160px; min-width: 160px; }
-    .main-content.sidebar-collapsed .col-enlaces { width: 130px; min-width: 130px; }
-}
-
-@media (max-width: 480px) {
-    .table-container {
-        border-radius: 8px;
+    /* Mejorar legibilidad en dispositivos pequeños */
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.75rem;
+        }
+        
+        /* Botones de formulario también mejorados */
+        .btn-group .btn {
+            padding: 0.25rem 0.4rem;
+        }
+        
+        .btn-action {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+        
+        .card-body {
+            padding: 0.75rem !important;
+        }
+        
+        .h4 {
+            font-size: 1.1rem;
+        }
     }
     
-    .table-header-section {
-        padding: 0.75rem;
+    /* Scroll horizontal suave */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
     }
     
-    .grid-table {
-        min-width: 900px;
+    /* Badges más pequeños */
+    .badge {
+        font-size: 0.7rem;
     }
     
-    .cell-content {
-        padding: 6px;
-        min-height: 45px;
-        font-size: 0.85rem;
+    /* Botones de acción modernos y atractivos */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        border: none;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        font-size: 14px;
+    }
+    
+    .btn-action::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-action:hover::before {
+        left: 100%;
+    }
+    
+    .btn-view {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+    
+    .btn-view:hover {
+        background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+        color: white;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    }
+    
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        color: white;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+    
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+    
+    .btn-action:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
     .action-buttons {
-        flex-direction: column;
-        gap: 0.2rem;
+        min-width: 120px;
     }
     
-    .link-group {
-        gap: 0.2rem;
-    }
-}
-
-/* Efectos de animación */
-@keyframes fadeInRow {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.grid-row {
-    animation: fadeInRow 0.3s ease-in-out;
-}
-
-.grid-row:nth-child(1) { animation-delay: 0.05s; }
-.grid-row:nth-child(2) { animation-delay: 0.1s; }
-.grid-row:nth-child(3) { animation-delay: 0.15s; }
-.grid-row:nth-child(4) { animation-delay: 0.2s; }
-.grid-row:nth-child(5) { animation-delay: 0.25s; }
-
-/* Estados de focus para accesibilidad */
-.action-btn:focus,
-.link-btn:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-.header-content:focus {
-    outline: 2px solid white;
-    outline-offset: -2px;
-}
-
-/* Simplificamos los efectos para mayor claridad */
-.grid-table {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* Aseguramos que los bordes sean visibles */
-.grid-body td {
-    border-color: #4a5568 !important;
-}
-
-.grid-header th {
-    border-color: #1a252f !important;
-}
-
-/* Estados de ordenamiento */
-.header-content.sorted-asc .sort-icon:before {
-    content: '\f0de';
-}
-
-.header-content.sorted-desc .sort-icon:before {
-    content: '\f0dd';
-}
-
-.header-content.sorted-asc,
-.header-content.sorted-desc {
-    background-color: rgba(255,255,255,0.15);
-}
-
-/* Indicadores de progreso de carga */
-.loading-row {
-    background: linear-gradient(90deg, 
-        rgba(255,255,255,0.1) 25%, 
-        rgba(255,255,255,0.3) 50%, 
-        rgba(255,255,255,0.1) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Modo pantalla completa */
-.table-container.fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
-    border-radius: 0;
-    margin: 0;
-}
-
-.table-container.fullscreen .table-wrapper {
-    height: calc(100vh - 80px);
-    overflow-y: auto;
-}
-
-/* Estilo de impresión */
-@media print {
-    .table-controls,
-    .action-buttons,
-    .link-group {
-        display: none !important;
+    /* Animación de pulso para botón de eliminar */
+    .btn-delete:hover {
+        animation: pulse-delete 2s infinite;
     }
     
-    .grid-table {
-        font-size: 0.8rem;
+    @keyframes pulse-delete {
+        0% {
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        50% {
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.6);
+        }
+        100% {
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
     }
-    
-    .grid-header {
-        background: #333 !important;
-        color: white !important;
-        -webkit-print-color-adjust: exact;
-    }
-    
-    .status-badge,
-    .process-badge {
-        border: 1px solid #333 !important;
-        -webkit-print-color-adjust: exact;
-    }
-}
-
-/* Mejoras en la selección de texto */
-.grid-table ::selection {
-    background-color: rgba(52, 152, 219, 0.3);
-    color: var(--text-dark);
-}
-
-.grid-table ::-moz-selection {
-    background-color: rgba(52, 152, 219, 0.3);
-    color: var(--text-dark);
-}
-
-/* Optimizaciones de rendimiento */
-.grid-table {
-    contain: layout style paint;
-    will-change: scroll-position;
-}
-
-.action-btn,
-.link-btn {
-    contain: layout;
-    will-change: transform;
-}
-
-/* Estados hover mejorados */
-.grid-row:hover .action-btn,
-.grid-row:hover .link-btn {
-    opacity: 1;
-    visibility: visible;
-}
-
-.action-btn,
-.link-btn {
-    opacity: 0.8;
-    transition: all 0.2s ease;
-}
-
-/* Tooltips mejorados */
-[title] {
-    position: relative;
-}
-
-[title]:hover:after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--primary-color);
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    z-index: 1001;
-    margin-bottom: 5px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    max-width: 300px;
-    white-space: normal;
-    text-align: center;
-    line-height: 1.3;
-}
-
-[title]:hover:before {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: var(--primary-color);
-    z-index: 1001;
-}
-
-/* Mejoras en accesibilidad para reducción de movimiento */
-@media (prefers-reduced-motion: reduce) {
-    .grid-row {
-        animation: none;
-    }
-    
-    .action-btn,
-    .link-btn {
-        transition: none;
-    }
-    
-    .grid-row:hover {
-        transform: none;
-    }
-}
-
-/* Alto contraste */
-@media (prefers-contrast: high) {
-    .grid-header {
-        background: #000 !important;
-        color: #fff !important;
-    }
-    
-    .grid-body td {
-        border-color: #000 !important;
-    }
-    
-    .status-badge,
-    .process-badge {
-        border: 2px solid #000 !important;
-    }
-    
-    .action-btn,
-    .link-btn {
-        border: 2px solid #000 !important;
-    }
-}
 </style>
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function confirmarEliminacion(proyectoId, nombreProyecto) {
-    document.getElementById('nombreProyecto').textContent = nombreProyecto;
-    document.getElementById('btnConfirmarEliminar').href = `/proyectos/${proyectoId}/eliminar/`;
-    new bootstrap.Modal(document.getElementById('modalEliminar')).show();
-}
-
-// Auto-submit del formulario de filtros cuando cambian los selects
-document.querySelectorAll('select[name="estado"], select[name="año"], select[name="proceso"]').forEach(function(select) {
-    select.addEventListener('change', function() {
-        this.form.submit();
-    });
-});
-
-// Limpiar búsqueda con Enter
-document.getElementById('q').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        this.form.submit();
-    }
-});
-
-// Funcionalidad de pantalla completa
-function toggleFullscreen() {
-    const container = document.querySelector('.table-container');
-    const button = event.target.closest('button');
-    const icon = button.querySelector('i');
-    
-    if (container.classList.contains('fullscreen')) {
-        container.classList.remove('fullscreen');
-        icon.className = 'fas fa-expand';
-        button.title = 'Pantalla completa';
-    } else {
-        container.classList.add('fullscreen');
-        icon.className = 'fas fa-compress';
-        button.title = 'Salir de pantalla completa';
-    }
-}
-
-// Funcionalidad de exportación/impresión
-function exportTable() {
-    window.print();
-}
-
-// Ordenamiento de tabla
-document.querySelectorAll('[data-sort]').forEach(function(header) {
-    header.addEventListener('click', function() {
-        const sortField = this.getAttribute('data-sort');
-        const currentUrl = new URL(window.location);
-        const currentSort = currentUrl.searchParams.get('sort');
-        const currentOrder = currentUrl.searchParams.get('order');
-        
-        let newOrder = 'asc';
-        if (currentSort === sortField && currentOrder === 'asc') {
-            newOrder = 'desc';
-        }
-        
-        currentUrl.searchParams.set('sort', sortField);
-        currentUrl.searchParams.set('order', newOrder);
-        
-        window.location.href = currentUrl.toString();
-    });
-});
-
-// Indicador visual de ordenamiento
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sortField = urlParams.get('sort');
-    const sortOrder = urlParams.get('order');
-    
-    if (sortField && sortOrder) {
-        const header = document.querySelector(`[data-sort="${sortField}"] .header-content`);
-        if (header) {
-            header.classList.add(`sorted-${sortOrder}`);
-        }
-    }
-});
-
-// Escape key para salir de pantalla completa
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        const container = document.querySelector('.table-container');
-        if (container.classList.contains('fullscreen')) {
-            toggleFullscreen();
-        }
-    }
-});
-
-// Lazy loading de imágenes (si hay avatares)
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.remove('lazy');
-                imageObserver.unobserve(img);
-            }
-        });
-    });
-    
-    document.querySelectorAll('img[data-src]').forEach(img => {
-        imageObserver.observe(img);
-    });
-}
-
-// Preservar estado del scroll
-window.addEventListener('beforeunload', function() {
-    sessionStorage.setItem('tableScrollPosition', document.querySelector('.table-wrapper').scrollTop);
-});
-
-window.addEventListener('load', function() {
-    const scrollPosition = sessionStorage.getItem('tableScrollPosition');
-    if (scrollPosition) {
-        document.querySelector('.table-wrapper').scrollTop = scrollPosition;
-        sessionStorage.removeItem('tableScrollPosition');
-    }
-});
-
-// Mejorar rendimiento en scroll
-let ticking = false;
-function updateScrollPosition() {
-    // Aquí puedes agregar lógica adicional para el scroll
-    ticking = false;
-}
-
-document.querySelector('.table-wrapper').addEventListener('scroll', function() {
-    if (!ticking) {
-        requestAnimationFrame(updateScrollPosition);
-        ticking = true;
-    }
-});
-
-// Función para mostrar loading
-function showLoading() {
-    document.querySelectorAll('.grid-row').forEach(row => {
-        row.classList.add('loading-row');
-    });
-}
-
-// Función para ocultar loading
-function hideLoading() {
-    document.querySelectorAll('.grid-row').forEach(row => {
-        row.classList.remove('loading-row');
-    });
-}
-
-// Selección múltiple de filas (funcionalidad futura)
-let selectedRows = new Set();
-
-function toggleRowSelection(rowId) {
-    const row = document.querySelector(`[data-id="${rowId}"]`);
-    if (selectedRows.has(rowId)) {
-        selectedRows.delete(rowId);
-        row.classList.remove('selected');
-    } else {
-        selectedRows.add(rowId);
-        row.classList.add('selected');
-    }
-    
-    updateBulkActions();
-}
-
-function updateBulkActions() {
-    // Aquí puedes agregar lógica para acciones en lote
-    console.log('Filas seleccionadas:', selectedRows.size);
-}
-
-// Buscar en la tabla (búsqueda local)
-function setupLocalSearch() {
-    const searchInput = document.getElementById('q');
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('.grid-row');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm) || searchTerm === '') {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }, 300));
-    }
-}
-
-// Función debounce para optimizar performance
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Inicializar funcionalidades
-document.addEventListener('DOMContentLoaded', function() {
-    // setupLocalSearch(); // Descomenta si quieres búsqueda local
-    
-    // Añadir clase CSS para filas seleccionadas
-    const style = document.createElement('style');
-    style.textContent = `
-        .grid-row.selected {
-            background-color: rgba(52, 152, 219, 0.15) !important;
-            border-left: 4px solid var(--accent-color);
-        }
-    `;
-    document.head.appendChild(style);
-});
-</script>
 {% endblock %}

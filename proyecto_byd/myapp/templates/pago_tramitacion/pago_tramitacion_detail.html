@@ -1,1071 +1,122 @@
-{% extends 'base.html' %}
-
-{% block title %}Detalle Movimiento - Sistema de Gestión{% endblock %}
-
-{% block page_title %}Detalle del Movimiento{% endblock %}
-
-{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'pago_tramitacion_list' %}">Ingresos/Egresos</a></li>
-<li class="breadcrumb-item active">{{ object.nombre|truncatechars:30 }}</li>
-{% endblock %}
-
-{% block content %}
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="{% if object.tipo_pago == 'ingreso' %}fas fa-arrow-up text-success{% else %}fas fa-arrow-down text-danger{% endif %} me-2"></i>
-                {{ object.nombre }}
-            </h1>
-            <p class="page-subtitle">
-                {% if object.tipo_pago == 'ingreso' %}
-                    <span class="badge bg-success">INGRESO</span>
-                {% else %}
-                    <span class="badge bg-danger">EGRESO</span>
-                {% endif %}
-                registrado el {{ object.fecha|date:"d/m/Y" }}
-            </p>
-        </div>
-        <div>
-            <a href="{% url 'pago_tramitacion_edit' object.pk %}" class="btn btn-warning me-2">
-                <i class="fas fa-edit me-2"></i>Editar
-            </a>
-            <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                <i class="fas fa-trash me-2"></i>Eliminar
-            </button>
-            <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- Información Principal -->
-<div class="row mb-4">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Información del Movimiento
-                </h5>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Pago</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .text-secondary {
+            font-weight: 500;
+        }
+        .text-muted {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h1 class="h3 mb-0">Detalles del Pago de Tramitación</h1>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="card-body p-4">
+                <!-- Información general -->
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <h6 class="text-muted">Detalles Básicos</h6>
-                        <table class="table table-borderless">
-                            <tr>
-                                <td class="fw-bold">ID:</td>
-                                <td>#{{ object.pk }}</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Tipo:</td>
-                                <td>
-                                    {% if object.tipo_pago == 'ingreso' %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-arrow-up me-1"></i>INGRESO
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-arrow-down me-1"></i>EGRESO
-                                        </span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Fecha:</td>
-                                <td>
-                                    <i class="fas fa-calendar me-1"></i>
-                                    {{ object.fecha|date:"l, d \de F \de Y" }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Origen:</td>
-                                <td>
-                                    <i class="fas fa-building me-1"></i>
-                                    {{ object.origen|default:"No especificado" }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Concepto:</td>
-                                <td>{{ object.nombre }}</td>
-                            </tr>
-                        </table>
+                        <h5 class="text-secondary">Registro:</h5>
+                        <p class="fs-5 text-dark">12345</p>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="text-muted">Monto</h6>
-                        <div class="text-center p-4 {% if object.tipo_pago == 'ingreso' %}bg-success{% else %}bg-danger{% endif %} bg-opacity-10 rounded">
-                            <div class="display-4 {% if object.tipo_pago == 'ingreso' %}text-success{% else %}text-danger{% endif %} fw-bold">
-                                ${{ object.ingreso|default:object.egreso|floatformat:0 }}
-                            </div>
-                            <small class="text-muted">
-                                {% if object.tipo_pago == 'ingreso' %}Ingreso registrado{% else %}Egreso registrado{% endif %}
-                            </small>
-                        </div>
+                        <h5 class="text-secondary">Fecha:</h5>
+                        <p class="fs-5 text-dark">2025-01-20</p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Resumen Rápido -->
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h6 class="card-title mb-0">
-                    <i class="fas fa-chart-pie me-2"></i>Resumen
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="text-center mb-3">
-                    {% if object.tipo_pago == 'ingreso' %}
-                        <i class="fas fa-plus-circle fa-3x text-success mb-2"></i>
-                        <h6 class="text-success">INGRESO</h6>
-                    {% else %}
-                        <i class="fas fa-minus-circle fa-3x text-danger mb-2"></i>
-                        <h6 class="text-danger">EGRESO</h6>
-                    {% endif %}
-                </div>
-                
-                <ul class="list-unstyled">
-                    <li class="d-flex justify-content-between">
-                        <span>Estado:</span>
-                        <span class="badge bg-success">Registrado</span>
-                    </li>
-                    <li class="d-flex justify-content-between">
-                        <span>Documentos:</span>
-                        <span class="badge bg-info" id="docs-count">0</span>
-                    </li>
-                    <li class="d-flex justify-content-between">
-                        <span>Completitud:</span>
-                        <span class="badge" id="completitud-badge">0%</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- Acciones Rápidas -->
-        <div class="card mt-3">
-            <div class="card-header">
-                <h6 class="card-title mb-0">
-                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'pago_tramitacion_edit' object.pk %}" class="btn btn-warning btn-sm">
-                        <i class="fas fa-edit me-2"></i>Editar Información
-                    </a>
-                    <button type="button" class="btn btn-info btn-sm" onclick="printDetails()">
-                        <i class="fas fa-print me-2"></i>Imprimir Detalle
-                    </button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="copyToClipboard()">
-                        <i class="fas fa-copy me-2"></i>Copiar Información
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Descripción Detallada -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-align-left me-2"></i>Descripción de la Gestión
-                </h5>
-            </div>
-            <div class="card-body">
-                {% if object.gestion %}
-                    <div class="p-3 bg-light rounded">
-                        {{ object.gestion|linebreaks }}
+                <!-- Información adicional -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Origen:</h5>
+                        <p class="fs-5 text-dark">Banco Nacional</p>
                     </div>
-                {% else %}
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-file-alt fa-2x mb-2"></i>
-                        <p>No se ha proporcionado una descripción para este movimiento.</p>
-                        <a href="{% url 'pago_tramitacion_edit' object.pk %}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-edit me-2"></i>Agregar Descripción
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Documentos Adjuntos -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-paperclip me-2"></i>Documentos Adjuntos
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <!-- Comprobante de Transferencia -->
-                    <div class="col-md-4">
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i class="fas fa-exchange-alt fa-2x text-primary"></i>
-                            </div>
-                            <h6>Comprobante de Transferencia</h6>
-                            {% if object.transferencia %}
-                                <div class="document-actions">
-                                    <a href="{{ object.transferencia.url }}" target="_blank" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-eye me-1"></i>Ver
-                                    </a>
-                                    <a href="{{ object.transferencia.url }}" download class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-download me-1"></i>Descargar
-                                    </a>
-                                </div>
-                                <small class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>Adjunto
-                                </small>
-                            {% else %}
-                                <div class="text-muted text-center py-3">
-                                    <i class="fas fa-file-alt fa-2x mb-2"></i>
-                                    <p class="mb-0">No adjunto</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Boleta B&D -->
-                    <div class="col-md-4">
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i class="fas fa-receipt fa-2x text-success"></i>
-                            </div>
-                            <h6>Boleta B&D</h6>
-                            {% if object.boletabyd %}
-                                <div class="document-actions">
-                                    <a href="{{ object.boletabyd.url }}" target="_blank" class="btn btn-success btn-sm">
-                                        <i class="fas fa-eye me-1"></i>Ver
-                                    </a>
-                                    <a href="{{ object.boletabyd.url }}" download class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-download me-1"></i>Descargar
-                                    </a>
-                                </div>
-                                <small class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>Adjunto
-                                </small>
-                            {% else %}
-                                <div class="text-muted text-center py-3">
-                                    <i class="fas fa-file-alt fa-2x mb-2"></i>
-                                    <p class="mb-0">No adjunto</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Factura B&D -->
-                    <div class="col-md-4">
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i class="fas fa-file-invoice fa-2x text-warning"></i>
-                            </div>
-                            <h6>Factura B&D</h6>
-                            {% if object.facturabyd %}
-                                <div class="document-actions">
-                                    <a href="{{ object.facturabyd.url }}" target="_blank" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-eye me-1"></i>Ver
-                                    </a>
-                                    <a href="{{ object.facturabyd.url }}" download class="btn btn-outline-warning btn-sm">
-                                        <i class="fas fa-download me-1"></i>Descargar
-                                    </a>
-                                </div>
-                                <small class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>Adjunto
-                                </small>
-                            {% else %}
-                                <div class="text-muted text-center py-3">
-                                    <i class="fas fa-file-alt fa-2x mb-2"></i>
-                                    <p class="mb-0">No adjunto</p>
-                                </div>
-                            {% endif %}
-                        </div>
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Nombre:</h5>
+                        <p class="fs-5 text-dark">Juan Pérez</p>
                     </div>
                 </div>
-                
-                {% if not object.transferencia and not object.boletabyd and not object.facturabyd %}
-                <div class="text-center text-muted py-4">
-                    <i class="fas fa-folder-open fa-3x mb-3"></i>
-                    <h6>No hay documentos adjuntos</h6>
-                    <p>Puedes agregar documentos editando este movimiento.</p>
-                    <a href="{% url 'pago_tramitacion_edit' object.pk %}" class="btn btn-outline-primary">
-                        <i class="fas fa-plus me-2"></i>Agregar Documentos
+
+                <!-- Gestión -->
+                <div class="mb-4">
+                    <h5 class="text-secondary">Gestión:</h5>
+                    <p class="fs-5 text-dark">Pago por tramitación de documentos</p>
+                </div>
+
+                <!-- Ingresos y Egresos -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Ingreso:</h5>
+                        <p class="fs-5 text-success fw-bold">
+                            <i class="fas fa-arrow-up"></i> 10,000
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-secondary">Egreso:</h5>
+                        <p class="fs-5 text-danger fw-bold">
+                            <i class="fas fa-arrow-down"></i> 8,500
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Documentos -->
+                <div class="mb-4">
+                    <h5 class="text-secondary">Transferencia:</h5>
+                    <a href="#" class="btn btn-primary btn-sm shadow-sm" target="_blank">
+                        <i class="fas fa-file-alt"></i> Ver Transferencia
                     </a>
                 </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal de Confirmación para Eliminar -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center">
-                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                    <h6>¿Estás seguro de eliminar este movimiento?</h6>
-                    <p class="text-muted">
-                        Se eliminará el 
-                        {% if object.tipo_pago == 'ingreso' %}
-                            <strong class="text-success">ingreso</strong>
-                        {% else %}
-                            <strong class="text-danger">egreso</strong>
-                        {% endif %}
-                        de <strong>${{ object.ingreso|default:object.egreso|floatformat:0 }}</strong>
-                        correspondiente a <strong>{{ object.nombre }}</strong>.
-                    </p>
-                    <p class="text-danger">
-                        <i class="fas fa-exclamation-circle me-1"></i>
-                        Esta acción no se puede deshacer.
-                    </p>
+                <div class="mb-4">
+                    <h5 class="text-secondary">Boleta BYD:</h5>
+                    <a href="#" class="btn btn-primary btn-sm shadow-sm" target="_blank">
+                        <i class="fas fa-file-alt"></i> Ver Boleta
+                    </a>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-secondary">Factura BYD:</h5>
+                    <a href="#" class="btn btn-primary btn-sm shadow-sm" target="_blank">
+                        <i class="fas fa-file-alt"></i> Ver Factura
+                    </a>
+                </div>
+
+                <!-- Acciones -->
+                <div class="d-flex justify-content-end gap-3">
+                    <a href="#" class="btn btn-warning shadow-sm">
+                        <i class="fas fa-edit"></i> Editar Pago
+                    </a>
+                    <a href="#" class="btn btn-secondary shadow-sm">
+                        <i class="fas fa-list"></i> Volver a la lista
+                    </a>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Cancelar
-                </button>
-                <a href="{% url 'pago_tramitacion_delete' object.pk %}" class="btn btn-danger">
-                    <i class="fas fa-trash me-2"></i>Eliminar Definitivamente
-                </a>
-            </div>
         </div>
     </div>
-</div>
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Calcular completitud y documentos
-document.addEventListener('DOMContentLoaded', function() {
-    const hasTransferencia = {% if object.transferencia %}true{% else %}false{% endif %};
-    const hasBoletaByd = {% if object.boletabyd %}true{% else %}false{% endif %};
-    const hasFacturaByd = {% if object.facturabyd %}true{% else %}false{% endif %};
-    const hasGestion = {% if object.gestion %}true{% else %}false{% endif %};
-    
-    // Calcular documentos
-    let documentosCount = 0;
-    if (hasTransferencia) documentosCount++;
-    if (hasBoletaByd) documentosCount++;
-    if (hasFacturaByd) documentosCount++;
-    
-    // Actualizar contador de documentos
-    document.getElementById('docs-count').textContent = documentosCount;
-    
-    // Calcular completitud
-    let completitud = 25; // Base por tener datos básicos
-    if (hasGestion) completitud += 25;
-    if (documentosCount > 0) completitud += (documentosCount * 16.67); // Hasta 50% por documentos
-    
-    // Actualizar badge de completitud
-    const completitudBadge = document.getElementById('completitud-badge');
-    completitudBadge.textContent = Math.round(completitud) + '%';
-    
-    if (completitud >= 80) {
-        completitudBadge.className = 'badge bg-success';
-    } else if (completitud >= 50) {
-        completitudBadge.className = 'badge bg-warning';
-    } else {
-        completitudBadge.className = 'badge bg-danger';
-    }
-});
-
-// Función para imprimir detalles
-function printDetails() {
-    const printContent = `
-        <html>
-        <head>
-            <title>Detalle de Movimiento #{{ object.pk }}</title>
-            <style>
-                body { 
-                    font-family: Arial, sans-serif; 
-                    margin: 20px; 
-                    line-height: 1.6;
-                }
-                .header { 
-                    text-align: center; 
-                    border-bottom: 2px solid #333; 
-                    padding-bottom: 15px; 
-                    margin-bottom: 20px;
-                }
-                .info-table { 
-                    width: 100%; 
-                    margin: 20px 0; 
-                    border-collapse: collapse;
-                }
-                .info-table td { 
-                    padding: 12px; 
-                    border-bottom: 1px solid #ddd; 
-                    vertical-align: top;
-                }
-                .info-table td:first-child {
-                    font-weight: bold;
-                    width: 30%;
-                    background-color: #f8f9fa;
-                }
-                .amount { 
-                    font-size: 28px; 
-                    font-weight: bold; 
-                    text-align: center; 
-                    margin: 30px 0; 
-                    padding: 20px;
-                    border: 2px solid #ddd;
-                    border-radius: 8px;
-                }
-                .success { color: #27ae60; }
-                .danger { color: #e74c3c; }
-                .footer {
-                    margin-top: 40px; 
-                    text-align: center; 
-                    color: #666;
-                    font-size: 12px;
-                    border-top: 1px solid #ddd;
-                    padding-top: 15px;
-                }
-                .description {
-                    background-color: #f8f9fa;
-                    padding: 15px;
-                    border-radius: 5px;
-                    margin: 20px 0;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>DETALLE DE MOVIMIENTO FINANCIERO</h1>
-                <h2>ID: #{{ object.pk }}</h2>
-            </div>
-            
-            <table class="info-table">
-                <tr>
-                    <td>Tipo de Movimiento:</td>
-                    <td>{% if object.tipo_pago == 'ingreso' %}INGRESO{% else %}EGRESO{% endif %}</td>
-                </tr>
-                <tr>
-                    <td>Fecha:</td>
-                    <td>{{ object.fecha|date:"d/m/Y" }}</td>
-                </tr>
-                <tr>
-                    <td>Concepto:</td>
-                    <td>{{ object.nombre }}</td>
-                </tr>
-                <tr>
-                    <td>Origen:</td>
-                    <td>{{ object.origen|default:"No especificado" }}</td>
-                </tr>
-                <tr>
-                    <td>Documentos Adjuntos:</td>
-                    <td>
-                        {% if object.transferencia %}• Comprobante de Transferencia<br>{% endif %}
-                        {% if object.boletabyd %}• Boleta B&D<br>{% endif %}
-                        {% if object.facturabyd %}• Factura B&D<br>{% endif %}
-                        {% if not object.transferencia and not object.boletabyd and not object.facturabyd %}Ninguno{% endif %}
-                    </td>
-                </tr>
-            </table>
-            
-            <div class="amount {% if object.tipo_pago == 'ingreso' %}success{% else %}danger{% endif %}">
-                MONTO: ${{ object.ingreso|default:object.egreso|floatformat:0 }}
-            </div>
-            
-            {% if object.gestion %}
-            <div class="description">
-                <h3>Descripción de la Gestión:</h3>
-                <p>{{ object.gestion|linebreaks }}</p>
-            </div>
-            {% endif %}
-            
-            <div class="footer">
-                <p>Documento generado el {{ "now"|date:"d/m/Y \a \l\a\s H:i" }}</p>
-                <p>Sistema de Gestión de Proyectos</p>
-            </div>
-        </body>
-        </html>
-    `;
-    
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-}
-
-// Función para copiar información al portapapeles
-function copyToClipboard() {
-    const info = `
-MOVIMIENTO FINANCIERO #{{ object.pk }}
-=====================================
-
-Tipo: {% if object.tipo_pago == 'ingreso' %}INGRESO{% else %}EGRESO{% endif %}
-Fecha: {{ object.fecha|date:"d/m/Y" }}
-Concepto: {{ object.nombre }}
-Origen: {{ object.origen|default:"No especificado" }}
-Monto: ${{ object.ingreso|default:object.egreso|floatformat:0 }}
-
-{% if object.gestion %}Descripción:
-{{ object.gestion }}
-
-{% endif %}Documentos adjuntos:
-{% if object.transferencia %}• Comprobante de Transferencia{% endif %}
-{% if object.boletabyd %}• Boleta B&D{% endif %}
-{% if object.facturabyd %}• Factura B&D{% endif %}
-{% if not object.transferencia and not object.boletabyd and not object.facturabyd %}• Ninguno{% endif %}
-
-Generado el {{ "now"|date:"d/m/Y H:i" }}
-    `.trim();
-    
-    navigator.clipboard.writeText(info).then(function() {
-        // Mostrar notificación de éxito
-        showToast('Información copiada al portapapeles', 'success');
-    }).catch(function(err) {
-        showToast('Error al copiar al portapapeles', 'danger');
-    });
-}
-
-// Función para mostrar notificaciones toast
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
-    toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
-        ${message}
-    `;
-    document.body.appendChild(toast);
-    
-    // Animar entrada
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 100);
-    
-    // Remover después de 3 segundos
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
-}
-
-// Animaciones para documentos
-document.addEventListener('DOMContentLoaded', function() {
-    const documentCards = document.querySelectorAll('.document-card');
-    
-    documentCards.forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.1}s`;
-        card.classList.add('fade-in-up');
-    });
-});
-
-// Función para obtener información del archivo
-function getFileInfo(url) {
-    if (!url) return null;
-    
-    const fileName = url.split('/').pop();
-    const extension = fileName.split('.').pop().toLowerCase();
-    
-    return {
-        name: fileName,
-        extension: extension,
-        icon: getFileIcon(extension)
-    };
-}
-
-function getFileIcon(extension) {
-    const icons = {
-        'pdf': 'fas fa-file-pdf text-danger',
-        'jpg': 'fas fa-file-image text-info',
-        'jpeg': 'fas fa-file-image text-info',
-        'png': 'fas fa-file-image text-info',
-        'doc': 'fas fa-file-word text-primary',
-        'docx': 'fas fa-file-word text-primary',
-        'xls': 'fas fa-file-excel text-success',
-        'xlsx': 'fas fa-file-excel text-success'
-    };
-    
-    return icons[extension] || 'fas fa-file text-muted';
-}
-</script>
-
-<style>
-/* Estilos para las tarjetas de documentos */
-.document-card {
-    border: 1px solid var(--medium-gray);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    height: 100%;
-    transition: all 0.3s ease;
-    background-color: white;
-}
-
-.document-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    border-color: var(--accent-color);
-}
-
-.document-icon {
-    margin-bottom: 1rem;
-}
-
-.document-actions {
-    margin: 1rem 0;
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.document-actions .btn {
-    flex: 1;
-    max-width: 100px;
-}
-
-/* Tabla sin bordes */
-.table-borderless td {
-    border: none !important;
-    padding: 0.75rem 0;
-}
-
-.table-borderless td:first-child {
-    color: var(--dark-gray);
-    width: 30%;
-}
-
-/* Notificaciones toast */
-.toast-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1050;
-    transform: translateX(100%);
-    opacity: 0;
-    transition: all 0.3s ease;
-    max-width: 350px;
-    font-weight: 500;
-}
-
-.toast-notification.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.toast-success {
-    background: var(--success-color);
-    color: white;
-}
-
-.toast-danger {
-    background: var(--danger-color);
-    color: white;
-}
-
-.toast-info {
-    background: var(--accent-color);
-    color: white;
-}
-
-/* Animaciones de entrada */
-.fade-in-up {
-    animation: fadeInUp 0.6s ease forwards;
-    opacity: 0;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Estilos para el monto destacado */
-.display-4 {
-    font-size: 2.5rem;
-    line-height: 1.2;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Mejoras en el modal */
-.modal-content {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid var(--medium-gray);
-    border-radius: 15px 15px 0 0;
-}
-
-.modal-footer {
-    border-top: 1px solid var(--medium-gray);
-    border-radius: 0 0 15px 15px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .page-header .d-flex {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .document-card {
-        margin-bottom: 1rem;
-    }
-    
-    .display-4 {
-        font-size: 2rem;
-    }
-    
-    .document-actions {
-        flex-direction: column;
-    }
-    
-    .document-actions .btn {
-        max-width: none;
-    }
-    
-    .toast-notification {
-        right: 10px;
-        left: 10px;
-        max-width: none;
-    }
-}
-
-/* Print styles */
-@media print {
-    .btn, .modal, .page-header .btn, .card-header {
-        display: none !important;
-    }
-    
-    .card {
-        border: 1px solid #000 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    
-    .page-header {
-        border-bottom: 2px solid #000;
-    }
-    
-    .display-4 {
-        font-size: 1.8rem;
-    }
-    
-    body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-}
-
-/* Loading states */
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn[data-loading="true"] {
-    position: relative;
-    color: transparent;
-}
-
-.btn[data-loading="true"]::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    left: 50%;
-    margin-left: -8px;
-    margin-top: -8px;
-    border: 2px solid transparent;
-    border-top-color: currentColor;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Accesibilidad */
-.btn:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-.document-card:focus-within {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-/* Estados de hover mejorados */
-.card:hover {
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-    transition: all 0.2s ease;
-}
-
-.document-actions .btn:hover {
-    transform: translateY(-2px) scale(1.05);
-}
-
-/* Colores de estado consistentes */
-.text-success { color: var(--success-color) !important; }
-.text-danger { color: var(--danger-color) !important; }
-.text-warning { color: var(--warning-color) !important; }
-.text-info { color: var(--accent-color) !important; }
-.text-primary { color: var(--primary-color) !important; }
-
-.bg-success { background-color: var(--success-color) !important; }
-.bg-danger { background-color: var(--danger-color) !important; }
-.bg-warning { background-color: var(--warning-color) !important; }
-.bg-info { background-color: var(--accent-color) !important; }
-
-/* Badges mejorados */
-.badge {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.badge.bg-success { 
-    background-color: var(--success-color) !important; 
-    box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
-}
-
-.badge.bg-danger { 
-    background-color: var(--danger-color) !important; 
-    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
-}
-
-.badge.bg-warning { 
-    background-color: var(--warning-color) !important; 
-    box-shadow: 0 2px 4px rgba(243, 156, 18, 0.3);
-}
-
-.badge.bg-info { 
-    background-color: var(--accent-color) !important; 
-    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
-}
-
-/* Efectos de transición para elementos interactivos */
-.list-unstyled li {
-    padding: 0.5rem 0;
-    transition: background-color 0.2s ease;
-}
-
-.list-unstyled li:hover {
-    background-color: rgba(52, 152, 219, 0.05);
-    border-radius: 4px;
-}
-
-/* Mejoras en la tipografía */
-.card-title {
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-.page-title {
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.page-subtitle {
-    font-weight: 500;
-    opacity: 0.8;
-}
-
-/* Estados de los documentos */
-.document-card.has-document {
-    border-color: var(--success-color);
-    background: linear-gradient(145deg, #ffffff 0%, #f8fffe 100%);
-}
-
-.document-card.no-document {
-    border-color: var(--medium-gray);
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    opacity: 0.7;
-}
-
-/* Scroll suave para elementos internos */
-.card-body {
-    scrollbar-width: thin;
-    scrollbar-color: var(--medium-gray) transparent;
-}
-
-.card-body::-webkit-scrollbar {
-    width: 6px;
-}
-
-.card-body::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.card-body::-webkit-scrollbar-thumb {
-    background: var(--medium-gray);
-    border-radius: 3px;
-}
-
-/* Indicadores de estado visual */
-.status-indicator {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 0.5rem;
-}
-
-.status-success { background-color: var(--success-color); }
-.status-warning { background-color: var(--warning-color); }
-.status-danger { background-color: var(--danger-color); }
-.status-info { background-color: var(--accent-color); }
-
-/* Animaciones adicionales */
-.pulse {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
-    }
-}
-
-/* Dark mode support (preparado para futuro) */
-@media (prefers-color-scheme: dark) {
-    .card {
-        background-color: #2d3748;
-        border-color: #4a5568;
-    }
-    
-    .table-borderless td {
-        color: #e2e8f0;
-    }
-    
-    .text-muted {
-        color: #a0aec0 !important;
-    }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-    .card {
-        border: 2px solid #000 !important;
-    }
-    
-    .badge {
-        border: 1px solid #000;
-    }
-    
-    .btn {
-        border: 2px solid #000;
-    }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    .fade-in-up,
-    .document-card,
-    .btn,
-    .card {
-        animation: none !important;
-        transition: none !important;
-    }
-    
-    .document-card:hover {
-        transform: none;
-    }
-}
-
-/* Selección de texto mejorada */
-::selection {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-::-moz-selection {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-/* Estilos para pantallas muy pequeñas */
-@media (max-width: 480px) {
-    .display-4 {
-        font-size: 1.8rem;
-    }
-    
-    .card-body {
-        padding: 1rem;
-    }
-    
-    .document-card {
-        padding: 1rem;
-    }
-    
-    .btn-group {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .page-header {
-        padding-bottom: 1rem;
-    }
-    
-    .page-title {
-        font-size: 1.5rem;
-    }
-}
-
-/* Optimizaciones de rendimiento */
-.document-card,
-.card,
-.btn {
-    contain: layout style paint;
-}
-
-.fade-in-up {
-    will-change: transform, opacity;
-}
-
-.document-card:hover {
-    will-change: transform, box-shadow;
-}
-</style>
-{% endblock %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

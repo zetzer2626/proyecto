@@ -1,266 +1,361 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
 
-{% block title %}Lista de Solicitudes - Sistema de Gestión{% endblock %}
-{% block page_title %}Gestión de Solicitudes{% endblock %}
+{% block title %}Lista de Solicitudes{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title"><i class="fas fa-file-alt me-2"></i>Solicitudes</h1>
-            <p class="page-subtitle">Gestiona todas las solicitudes del sistema</p>
-        </div>
-        <div>
-            <a href="{% url 'solicitud-create' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Nueva Solicitud
-            </a>
-        </div>
-    </div>
-</div>
+<div class="container-fluid py-4">
+    <h2 class="text-center mb-4 text-primary fw-bold">Gestión de Solicitudes de Documentos</h2>
 
-<!-- Stats Cards Row -->
-<div class="row mb-4">
-    <div class="col-lg-4 col-md-6">
-        <div class="stats-card success">
-            <div class="stats-number">{{ completados_count }}</div>
-            <div class="stats-label">
-                <i class="fas fa-check-circle me-1"></i>Completadas
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="stats-card warning">
-            <div class="stats-number">{{ en_proceso_count }}</div>
-            <div class="stats-label">
-                <i class="fas fa-clock me-1"></i>En Proceso
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="stats-card danger">
-            <div class="stats-number">{{ pendientes_count }}</div>
-            <div class="stats-label">
-                <i class="fas fa-exclamation-triangle me-1"></i>Pendientes
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Filters and Search -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-filter me-2"></i>Filtros y Búsqueda
-        </h5>
-    </div>
-    <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-6">
-                <label for="q" class="form-label">Buscar</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input type="text" class="form-control" id="q" name="q" 
-                           placeholder="Solicitante, nombre, dirección..." 
-                           value="{{ query }}">
+    <!-- Tarjetas de Resumen (más compactas) -->
+    <div class="row g-3 mb-4">
+        <!-- Completados -->
+        <div class="col-6 col-md-4">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="completados">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                    </div>
+                    <div>
+                        <h6 id="completados" class="text-success fw-bold mb-1">Completados</h6>
+                        <p class="h4 mb-0 text-success">{{ completados_count }}</p>
+                        <small class="text-muted">Solicitudes</small>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <label for="estado" class="form-label">Estado</label>
-                <select class="form-control" id="estado" name="estado">
-                    <option value="">Todos los estados</option>
-                    <option value="completado" {% if estado == 'completado' %}selected{% endif %}>Completadas</option>
-                    <option value="en_proceso" {% if estado == 'en_proceso' %}selected{% endif %}>En Proceso</option>
-                    <option value="pendiente" {% if estado == 'pendiente' %}selected{% endif %}>Pendientes</option>
+        </div>
+        <!-- En Proceso -->
+        <div class="col-6 col-md-4">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="enProceso">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="fas fa-spinner fa-2x text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 id="enProceso" class="text-warning fw-bold mb-1">En Proceso</h6>
+                        <p class="h4 mb-0 text-warning">{{ en_proceso_count }}</p>
+                        <small class="text-muted">Solicitudes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Pendientes -->
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100" aria-labelledby="pendientes">
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="me-2">
+                        <i class="fas fa-exclamation-circle fa-2x text-danger"></i>
+                    </div>
+                    <div>
+                        <h6 id="pendientes" class="text-danger fw-bold mb-1">Pendientes</h6>
+                        <p class="h4 mb-0 text-danger">{{ pendientes_count }}</p>
+                        <small class="text-muted">Solicitudes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Búsqueda y Filtros (más compacto) -->
+    <div class="bg-white bg-opacity-90 rounded-3 shadow-lg p-3 mb-4">
+        <form method="get" class="row gy-2 gx-3 align-items-end">
+            <!-- Campo de búsqueda -->
+            <div class="col-lg-4 col-md-6">
+                <label for="search" class="form-label fw-bold small">Buscar</label>
+                <input 
+                    type="text" 
+                    id="search" 
+                    name="q" 
+                    class="form-control form-control-sm border-primary" 
+                    placeholder="Solicitante, nombre, dirección..." 
+                    value="{{ query }}">
+            </div>
+
+            <!-- Filtro por estado -->
+            <div class="col-lg-3 col-md-6">
+                <label for="estado" class="form-label fw-bold small">Estado</label>
+                <select id="estado" name="estado" class="form-select form-select-sm border-primary">
+                    <option value="">Todos los Estados</option>
+                    <option value="completado" {% if estado == "completado" %}selected{% endif %}>Completado</option>
+                    <option value="en_proceso" {% if estado == "en_proceso" %}selected{% endif %}>En Proceso</option>
+                    <option value="pendiente" {% if estado == "pendiente" %}selected{% endif %}>Pendiente</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-1"></i>Buscar
+
+            <!-- Botones de acción (reorganizados) -->
+            <div class="col-lg-5 col-md-12">
+                <div class="d-flex flex-wrap gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-search"></i> Buscar
                     </button>
-                    <a href="{% url 'solicitud-list' %}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times me-1"></i>Limpiar
+                    <a href="{% url 'solicitud-create' %}" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> Nueva
+                    </a>
+                    <a href="{% url 'solicitud-list' %}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-eraser"></i> Limpiar
                     </a>
                 </div>
             </div>
         </form>
     </div>
-</div>
 
-<!-- Solicitudes Table -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-table me-2"></i>Lista de Solicitudes
-            <span class="badge bg-secondary ms-2">{{ solicitudes.count }} resultado{{ solicitudes.count|pluralize }}</span>
-        </h5>
-    </div>
-    <div class="card-body p-0">
-        {% if solicitudes %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Solicitante</th>
-                            <th>Documento</th>
-                            <th>Nombre</th>
-                            <th>Dirección</th>
-                            <th>Fecha Solicitud</th>
-                            <th>Fecha Recepción</th>
-                            <th>Estado</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for solicitud in solicitudes %}
-                            <tr>
-                                <td>
-                                    <div class="fw-semibold">{{ solicitud.solicitante|default:"Sin especificar" }}</div>
-                                </td>
-                                <td>
-                                    <span class="text-truncate" style="max-width: 150px; display: inline-block;" 
-                                          title="{{ solicitud.nombre_documento }}">
-                                        {{ solicitud.nombre_documento|default:"Sin documento" }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="fw-semibold">{{ solicitud.nombre|default:"Sin nombre" }}</div>
-                                </td>
-                                <td>
-                                    <span class="text-truncate" style="max-width: 200px; display: inline-block;" 
-                                          title="{{ solicitud.direccion }}">
-                                        {{ solicitud.direccion|default:"Sin dirección" }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {% if solicitud.fecha_solicitud %}
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-calendar me-1"></i>{{ solicitud.fecha_solicitud }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted">Sin fecha</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if solicitud.fecha_recepcion %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-calendar-check me-1"></i>{{ solicitud.fecha_recepcion }}
-                                        </span>
-                                    {% else %}
-                                        <span class="text-muted">Sin fecha</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check-circle me-1"></i>Completada
-                                        </span>
-                                    {% elif solicitud.fecha_solicitud and not solicitud.fecha_recepcion %}
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-clock me-1"></i>En Proceso
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-exclamation-triangle me-1"></i>Pendiente
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <a href="{% url 'solicitud-detail' solicitud.pk %}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{% url 'solicitud-update' solicitud.pk %}" 
-                                           class="btn btn-sm btn-outline-secondary" 
-                                           title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{% url 'solicitud-delete' solicitud.pk %}" 
-                                           class="btn btn-sm btn-outline-danger" 
-                                           title="Eliminar"
-                                           onclick="return confirm('¿Estás seguro de que deseas eliminar esta solicitud?')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No se encontraron solicitudes</h5>
-                <p class="text-muted mb-4">No hay solicitudes que coincidan con tus criterios de búsqueda.</p>
-                <a href="{% url 'solicitud-create' %}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Crear Primera Solicitud
-                </a>
-            </div>
-        {% endif %}
+    <!-- Tabla de Solicitudes Optimizada -->
+    <div class="table-responsive">
+        <table id="example" class="table table-striped table-hover table-bordered" style="font-size: 0.85rem;">
+            <thead class="table-dark">
+                <tr>
+                    <th style="min-width: 120px;">Solicitante</th>
+                    <th style="min-width: 130px;">Documentos</th>
+                    <th style="min-width: 120px;">Nombre</th>
+                    <th style="min-width: 120px;">Dirección</th>
+                    <th style="min-width: 110px;">F. Solicitud</th>
+                    <th style="min-width: 110px;">F. Recepción</th>
+                    <th style="min-width: 150px;">Descripción</th>
+                    <th style="min-width: 90px;">Documento</th>
+                    <th style="min-width: 90px;">Drive</th>
+                    <th style="min-width: 100px;">Estado</th>
+                    <th style="min-width: 120px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes %}
+                    <tr>
+                        <td>
+                            <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
+                                {{ solicitud.solicitante }}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="max-width: 130px; word-wrap: break-word; white-space: normal;">
+                                <strong>{{ solicitud.nombre_documento }}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
+                                {{ solicitud.nombre }}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
+                                {{ solicitud.direccion }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            {% if solicitud.fecha_solicitud %}
+                                <small>{{ solicitud.fecha_solicitud }}</small>
+                            {% else %}
+                                <span class="text-muted">Sin Fecha</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if solicitud.fecha_recepcion %}
+                                <small>{{ solicitud.fecha_recepcion }}</small>
+                            {% else %}
+                                <span class="text-muted">Sin Fecha</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
+                                {{ solicitud.descripcion }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            {% if solicitud.documento_solicitud %}
+                                <a href="{{ solicitud.documento_solicitud.url }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Documento">
+                                    <i class="fas fa-file-alt"></i>
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if solicitud.link_solicitud %}
+                                <a href="{{ solicitud.link_solicitud }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver en Drive">
+                                    <i class="fas fa-folder"></i>
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if solicitud.fecha_solicitud and solicitud.fecha_recepcion %}
+                                <span class="badge bg-success">Completado</span>
+                            {% elif solicitud.fecha_solicitud %}
+                                <span class="badge bg-warning text-dark">En Proceso</span>
+                            {% else %}
+                                <span class="badge bg-danger">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons d-flex gap-1 justify-content-center">
+                                <a href="{% url 'solicitud-detail' solicitud.pk %}" class="btn-action btn-view" title="Ver Detalles" data-bs-toggle="tooltip">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'solicitud-update' solicitud.pk %}" class="btn-action btn-edit" title="Editar Solicitud" data-bs-toggle="tooltip">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'solicitud-delete' solicitud.pk %}" class="btn-action btn-delete" title="Eliminar Solicitud" data-bs-toggle="tooltip" onclick="return confirm('¿Estás seguro de eliminar esta solicitud?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">
+                            <i class="fas fa-search fa-2x mb-2"></i>
+                            <br>No se encontraron solicitudes que coincidan con la búsqueda.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Pagination if needed -->
-{% if is_paginated %}
-<div class="d-flex justify-content-center mt-4">
-    <nav aria-label="Navegación de páginas">
-        <ul class="pagination">
-            {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                </li>
-            {% endif %}
-            
-            <li class="page-item active">
-                <span class="page-link">
-                    {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                </span>
-            </li>
-            
-            {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-</div>
-{% endif %}
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Auto-submit form on select change
-    document.getElementById('estado').addEventListener('change', function() {
-        this.form.submit();
-    });
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+    }
     
-    // Confirm delete actions
-    document.querySelectorAll('.btn-outline-danger').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
-                e.preventDefault();
-            }
-        });
-    });
-</script>
+    /* Optimizaciones para la tabla */
+    .table td, .table th {
+        vertical-align: top;
+        padding: 0.5rem 0.25rem;
+        word-wrap: break-word;
+    }
+    
+    /* Permitir que las celdas se expandan verticalmente */
+    .table td div {
+        line-height: 1.3;
+    }
+    
+    /* Botones de acción modernos y atractivos */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        border: none;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        font-size: 14px;
+    }
+    
+    .btn-action::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-action:hover::before {
+        left: 100%;
+    }
+    
+    .btn-view {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+    
+    .btn-view:hover {
+        background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+        color: white;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    }
+    
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        color: white;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+    
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+    
+    .btn-action:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .action-buttons {
+        min-width: 120px;
+    }
+    
+    /* Animación de pulso para botón de eliminar */
+    .btn-delete:hover {
+        animation: pulse-delete 2s infinite;
+    }
+    
+    @keyframes pulse-delete {
+        0% {
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+        50% {
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.6);
+        }
+        100% {
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+    }
+    
+    /* Mejorar legibilidad en dispositivos pequeños */
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.75rem;
+        }
+        
+        .card-body {
+            padding: 0.75rem !important;
+        }
+        
+        .h4 {
+            font-size: 1.1rem;
+        }
+        
+        .btn-action {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+    }
+    
+    /* Scroll horizontal suave */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Badges más pequeños */
+    .badge {
+        font-size: 0.7rem;
+    }
+</style>
+
 {% endblock %}

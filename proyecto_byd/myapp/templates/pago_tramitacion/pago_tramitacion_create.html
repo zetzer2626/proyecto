@@ -1,440 +1,147 @@
 {% extends 'base.html' %}
 
-{% block title %}Nuevo Movimiento Financiero - Sistema de Gestión{% endblock %}
+{% load static %}
+{% load widget_tweaks %}
+{% load humanize %}
 
-{% block page_title %}Nuevo Movimiento Financiero{% endblock %}
-
-{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'pago_tramitacion_list' %}">Ingresos/Egresos</a></li>
-<li class="breadcrumb-item active">Nuevo Movimiento</li>
-{% endblock %}
+{% block title %}Registrar Pago{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="fas fa-plus-circle me-2"></i>Registrar Nuevo Movimiento
-            </h1>
-            <p class="page-subtitle">Registra un nuevo ingreso o egreso en el sistema</p>
+<div class="container my-5">
+    <div class="card shadow-lg border-primary mx-auto" style="max-width: 700px;">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title text-center mb-0">Formulario Ingreso y Egreso</h3>
         </div>
-        <div>
-            <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
-            </a>
-        </div>
-    </div>
-</div>
+        <div class="card-body bg-light">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-<!-- Indicadores de tipo de movimiento -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card border-success movement-type-card" id="ingreso-card">
-            <div class="card-body text-center">
-                <i class="fas fa-arrow-up fa-2x text-success mb-2"></i>
-                <h5 class="card-title text-success">Ingreso</h5>
-                <p class="card-text">Dinero que entra al sistema</p>
-                <button type="button" class="btn btn-success" onclick="selectMovementType('ingreso')">
-                    Seleccionar Ingreso
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-danger movement-type-card" id="egreso-card">
-            <div class="card-body text-center">
-                <i class="fas fa-arrow-down fa-2x text-danger mb-2"></i>
-                <h5 class="card-title text-danger">Egreso</h5>
-                <p class="card-text">Dinero que sale del sistema</p>
-                <button type="button" class="btn btn-danger" onclick="selectMovementType('egreso')">
-                    Seleccionar Egreso
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+                <!-- Mostrar errores del formulario -->
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-<!-- Formulario -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-edit me-2"></i>Información del Movimiento
-            <span id="movement-indicator" class="badge ms-2" style="display: none;"></span>
-        </h5>
-    </div>
-    <div class="card-body">
-        <form method="post" enctype="multipart/form-data" id="payment-form">
-            {% csrf_token %}
-            
-            <div class="row">
-                <!-- Tipo de Pago (oculto) -->
-                <div class="col-12">
-                    {{ form.tipo_pago.as_hidden }}
-                </div>
-                
-                <!-- Información Básica -->
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.fecha.id_for_label }}" class="form-label">
-                            <i class="fas fa-calendar-alt me-1"></i>Fecha
-                        </label>
-                        {{ form.fecha }}
-                        {% if form.fecha.errors %}
-                            <div class="text-danger small">{{ form.fecha.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.origen.id_for_label }}" class="form-label">
-                            <i class="fas fa-building me-1"></i>Origen
-                        </label>
-                        {{ form.origen }}
-                        {% if form.origen.errors %}
-                            <div class="text-danger small">{{ form.origen.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
-                            <i class="fas fa-tag me-1"></i>Nombre/Concepto
-                        </label>
-                        {{ form.nombre }}
-                        {% if form.nombre.errors %}
-                            <div class="text-danger small">{{ form.nombre.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <!-- Monto -->
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-dollar-sign me-1"></i>
-                            <span id="amount-label">Monto</span>
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="amount-input" 
-                                   name="monto" 
-                                   placeholder="0.00" 
-                                   step="0.01" 
-                                   min="0"
-                                   required>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_tipo_pago" class="form-label">Tipo de Pago</label>
+                            {{ form.tipo_pago|add_class:"form-select" }}
                         </div>
-                        <div id="amount-error" class="text-danger small" style="display: none;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha:</label>
+                            <input type="date" id="fecha" name="fecha" class="form-control" required>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Descripción/Gestión -->
-                <div class="col-12">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.gestion.id_for_label }}" class="form-label">
-                            <i class="fas fa-align-left me-1"></i>Descripción de la Gestión
-                        </label>
-                        {{ form.gestion }}
-                        {% if form.gestion.errors %}
-                            <div class="text-danger small">{{ form.gestion.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Documentos de Soporte -->
-            <div class="row">
-                <div class="col-12">
-                    <h6 class="text-muted mb-3">
-                        <i class="fas fa-paperclip me-2"></i>Documentos de Soporte
-                    </h6>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.transferencia.id_for_label }}" class="form-label">
-                            <i class="fas fa-exchange-alt me-1"></i>Comprobante de Transferencia
-                        </label>
-                        {{ form.transferencia }}
-                        {% if form.transferencia.errors %}
-                            <div class="text-danger small">{{ form.transferencia.errors }}</div>
-                        {% endif %}
-                        <small class="text-muted">PDF, JPG, PNG</small>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.boletabyd.id_for_label }}" class="form-label">
-                            <i class="fas fa-receipt me-1"></i>Boleta B&D
-                        </label>
-                        {{ form.boletabyd }}
-                        {% if form.boletabyd.errors %}
-                            <div class="text-danger small">{{ form.boletabyd.errors }}</div>
-                        {% endif %}
-                        <small class="text-muted">PDF, JPG, PNG</small>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.facturabyd.id_for_label }}" class="form-label">
-                            <i class="fas fa-file-invoice me-1"></i>Factura B&D
-                        </label>
-                        {{ form.facturabyd }}
-                        {% if form.facturabyd.errors %}
-                            <div class="text-danger small">{{ form.facturabyd.errors }}</div>
-                        {% endif %}
-                        <small class="text-muted">PDF, JPG, PNG</small>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Campos ocultos para ingreso/egreso -->
-            {{ form.ingreso.as_hidden }}
-            {{ form.egreso.as_hidden }}
-            
-            <!-- Botones de Acción -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'pago_tramitacion_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                            <i class="fas fa-save me-2"></i>Guardar Movimiento
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Ayuda -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h6 class="card-title mb-0">
-            <i class="fas fa-info-circle me-2"></i>Información de Ayuda
-        </h6>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <h6 class="text-success">
-                    <i class="fas fa-arrow-up me-1"></i>Ingresos
-                </h6>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-check text-success me-2"></i>Pagos de clientes</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Honorarios recibidos</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Ventas de servicios</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Otros ingresos</li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <h6 class="text-danger">
-                    <i class="fas fa-arrow-down me-1"></i>Egresos
-                </h6>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-check text-danger me-2"></i>Pagos a proveedores</li>
-                    <li><i class="fas fa-check text-danger me-2"></i>Gastos operacionales</li>
-                    <li><i class="fas fa-check text-danger me-2"></i>Servicios contratados</li>
-                    <li><i class="fas fa-check text-danger me-2"></i>Otros gastos</li>
-                </ul>
-            </div>
+                <div class="mb-3">
+                    <label for="id_origen" class="form-label">Origen</label>
+                    {{ form.origen|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_nombre" class="form-label">Nombre</label>
+                    {{ form.nombre|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_gestion" class="form-label">Gestión</label>
+                    {{ form.gestion|add_class:"form-control" }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_ingreso" class="form-label">Ingreso</label>
+                            {{ form.ingreso|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_egreso" class="form-label">Egreso</label>
+                            {{ form.egreso|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_transferencia" class="form-label">Transferencia</label>
+                    {{ form.transferencia|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_boletabyd" class="form-label">Boleta BYD</label>
+                    {{ form.boletabyd|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_facturabyd" class="form-label">Factura BYD</label>
+                    {{ form.facturabyd|add_class:"form-control" }}
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg w-100 shadow">Registrar Pago</button>
+            </form>
         </div>
     </div>
 </div>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Variables globales
-let selectedType = null;
-
-// Función para seleccionar tipo de movimiento
-function selectMovementType(type) {
-    selectedType = type;
-    
-    // Actualizar UI
-    document.querySelectorAll('.movement-type-card').forEach(card => {
-        card.classList.remove('border-primary', 'bg-light');
-    });
-    
-    const selectedCard = document.getElementById(type + '-card');
-    selectedCard.classList.add('border-primary', 'bg-light');
-    
-    // Actualizar campo tipo_pago
-    const tipoInput = document.querySelector('input[name="tipo_pago"]');
-    if (tipoInput) {
-        tipoInput.value = type;
-    }
-    
-    // Actualizar indicador
-    const indicator = document.getElementById('movement-indicator');
-    indicator.style.display = 'inline-block';
-    indicator.className = 'badge ms-2 ' + (type === 'ingreso' ? 'bg-success' : 'bg-danger');
-    indicator.textContent = type === 'ingreso' ? 'INGRESO' : 'EGRESO';
-    
-    // Actualizar etiqueta del monto
-    const amountLabel = document.getElementById('amount-label');
-    amountLabel.innerHTML = '<i class="fas fa-dollar-sign me-1"></i>' + 
-                           (type === 'ingreso' ? 'Monto del Ingreso' : 'Monto del Egreso');
-    
-    // Actualizar placeholder
-    const amountInput = document.getElementById('amount-input');
-    amountInput.placeholder = type === 'ingreso' ? 'Ingrese el monto recibido' : 'Ingrese el monto gastado';
-    
-    // Habilitar botón submit
-    updateSubmitButton();
-}
-
-// Función para actualizar estado del botón submit
-function updateSubmitButton() {
-    const submitBtn = document.getElementById('submit-btn');
-    const amountInput = document.getElementById('amount-input');
-    const nombreInput = document.querySelector('input[name="nombre"]');
-    
-    const isValid = selectedType && 
-                   amountInput.value && 
-                   parseFloat(amountInput.value) > 0 && 
-                   nombreInput.value.trim();
-    
-    submitBtn.disabled = !isValid;
-    
-    if (isValid) {
-        submitBtn.className = 'btn btn-' + (selectedType === 'ingreso' ? 'success' : 'danger');
-        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar ' + 
-                             (selectedType === 'ingreso' ? 'Ingreso' : 'Egreso');
-    } else {
-        submitBtn.className = 'btn btn-primary';
-        submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Movimiento';
-    }
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    const amountInput = document.getElementById('amount-input');
-    const nombreInput = document.querySelector('input[name="nombre"]');
-    
-    // Detectar tipo pre-seleccionado desde GET parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const preSelectedType = urlParams.get('tipo');
-    if (preSelectedType && ['ingreso', 'egreso'].includes(preSelectedType)) {
-        selectMovementType(preSelectedType);
-    }
-    
-    // Event listeners para validación
-    amountInput.addEventListener('input', function() {
-        updateSubmitButton();
-        validateAmount();
-    });
-    
-    nombreInput.addEventListener('input', updateSubmitButton);
-    
-    // Validar monto
-    function validateAmount() {
-        const value = parseFloat(amountInput.value);
-        const errorDiv = document.getElementById('amount-error');
-        
-        if (value < 0) {
-            errorDiv.textContent = 'El monto no puede ser negativo';
-            errorDiv.style.display = 'block';
-            amountInput.classList.add('is-invalid');
-        } else if (value > 999999999) {
-            errorDiv.textContent = 'El monto es demasiado grande';
-            errorDiv.style.display = 'block';
-            amountInput.classList.add('is-invalid');
-        } else {
-            errorDiv.style.display = 'none';
-            amountInput.classList.remove('is-invalid');
-        }
-    }
-});
-
-// Interceptar envío del formulario
-document.getElementById('payment-form').addEventListener('submit', function(e) {
-    if (!selectedType) {
-        e.preventDefault();
-        alert('Por favor selecciona el tipo de movimiento (Ingreso o Egreso)');
-        return;
-    }
-    
-    const amountInput = document.getElementById('amount-input');
-    const amount = parseFloat(amountInput.value);
-    
-    if (!amount || amount <= 0) {
-        e.preventDefault();
-        alert('Por favor ingresa un monto válido mayor a 0');
-        return;
-    }
-    
-    // Asignar el monto al campo correcto
-    if (selectedType === 'ingreso') {
-        document.querySelector('input[name="ingreso"]').value = amount;
-        document.querySelector('input[name="egreso"]').value = '';
-    } else {
-        document.querySelector('input[name="egreso"]').value = amount;
-        document.querySelector('input[name="ingreso"]').value = '';
-    }
-});
-
-// Formatear números mientras se escriben
-document.getElementById('amount-input').addEventListener('input', function(e) {
-    let value = e.target.value;
-    // Permitir solo números y punto decimal
-    value = value.replace(/[^0-9.]/g, '');
-    
-    // Permitir solo un punto decimal
-    const parts = value.split('.');
-    if (parts.length > 2) {
-        value = parts[0] + '.' + parts.slice(1).join('');
-    }
-    
-    e.target.value = value;
-});
-</script>
-
 <style>
-.movement-type-card {
-    transition: all 0.3s ease;
-    cursor: pointer;
+    body {
+    background-color: #f8f9fa;
 }
 
-.movement-type-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 30px;
 }
 
-.movement-type-card.border-primary {
-    border-width: 2px !important;
-}
-
-.form-control:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-}
-
-.input-group-text {
-    background-color: var(--light-gray);
-    border-color: var(--medium-gray);
-}
-
-#amount-input.is-invalid {
-    border-color: var(--danger-color);
+.card {
+    border-radius: 0.5rem;
 }
 
 .card-header {
-    background-color: white;
-    border-bottom: 1px solid var(--medium-gray);
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.25rem;
 }
 
-.list-unstyled li {
-    padding: 0.25rem 0;
+.card-body {
+    padding: 1.5rem;  /* Ajustado para ser más compacto */
+}
+
+.form-control {
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #218838);
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.alert-danger ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.alert-danger li {
+    margin-bottom: 5px;
 }
 </style>
 {% endblock %}

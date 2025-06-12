@@ -1,681 +1,98 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ tramitacion.nombre }} - Detalles de Tramitación{% endblock %}
+{% load static %}
 
-{% block page_title %}Detalles de Tramitación{% endblock %}
+{% block title %}Detalle del Trámite{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="fas fa-cogs me-2"></i>{{ tramitacion.nombre }}
-            </h1>
-            <p class="page-subtitle">
-                <i class="fas fa-info-circle me-1"></i>
-                Presupuesto: {{ tramitacion.presupuesto }} | 
-                Año: {{ tramitacion.año }} |
-                <span class="badge {% if tramitacion.fecha_solicitud and tramitacion.fecha_recepcion %}bg-success{% elif tramitacion.fecha_solicitud %}bg-warning{% else %}bg-secondary{% endif %}">
-                    {% if tramitacion.fecha_solicitud and tramitacion.fecha_recepcion %}
-                        Completada
-                    {% elif tramitacion.fecha_solicitud %}
-                        En Proceso
-                    {% else %}
-                        Pendiente
-                    {% endif %}
-                </span>
-            </p>
-        </div>
-        <div>
-            <a href="{% url 'tramitacion-update' tramitacion.pk %}" class="btn btn-primary me-2">
-                <i class="fas fa-edit me-2"></i>Editar
-            </a>
-            <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-            </a>
-        </div>
-    </div>
-</div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Tarjeta estilizada con sombras y bordes -->
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #4e73df, #6610f2);">
+                    <h4 class="mb-0 fw-bold">Detalle del Trámite</h4>
+                </div>
+                <div class="card-body px-5 py-4">
+                    <p class="text-muted text-center mb-4">Información completa del trámite seleccionado.</p>
+                    
+                    <!-- Detalles del trámite -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Presupuesto</h6>
+                            <p class="form-control-plaintext">{{ tramitacion.presupuesto }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Nombre</h6>
+                            <p class="form-control-plaintext">{{ tramitacion.nombre }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Direccion</h6>
+                            <p class="form-control-plaintext">{{ tramitacion.direccion }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Año</h6>
+                            <p class="form-control-plaintext">{{ tramitacion.año }}</p>
+                        </div>
+                    </div>
 
-<div class="row">
-    <!-- Información Principal -->
-    <div class="col-lg-8">
-        <!-- Información Básica -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Información de la Tramitación
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="info-item mb-3">
-                            <label class="info-label">
-                                <i class="fas fa-dollar-sign me-1"></i>Presupuesto
-                            </label>
-                            <p class="info-value">{{ tramitacion.presupuesto }}</p>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Fecha de Entrega</h6>
+                            <p class="form-control-plaintext">{{ tramitacion.fecha_recepcion }}</p>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="info-item mb-3">
-                            <label class="info-label">
-                                <i class="fas fa-calendar me-1"></i>Año
-                            </label>
-                            <p class="info-value">{{ tramitacion.año }}</p>
-                        </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-primary">Descripción</h6>
+                        <p class="form-control-plaintext">{{ tramitacion.descripcion }}</p>
+
+                        <h6 class="fw-bold text-primary">nota</h6>
+                        <p class="form-control-plaintext">{{ tramitacion.nota }}</p>
                     </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="info-item mb-3">
-                            <label class="info-label">
-                                <i class="fas fa-user me-1"></i>Nombre
-                            </label>
-                            <p class="info-value">{{ tramitacion.nombre }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="info-item mb-3">
-                            <label class="info-label">
-                                <i class="fas fa-map-marker-alt me-1"></i>Dirección
-                            </label>
-                            <p class="info-value">{{ tramitacion.direccion }}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                {% if tramitacion.descripcion %}
-                <div class="info-item mb-3">
-                    <label class="info-label">
-                        <i class="fas fa-align-left me-1"></i>Descripción
-                    </label>
-                    <div class="info-value">
-                        <div class="description-content p-3 bg-light rounded">
-                            {{ tramitacion.descripcion|linebreaks }}
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if tramitacion.nota %}
-                <div class="info-item">
-                    <label class="info-label">
-                        <i class="fas fa-sticky-note me-1"></i>Nota
-                    </label>
-                    <div class="info-value">
-                        <div class="note-content p-3 bg-warning bg-opacity-10 rounded border-start border-warning border-3">
-                            {{ tramitacion.nota|linebreaks }}
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Timeline de Fechas -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-calendar me-2"></i>Timeline de la Tramitación
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="timeline">
-                    <!-- Fecha de Solicitud -->
-                    <div class="timeline-item {% if tramitacion.fecha_solicitud %}completed{% else %}pending{% endif %}">
-                        <div class="timeline-marker">
-                            <i class="fas fa-{% if tramitacion.fecha_solicitud %}check-circle text-success{% else %}clock text-muted{% endif %}"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <h6 class="timeline-title">Solicitud Iniciada</h6>
-                            <p class="timeline-date">
-                                {% if tramitacion.fecha_solicitud %}
-                                    <i class="fas fa-calendar me-1"></i>{{ tramitacion.fecha_solicitud }}
-                                    <span class="badge bg-success ms-2">Completado</span>
-                                {% else %}
-                                    <i class="fas fa-clock me-1"></i>Pendiente
-                                    <span class="badge bg-secondary ms-2">Sin fecha</span>
-                                {% endif %}
-                            </p>
-                            <small class="text-muted">Fecha en que se inició la tramitación</small>
-                        </div>
-                    </div>
-                    
-                    <!-- Fecha de Recepción -->
-                    <div class="timeline-item {% if tramitacion.fecha_recepcion %}completed{% elif tramitacion.fecha_solicitud %}current{% else %}pending{% endif %}">
-                        <div class="timeline-marker">
-                            <i class="fas fa-{% if tramitacion.fecha_recepcion %}check-circle text-success{% elif tramitacion.fecha_solicitud %}clock text-warning{% else %}clock text-muted{% endif %}"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <h6 class="timeline-title">Tramitación Recibida</h6>
-                            <p class="timeline-date">
-                                {% if tramitacion.fecha_recepcion %}
-                                    <i class="fas fa-calendar me-1"></i>{{ tramitacion.fecha_recepcion }}
-                                    <span class="badge bg-success ms-2">Completado</span>
-                                {% elif tramitacion.fecha_solicitud %}
-                                    <i class="fas fa-clock me-1"></i>En proceso
-                                    <span class="badge bg-warning ms-2">Pendiente</span>
-                                {% else %}
-                                    <i class="fas fa-clock me-1"></i>Esperando solicitud
-                                    <span class="badge bg-secondary ms-2">Pendiente</span>
-                                {% endif %}
-                            </p>
-                            <small class="text-muted">Fecha en que se recibió la tramitación</small>
-                        </div>
-                    </div>
-                    
-                    <!-- Estado Final -->
-                    {% if tramitacion.fecha_solicitud and tramitacion.fecha_recepcion %}
-                    <div class="timeline-item completed">
-                        <div class="timeline-marker">
-                            <i class="fas fa-flag-checkered text-success"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <h6 class="timeline-title">Proceso Completado</h6>
-                            <p class="timeline-date">
-                                <i class="fas fa-check-double me-1"></i>
-                                Tramitación procesada exitosamente
-                                <span class="badge bg-success ms-2">Finalizada</span>
-                            </p>
-                            <small class="text-muted">La tramitación ha sido completada</small>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Documento Adjunto -->
-        {% if tramitacion.documento_tramitacion %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-paperclip me-2"></i>Documento de Tramitación
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="document-preview bg-light rounded-3 p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <div class="file-icon me-3">
-                                <i class="fas fa-file-pdf text-danger fs-1"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-1">{{ tramitacion.documento_tramitacion.name }}</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-paperclip me-1"></i>Documento de tramitación
-                                </small>
-                            </div>
-                        </div>
-                        <div class="file-actions">
-                            <a href="{{ tramitacion.documento_tramitacion.url }}" target="_blank" 
-                               class="btn btn-outline-primary me-2">
-                                <i class="fas fa-eye me-1"></i>Ver
-                            </a>
-                            <a href="{{ tramitacion.documento_tramitacion.url }}" download 
-                               class="btn btn-outline-success">
-                                <i class="fas fa-download me-1"></i>Descargar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <!-- Enlace Externo -->
-        {% if tramitacion.link_tramitacion %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-external-link-alt me-2"></i>Enlace Relacionado
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="link-preview bg-light rounded-3 p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <div class="link-icon me-3">
-                                <i class="fas fa-link text-primary fs-1"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Enlace de Tramitación</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-external-link-alt me-1"></i>{{ tramitacion.link_tramitacion|truncatechars:50 }}
-                                </small>
-                            </div>
-                        </div>
-                        <div class="link-actions">
-                            <a href="{{ tramitacion.link_tramitacion }}" target="_blank" 
-                               class="btn btn-outline-primary">
-                                <i class="fas fa-external-link-alt me-1"></i>Abrir Enlace
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-    
-    <!-- Panel Lateral -->
-    <div class="col-lg-4">
-        <!-- Estado Actual -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-tachometer-alt me-2"></i>Estado Actual
-                </h5>
-            </div>
-            <div class="card-body text-center">
-                {% if tramitacion.fecha_solicitud and tramitacion.fecha_recepcion %}
-                    <div class="status-display bg-success text-white rounded-3 p-4 mb-3">
-                        <i class="fas fa-check-circle fs-1 mb-2"></i>
-                        <h5 class="mb-0">Completada</h5>
-                        <small class="opacity-75">Tramitación procesada</small>
-                    </div>
-                    <div class="progress mb-3" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: 100%"></div>
-                    </div>
-                    <small class="text-success fw-semibold">✓ Proceso finalizado exitosamente</small>
-                {% elif tramitacion.fecha_solicitud %}
-                    <div class="status-display bg-warning text-white rounded-3 p-4 mb-3">
-                        <i class="fas fa-clock fs-1 mb-2"></i>
-                        <h5 class="mb-0">En Proceso</h5>
-                        <small class="opacity-75">Esperando recepción</small>
-                    </div>
-                    <div class="progress mb-3" style="height: 8px;">
-                        <div class="progress-bar bg-warning" style="width: 60%"></div>
-                    </div>
-                    <small class="text-warning fw-semibold">◐ En proceso de recepción</small>
-                {% else %}
-                    <div class="status-display bg-secondary text-white rounded-3 p-4 mb-3">
-                        <i class="fas fa-hourglass fs-1 mb-2"></i>
-                        <h5 class="mb-0">Pendiente</h5>
-                        <small class="opacity-75">Sin fecha de solicitud</small>
-                    </div>
-                    <div class="progress mb-3" style="height: 8px;">
-                        <div class="progress-bar bg-secondary" style="width: 10%"></div>
-                    </div>
-                    <small class="text-muted fw-semibold">○ Esperando inicio</small>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Información Rápida -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-info me-2"></i>Información Rápida
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="info-stats">
-                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
-                        <div class="stat-label">
-                            <i class="fas fa-dollar-sign text-primary me-2"></i>Presupuesto
-                        </div>
-                        <div class="stat-value fw-semibold">
-                            {{ tramitacion.presupuesto }}
-                        </div>
-                    </div>
-                    
-                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
-                        <div class="stat-label">
-                            <i class="fas fa-calendar text-info me-2"></i>Año
-                        </div>
-                        <div class="stat-value fw-semibold">
-                            {{ tramitacion.año }}
-                        </div>
-                    </div>
-                    
-                    {% if tramitacion.fecha_solicitud %}
-                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
-                        <div class="stat-label">
-                            <i class="fas fa-calendar-plus text-success me-2"></i>Solicitado
-                        </div>
-                        <div class="stat-value fw-semibold">
-                            {{ tramitacion.fecha_solicitud }}
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    {% if tramitacion.fecha_recepcion %}
-                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
-                        <div class="stat-label">
-                            <i class="fas fa-calendar-check text-warning me-2"></i>Recibido
-                        </div>
-                        <div class="stat-value fw-semibold">
-                            {{ tramitacion.fecha_recepcion }}
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="stat-item d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
-                        <div class="stat-label">
-                            <i class="fas fa-paperclip text-secondary me-2"></i>Documento
-                        </div>
-                        <div class="stat-value fw-semibold">
+                   
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Documento de Tramitación</h6>
                             {% if tramitacion.documento_tramitacion %}
-                                <span class="text-success">✓ Adjunto</span>
+                                <a href="{{ tramitacion.documento_tramitacion.url }}" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm" target="_blank">
+                                    <i class="fas fa-download me-2"></i> Descargar Documento
+                                </a>
                             {% else %}
-                                <span class="text-muted">Sin archivo</span>
+                                <p class="form-control-plaintext text-muted">No disponible</p>
                             {% endif %}
                         </div>
-                    </div>
-                    
-                    <div class="stat-item d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                        <div class="stat-label">
-                            <i class="fas fa-link text-primary me-2"></i>Enlace
-                        </div>
-                        <div class="stat-value fw-semibold">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary">Enlace de Tramitación</h6>
                             {% if tramitacion.link_tramitacion %}
-                                <span class="text-success">✓ Disponible</span>
+                                <a href="{{ tramitacion.link_tramitacion }}" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm" target="_blank">
+                                    <i class="fas fa-link me-2"></i> Ver Enlace
+                                </a>
                             {% else %}
-                                <span class="text-muted">Sin enlace</span>
+                                <p class="form-control-plaintext text-muted">No disponible</p>
                             {% endif %}
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Acciones -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-cogs me-2"></i>Acciones
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'tramitacion-update' tramitacion.pk %}" class="btn btn-primary">
-                        <i class="fas fa-edit me-2"></i>Editar Tramitación
-                    </a>
-                    
-                    {% if tramitacion.documento_tramitacion %}
-                    <a href="{{ tramitacion.documento_tramitacion.url }}" target="_blank" class="btn btn-outline-info">
-                        <i class="fas fa-file-pdf me-2"></i>Ver Documento
-                    </a>
-                    {% endif %}
-                    
-                    {% if tramitacion.link_tramitacion %}
-                    <a href="{{ tramitacion.link_tramitacion }}" target="_blank" class="btn btn-outline-success">
-                        <i class="fas fa-external-link-alt me-2"></i>Abrir Enlace
-                    </a>
-                    {% endif %}
-                    
-                    <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Volver a Lista
-                    </a>
-                    
-                    <hr class="my-2">
-                    
-                    <a href="{% url 'tramitacion-delete' tramitacion.pk %}" class="btn btn-outline-danger"
-                       onclick="return confirm('¿Está seguro de que desea eliminar esta tramitación?')">
-                        <i class="fas fa-trash me-2"></i>Eliminar Tramitación
-                    </a>
+
+                    <!-- Botón para regresar -->
+                    <div class="text-center mt-5">
+                        <a href="{% url 'tramitacion-list' %}" class="btn btn-secondary btn-lg rounded-pill px-5 shadow-sm">
+                            <i class="fas fa-arrow-left me-2"></i> Volver a la Lista
+                        </a>
+                        <a href="{% url 'tramitacion-update' tramitacion.pk %}" class="btn btn-warning btn-sm" title="Editar">
+                            <i class="fas fa-edit"></i>Editar
+                        </a>
+                        <a href="{% url 'tramitacion-delete' tramitacion.pk %}" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Seguro que desea eliminar este trámite?')">
+                            <i class="fas fa-trash-alt"></i>Eliminar
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<style>
-    .info-label {
-        font-weight: 600;
-        color: var(--primary-color);
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
-        display: block;
-    }
-    
-    .info-value {
-        margin-bottom: 0;
-        color: var(--text-dark);
-        font-size: 1rem;
-    }
-    
-    .description-content {
-        border-left: 4px solid var(--accent-color);
-        font-style: italic;
-    }
-    
-    .note-content {
-        border-left: 4px solid var(--warning-color) !important;
-    }
-    
-    /* Timeline Styles */
-    .timeline {
-        position: relative;
-        padding-left: 2rem;
-    }
-    
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 1rem;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: var(--medium-gray);
-    }
-    
-    .timeline-item {
-        position: relative;
-        margin-bottom: 2rem;
-    }
-    
-    .timeline-item.completed::before {
-        background: var(--success-color);
-    }
-    
-    .timeline-item.current::before {
-        background: var(--warning-color);
-    }
-    
-    .timeline-marker {
-        position: absolute;
-        left: -2rem;
-        top: 0;
-        width: 2rem;
-        height: 2rem;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .timeline-content {
-        background: white;
-        border: 1px solid var(--medium-gray);
-        border-radius: 8px;
-        padding: 1rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-    }
-    
-    .timeline-content:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transform: translateY(-1px);
-    }
-    
-    .timeline-title {
-        margin-bottom: 0.5rem;
-        color: var(--primary-color);
-        font-weight: 600;
-    }
-    
-    .timeline-date {
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-    }
-    
-    /* Document and Link Preview */
-    .document-preview, .link-preview {
-        border: 1px solid var(--medium-gray);
-        transition: all 0.3s ease;
-    }
-    
-    .document-preview:hover, .link-preview:hover {
-        border-color: var(--accent-color);
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
-        transform: translateY(-1px);
-    }
-    
-    .file-icon, .link-icon {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(145deg, #ffffff, #f1f3f4);
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    
-    /* Status Display */
-    .status-display {
-        background: linear-gradient(135deg, var(--success-color), #58d68d);
-        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        transition: all 0.3s ease;
-    }
-    
-    .status-display.bg-warning {
-        background: linear-gradient(135deg, var(--warning-color), #f7dc6f) !important;
-        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
-    }
-    
-    .status-display.bg-secondary {
-        background: linear-gradient(135deg, var(--dark-gray), #95a5a6) !important;
-        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-    }
-    
-    .status-display:hover {
-        transform: scale(1.02);
-    }
-    
-    /* Info Stats */
-    .stat-item {
-        transition: all 0.3s ease;
-    }
-    
-    .stat-item:hover {
-        background-color: rgba(52, 152, 219, 0.05) !important;
-        transform: translateX(5px);
-    }
-    
-    .stat-label {
-        font-size: 0.9rem;
-        color: var(--dark-gray);
-    }
-    
-    .stat-value {
-        font-size: 0.9rem;
-        color: var(--text-dark);
-    }
-    
-    /* Progress Animation */
-    .progress-bar {
-        transition: width 1.5s ease-in-out;
-    }
-    
-    /* Badge Styles */
-    .badge {
-        font-size: 0.75rem;
-        padding: 0.5rem 0.75rem;
-    }
-    
-    /* Card Hover Effects */
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    }
-    
-    .btn:hover {
-        transform: translateY(-1px);
-    }
-</style>
-
-<script>
-    // Animate progress bars on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const progressBars = document.querySelectorAll('.progress-bar');
-        progressBars.forEach(function(bar) {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 500);
-        });
-    });
-    
-    // Add animation to timeline items
-    const timelineItems = document.querySelectorAll('.timeline-item');
-    timelineItems.forEach(function(item, index) {
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-20px)';
-        
-        setTimeout(() => {
-            item.style.transition = 'all 0.5s ease';
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        }, index * 200 + 300);
-    });
-    
-    // Status indicator animation
-    const statusDisplay = document.querySelector('.status-display');
-    if (statusDisplay) {
-        statusDisplay.style.transform = 'scale(0.9)';
-        statusDisplay.style.opacity = '0';
-        
-        setTimeout(() => {
-            statusDisplay.style.transition = 'all 0.6s ease';
-            statusDisplay.style.transform = 'scale(1)';
-            statusDisplay.style.opacity = '1';
-        }, 200);
-    }
-    
-    // Add hover effects to action buttons
-    document.querySelectorAll('.btn').forEach(function(btn) {
-        btn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
-        });
-        
-        btn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-    
-    // Animate stat items on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.transform = 'translateX(0)';
-                entry.target.style.opacity = '1';
-            }
-        });
-    }, observerOptions);
-    
-    document.querySelectorAll('.stat-item').forEach(function(item, index) {
-        item.style.transform = 'translateX(-20px)';
-        item.style.opacity = '0';
-        item.style.transition = `all 0.5s ease ${index * 0.1}s`;
-        observer.observe(item);
-    });
-    
-    console.log('Vista de detalles de tramitación cargada correctamente');
-</script>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}

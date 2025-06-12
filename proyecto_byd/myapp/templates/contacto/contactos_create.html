@@ -1,631 +1,95 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Nuevo Contacto - Sistema de Gestión{% endblock %}
+{% load static %}
 
-{% block page_title %}Nuevo Contacto{% endblock %}
-
-{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'contacto-list' %}">Contactos</a></li>
-<li class="breadcrumb-item active">Nuevo Contacto</li>
-{% endblock %}
+{% load widget_tweaks %}
 
 {% block content %}
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="page-title">
-                <i class="fas fa-user-plus me-2"></i>Agregar Nuevo Contacto
-            </h1>
-            <p class="page-subtitle">Registra un nuevo contacto en el sistema</p>
-        </div>
-        <div>
-            <a href="{% url 'contacto-list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Contactos
-            </a>
-        </div>
-    </div>
-</div>
+<div class="container my-5">
+    <h2 class="text-center mb-4">Crear Nuevo Contacto</h2>
 
-<!-- Selección de tipo de contacto -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-tags me-2"></i>Tipo de Contacto
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="contact-type-card" data-type="CLIENTE">
-                            <div class="contact-type-icon">
-                                <i class="fas fa-user-tie fa-2x text-primary"></i>
-                            </div>
-                            <h6>Cliente</h6>
-                            <small class="text-muted">Cliente general</small>
-                        </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="border: 2px solid #6c757d; border-radius: 15px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
+                <div class="card-body">
+                    <!-- Encabezado con título de la libreta -->
+                    <div class="mb-4 text-center">
+                        <h4 class="text-primary">Formulario de Contacto</h4>
+                        <hr style="border-color: #6c757d; width: 60px; margin: auto;">
                     </div>
-                    <div class="col-md-2">
-                        <div class="contact-type-card" data-type="CLIENTE PROYECTO">
-                            <div class="contact-type-icon">
-                                <i class="fas fa-project-diagram fa-2x text-success"></i>
-                            </div>
-                            <h6>Cliente Proyecto</h6>
-                            <small class="text-muted">Cliente con proyecto</small>
+                    
+                    <!-- Formulario con campos estilo libreta -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="nombre" class="form-label fw-bold">Nombre Completo</label>
+                            {{ form.nombre|add_class:"form-control" }}
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="contact-type-card" data-type="CLIENTE LOTE">
-                            <div class="contact-type-icon">
-                                <i class="fas fa-map fa-2x text-info"></i>
-                            </div>
-                            <h6>Cliente Lote</h6>
-                            <small class="text-muted">Cliente de lote</small>
+
+                        <div class="mb-4">
+                            <label for="tipo" class="form-label fw-bold">Tipo de Contacto</label>
+                            <select name="tipo" class="form-select">
+                                <option value="CLIENTE" {% if form.tipo.value == "CLIENTE" %}selected{% endif %}>Cliente</option>
+                                <option value="CLIENTE PROYECTO" {% if form.tipo.value == "CLIENTE PROYECTO" %}selected{% endif %}>Cliente Proyecto</option>
+                                <option value="CLIENTE LOTE" {% if form.tipo.value == "CLIENTE LOTE" %}selected{% endif %}>Cliente Lote</option>
+                                <option value="PROFESIONAL" {% if form.tipo.value == "PROFESIONAL" %}selected{% endif %}>Profesional</option>
+                                <option value="ENTIDAD" {% if form.tipo.value == "ENTIDAD" %}selected{% endif %}>Entidad</option>
+                                <option value="OTROS" {% if form.tipo.value == "OTROS" %}selected{% endif %}>Otros</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="contact-type-card" data-type="PROFESIONAL">
-                            <div class="contact-type-icon">
-                                <i class="fas fa-hard-hat fa-2x text-warning"></i>
-                            </div>
-                            <h6>Profesional</h6>
-                            <small class="text-muted">Profesional asociado</small>
+
+                        <div class="mb-4">
+                            <label for="telefono" class="form-label fw-bold">Teléfono</label>
+                            {{ form.telefono|add_class:"form-control" }}
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="contact-type-card" data-type="ENTIDAD">
-                            <div class="contact-type-icon">
-                                <i class="fas fa-building fa-2x text-secondary"></i>
-                            </div>
-                            <h6>Entidad</h6>
-                            <small class="text-muted">Empresa u organización</small>
+
+                        <div class="mb-4">
+                            <label for="correo" class="form-label fw-bold">Correo Electrónico</label>
+                            {{ form.correo|add_class:"form-control" }}
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="contact-type-card" data-type="OTROS">
-                            <div class="contact-type-icon">
-                                <i class="fas fa-users fa-2x text-dark"></i>
-                            </div>
-                            <h6>Otros</h6>
-                            <small class="text-muted">Otros tipos</small>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-primary px-4 py-2">
+                                <i class="bi bi-save"></i> Guardar Contacto
+                            </button>
+                            <a href="{% url 'contacto-list' %}" class="btn btn-secondary px-4 py-2 text-decoration-none">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Formulario -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="fas fa-edit me-2"></i>Información del Contacto
-            <span id="type-indicator" class="badge ms-2" style="display: none;"></span>
-        </h5>
-    </div>
-    <div class="card-body">
-        <form method="post" id="contact-form">
-            {% csrf_token %}
-            
-            <div class="row">
-                <!-- Tipo (oculto, se selecciona arriba) -->
-                {{ form.tipo.as_hidden }}
-                
-                <!-- Nombre -->
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
-                            <i class="fas fa-user me-1"></i>Nombre Completo *
-                        </label>
-                        {{ form.nombre }}
-                        {% if form.nombre.errors %}
-                            <div class="text-danger small">{{ form.nombre.errors }}</div>
-                        {% endif %}
-                        <small class="text-muted">Nombre completo de la persona o entidad</small>
-                    </div>
-                </div>
-                
-                <!-- Teléfono -->
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.telefono.id_for_label }}" class="form-label">
-                            <i class="fas fa-phone me-1"></i>Teléfono *
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-phone"></i>
-                            </span>
-                            {{ form.telefono }}
-                        </div>
-                        {% if form.telefono.errors %}
-                            <div class="text-danger small">{{ form.telefono.errors }}</div>
-                        {% endif %}
-                        <small class="text-muted">Número de teléfono principal</small>
-                    </div>
-                </div>
-                
-                <!-- Correo -->
-                <div class="col-md-12">
-                    <div class="form-group mb-3">
-                        <label for="{{ form.correo.id_for_label }}" class="form-label">
-                            <i class="fas fa-envelope me-1"></i>Correo Electrónico *
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-                            {{ form.correo }}
-                        </div>
-                        {% if form.correo.errors %}
-                            <div class="text-danger small">{{ form.correo.errors }}</div>
-                        {% endif %}
-                        <small class="text-muted">Dirección de correo electrónico válida</small>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Vista previa del contacto -->
-            <div class="row mt-4" id="contact-preview" style="display: none;">
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        <h6 class="alert-heading">
-                            <i class="fas fa-eye me-2"></i>Vista Previa del Contacto
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="preview-avatar">
-                                    <div class="avatar-circle" id="preview-avatar">
-                                        <span id="preview-initials"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="preview-info">
-                                    <h5 id="preview-name">Nombre del Contacto</h5>
-                                    <p class="mb-1">
-                                        <span class="badge" id="preview-type-badge">Tipo</span>
-                                    </p>
-                                    <p class="mb-1">
-                                        <i class="fas fa-phone me-1"></i>
-                                        <span id="preview-phone">Teléfono</span>
-                                    </p>
-                                    <p class="mb-0">
-                                        <i class="fas fa-envelope me-1"></i>
-                                        <span id="preview-email">correo@ejemplo.com</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Botones de Acción -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'contacto-list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                            <i class="fas fa-save me-2"></i>Guardar Contacto
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Información de ayuda -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h6 class="card-title mb-0">
-            <i class="fas fa-info-circle me-2"></i>Tipos de Contacto
-        </h6>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <h6 class="text-primary">
-                    <i class="fas fa-users me-1"></i>Clientes
-                </h6>
-                <ul class="list-unstyled small">
-                    <li><strong>Cliente:</strong> Cliente general sin especificación</li>
-                    <li><strong>Cliente Proyecto:</strong> Cliente con proyecto en desarrollo</li>
-                    <li><strong>Cliente Lote:</strong> Cliente interesado en lotes</li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <h6 class="text-warning">
-                    <i class="fas fa-briefcase me-1"></i>Profesionales y Entidades
-                </h6>
-                <ul class="list-unstyled small">
-                    <li><strong>Profesional:</strong> Arquitectos, ingenieros, etc.</li>
-                    <li><strong>Entidad:</strong> Empresas, instituciones</li>
-                    <li><strong>Otros:</strong> Cualquier otro tipo de contacto</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Variables globales
-let selectedType = null;
-
-// Configuración de colores por tipo
-const typeColors = {
-    'CLIENTE': { badge: 'bg-primary', icon: 'text-primary' },
-    'CLIENTE PROYECTO': { badge: 'bg-success', icon: 'text-success' },
-    'CLIENTE LOTE': { badge: 'bg-info', icon: 'text-info' },
-    'PROFESIONAL': { badge: 'bg-warning', icon: 'text-warning' },
-    'ENTIDAD': { badge: 'bg-secondary', icon: 'text-secondary' },
-    'OTROS': { badge: 'bg-dark', icon: 'text-dark' }
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Event listeners para selección de tipo
-    document.querySelectorAll('.contact-type-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const type = this.dataset.type;
-            selectContactType(type);
-        });
-    });
-    
-    // Event listeners para actualización de vista previa
-    const nameInput = document.querySelector('input[name="nombre"]');
-    const phoneInput = document.querySelector('input[name="telefono"]');
-    const emailInput = document.querySelector('input[name="correo"]');
-    
-    nameInput.addEventListener('input', updatePreview);
-    phoneInput.addEventListener('input', updatePreview);
-    emailInput.addEventListener('input', updatePreview);
-    
-    // Event listeners para validación
-    nameInput.addEventListener('input', validateForm);
-    phoneInput.addEventListener('input', validateForm);
-    emailInput.addEventListener('input', validateForm);
-    
-    // Formateo de teléfono
-    phoneInput.addEventListener('input', function(e) {
-        formatPhoneNumber(e.target);
-    });
-    
-    // Validación de email en tiempo real
-    emailInput.addEventListener('blur', validateEmail);
-});
-
-// Función para seleccionar tipo de contacto
-function selectContactType(type) {
-    selectedType = type;
-    
-    // Actualizar UI de selección
-    document.querySelectorAll('.contact-type-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    document.querySelector(`[data-type="${type}"]`).classList.add('selected');
-    
-    // Actualizar campo oculto
-    document.querySelector('input[name="tipo"]').value = type;
-    
-    // Actualizar indicador
-    const indicator = document.getElementById('type-indicator');
-    indicator.style.display = 'inline-block';
-    indicator.className = `badge ms-2 ${typeColors[type].badge}`;
-    indicator.textContent = type;
-    
-    // Actualizar vista previa
-    updatePreview();
-    validateForm();
-}
-
-// Función para actualizar vista previa
-function updatePreview() {
-    const name = document.querySelector('input[name="nombre"]').value;
-    const phone = document.querySelector('input[name="telefono"]').value;
-    const email = document.querySelector('input[name="correo"]').value;
-    
-    if (name || phone || email || selectedType) {
-        document.getElementById('contact-preview').style.display = 'block';
-        
-        // Actualizar nombre
-        document.getElementById('preview-name').textContent = name || 'Nombre del Contacto';
-        
-        // Actualizar iniciales
-        const initials = getInitials(name);
-        document.getElementById('preview-initials').textContent = initials;
-        
-        // Actualizar tipo
-        if (selectedType) {
-            const typeBadge = document.getElementById('preview-type-badge');
-            typeBadge.textContent = selectedType;
-            typeBadge.className = `badge ${typeColors[selectedType].badge}`;
-        }
-        
-        // Actualizar teléfono
-        document.getElementById('preview-phone').textContent = phone || 'Teléfono';
-        
-        // Actualizar email
-        document.getElementById('preview-email').textContent = email || 'correo@ejemplo.com';
-        
-        // Actualizar color del avatar
-        if (selectedType) {
-            const avatar = document.getElementById('preview-avatar');
-            avatar.className = `avatar-circle ${typeColors[selectedType].icon.replace('text-', 'bg-')}`;
-        }
-    } else {
-        document.getElementById('contact-preview').style.display = 'none';
-    }
-}
-
-// Función para obtener iniciales
-function getInitials(name) {
-    if (!name) return '?';
-    
-    const words = name.trim().split(' ');
-    if (words.length === 1) {
-        return words[0].substring(0, 2).toUpperCase();
-    } else {
-        return (words[0].charAt(0) + (words[words.length - 1].charAt(0) || '')).toUpperCase();
-    }
-}
-
-// Función para validar formulario
-function validateForm() {
-    const name = document.querySelector('input[name="nombre"]').value.trim();
-    const phone = document.querySelector('input[name="telefono"]').value.trim();
-    const email = document.querySelector('input[name="correo"]').value.trim();
-    
-    const isValid = selectedType && 
-                   name.length >= 2 && 
-                   phone.length >= 8 && 
-                   isValidEmail(email);
-    
-    document.getElementById('submit-btn').disabled = !isValid;
-    
-    return isValid;
-}
-
-// Función para validar email
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-function validateEmail() {
-    const emailInput = document.querySelector('input[name="correo"]');
-    const email = emailInput.value.trim();
-    
-    if (email && !isValidEmail(email)) {
-        emailInput.classList.add('is-invalid');
-        
-        // Mostrar mensaje de error si no existe
-        if (!emailInput.nextElementSibling || !emailInput.nextElementSibling.classList.contains('invalid-feedback')) {
-            const feedback = document.createElement('div');
-            feedback.className = 'invalid-feedback';
-            feedback.textContent = 'Por favor ingresa un correo válido';
-            emailInput.parentNode.insertBefore(feedback, emailInput.nextSibling);
-        }
-    } else {
-        emailInput.classList.remove('is-invalid');
-        const feedback = emailInput.parentNode.querySelector('.invalid-feedback');
-        if (feedback) feedback.remove();
-    }
-}
-
-// Función para formatear número de teléfono
-function formatPhoneNumber(input) {
-    let value = input.value.replace(/\D/g, ''); // Quitar caracteres no numéricos
-    
-    // Aplicar formato chileno
-    if (value.length <= 8) {
-        // Número fijo: 12345678 -> 1234-5678
-        value = value.replace(/(\d{4})(\d{0,4})/, '$1-$2');
-    } else if (value.length === 9 && value.startsWith('9')) {
-        // Celular: 987654321 -> 9-8765-4321
-        value = value.replace(/(\d{1})(\d{4})(\d{0,4})/, '$1-$2-$3');
-    } else if (value.length === 11 && value.startsWith('569')) {
-        // Celular con código: 56987654321 -> +56 9-8765-4321
-        value = value.replace(/(\d{2})(\d{1})(\d{4})(\d{0,4})/, '+$1 $2-$3-$4');
-    }
-    
-    input.value = value;
-}
-
-// Interceptar envío del formulario
-document.getElementById('contact-form').addEventListener('submit', function(e) {
-    if (!selectedType) {
-        e.preventDefault();
-        alert('Por favor selecciona el tipo de contacto');
-        return;
-    }
-    
-    if (!validateForm()) {
-        e.preventDefault();
-        alert('Por favor completa todos los campos requeridos correctamente');
-        return;
-    }
-});
-
-// Función para limpiar formulario
-function clearForm() {
-    document.getElementById('contact-form').reset();
-    selectedType = null;
-    document.querySelectorAll('.contact-type-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    document.getElementById('type-indicator').style.display = 'none';
-    document.getElementById('contact-preview').style.display = 'none';
-    document.getElementById('submit-btn').disabled = true;
-}
-</script>
 
 <style>
-/* Estilos para las tarjetas de tipo de contacto */
-.contact-type-card {
-    border: 2px solid var(--medium-gray);
-    border-radius: 12px;
-    padding: 1.5rem 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background: white;
-}
-
-.contact-type-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    border-color: var(--accent-color);
-}
-
-.contact-type-card.selected {
-    border-color: var(--accent-color);
-    background: rgba(52, 152, 219, 0.05);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
-}
-
-.contact-type-icon {
-    margin-bottom: 0.5rem;
-}
-
-.contact-type-card h6 {
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-
-.contact-type-card small {
-    font-size: 0.75rem;
-}
-
-/* Vista previa del contacto */
-.preview-avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.avatar-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 1.5rem;
-    background-color: var(--accent-color);
-}
-
-.preview-info h5 {
-    margin-bottom: 0.5rem;
-    color: var(--primary-color);
-}
-
-/* Inputs mejorados */
-.form-control:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-}
-
-.input-group-text {
-    background-color: var(--light-gray);
-    border-color: var(--medium-gray);
-    color: var(--dark-gray);
-}
-
-.form-control.is-invalid {
-    border-color: var(--danger-color);
-    animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-/* Botones */
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-}
-
-/* Badges personalizados */
-.badge {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 15px;
-    font-weight: 600;
-}
-
-/* Lista de ayuda */
-.list-unstyled li {
-    padding: 0.25rem 0;
-    border-bottom: 1px solid var(--light-gray);
-}
-
-.list-unstyled li:last-child {
-    border-bottom: none;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .contact-type-card {
-        height: 100px;
-        padding: 1rem 0.5rem;
-        margin-bottom: 1rem;
+    /* Fondo del formulario con imitación de papel */
+    .card {
+        background-color: #fdfdfd;
+        background-image: linear-gradient(white, #f7f7f7);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
     }
-    
-    .contact-type-icon i {
-        font-size: 1.5rem !important;
-    }
-    
-    .contact-type-card h6 {
-        font-size: 0.9rem;
-    }
-    
-    .avatar-circle {
-        width: 60px;
-        height: 60px;
-        font-size: 1.2rem;
-    }
-    
-    .preview-info h5 {
-        font-size: 1.1rem;
-    }
-}
 
-/* Estados de validación */
-.invalid-feedback {
-    display: block;
-    width: 100%;
-    margin-top: 0.25rem;
-    font-size: 0.875rem;
-    color: var(--danger-color);
-}
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
 
-/* Colores para avatares por tipo */
-.bg-primary { background-color: var(--primary-color) !important; }
-.bg-success { background-color: var(--success-color) !important; }
-.bg-info { background-color: var(--accent-color) !important; }
-.bg-warning { background-color: var(--warning-color) !important; }
-.bg-secondary { background-color: var(--dark-gray) !important; }
-.bg-dark { background-color: var(--secondary-color) !important; }
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Botones con estilo de página de libreta */
+    .btn-primary, .btn-secondary {
+        border-radius: 10px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
 </style>
+
 {% endblock %}
