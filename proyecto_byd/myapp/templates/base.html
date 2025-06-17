@@ -78,7 +78,9 @@
                 <li class="nav-item">
                     <a class="nav-link {% if 'actividad' in request.path %}active{% endif %}" href="{% url 'calendario' %}">Calendario</a>
                 </li>
-              
+                <li class="nav-item">
+                    <a class="nav-link {% if 'pagos-cliente' in request.path %}active{% endif %}" href="{% url 'pago_cliente_list' %}">Pagos Cliente</a>
+                </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}

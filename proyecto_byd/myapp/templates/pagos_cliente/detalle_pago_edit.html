@@ -1,0 +1,536 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Detalle de Pago{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4><i class="fas fa-edit"></i> Editar Detalle de Pago</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Información del pago principal -->
+                    <div class="alert alert-info border-left-info mb-4">
+                        <h6><i class="fas fa-info-circle"></i> Información del Pago Principal</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Cliente:</strong> {{ pago_cliente.cliente_nombre }}</p>
+                                <p><strong>Proyecto:</strong> {{ pago_cliente.proyecto.nombre }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Monto Total:</strong> <span class="text-primary">${{ pago_cliente.monto_total|floatformat:0 }}</span></p>
+                                <p><strong>Monto Pendiente:</strong> <span class="text-danger">${{ pago_cliente.monto_pendiente|floatformat:0 }}</span></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Progreso actual -->
+                        <div class="mt-3">
+                            <label class="form-label"><strong>Progreso Actual:</strong></label>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar 
+                                    {% if pago_cliente.porcentaje_pagado == 100 %}bg-success
+                                    {% elif pago_cliente.porcentaje_pagado >= 50 %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ pago_cliente.porcentaje_pagado }}%">
+                                    {{ pago_cliente.porcentaje_pagado|floatformat:1 }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del detalle actual -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Detalle de Pago Actual</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <small class="text-muted">Fecha Actual:</small><br>
+                                    <strong>{{ detalle.fecha_pago|date:"d/m/Y" }}</strong>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Monto Actual:</small><br>
+                                    <strong class="text-success">${{ detalle.monto_pago|floatformat:0 }}</strong>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Forma de Pago:</small><br>
+                                    <strong>{{ detalle.get_forma_pago_display }}</strong>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Registrado:</small><br>
+                                    <strong>{{ detalle.fecha_registro|date:"d/m/Y H:i" }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar errores del formulario -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Por favor, corrija los siguientes errores:</h6>
+                            <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ field|capfirst }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_fecha_pago" class="form-label"><strong>Fecha del Pago: <span class="text-danger">*</span></strong></label>
+                                {{ form.fecha_pago }}
+                                <div class="form-text">Fecha en que se realizó el pago</div>
+                                {% if form.fecha_pago.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.fecha_pago.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_monto_pago" class="form-label"><strong>Monto del Pago: <span class="text-danger">*</span></strong></label>
+                                {{ form.monto_pago }}
+                                <div class="form-text">
+                                    Monto actual: ${{ detalle.monto_pago|floatformat:0 }} | 
+                                    Pendiente disponible: ${{ pago_cliente.monto_pendiente|add:detalle.monto_pago|floatformat:0 }}
+                                </div>
+                                {% if form.monto_pago.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.monto_pago.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_forma_pago" class="form-label">Forma de Pago:</label>
+                                {{ form.forma_pago }}
+                                {% if form.forma_pago.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.forma_pago.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_numero_referencia" class="form-label">Número de Referencia:</label>
+                                {{ form.numero_referencia }}
+                                <div class="form-text">Número de transferencia, cheque, etc.</div>
+                                {% if form.numero_referencia.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.numero_referencia.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_comprobante_pago" class="form-label">Comprobante de Pago:</label>
+                                {{ form.comprobante_pago }}
+                                {% if detalle.comprobante_pago %}
+                                <div class="form-text">
+                                    <i class="fas fa-file"></i> 
+                                    Archivo actual: 
+                                    <a href="{{ detalle.comprobante_pago.url }}" target="_blank" class="text-decoration-none">
+                                        {{ detalle.comprobante_pago.name|default:"Ver comprobante" }}
+                                    </a>
+                                    <br><small class="text-muted">Seleccione un nuevo archivo para reemplazarlo</small>
+                                </div>
+                                {% else %}
+                                <div class="form-text">Formatos permitidos: PDF, JPG, PNG (máximo 5MB)</div>
+                                {% endif %}
+                                {% if form.comprobante_pago.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.comprobante_pago.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_notas" class="form-label">Notas:</label>
+                                {{ form.notas }}
+                                <div class="form-text">Información adicional sobre este pago</div>
+                                {% if form.notas.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.notas.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Información de registro -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6><i class="fas fa-info-circle"></i> Información del Registro</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <small class="text-muted">Registrado por:</small><br>
+                                        <strong>
+                                            {% if detalle.registrado_por %}
+                                                {{ detalle.registrado_por.username }}
+                                            {% else %}
+                                                Sistema
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">Fecha de registro:</small><br>
+                                        <strong>{{ detalle.fecha_registro|date:"d/m/Y H:i" }}</strong>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">Última edición:</small><br>
+                                        <strong>{{ detalle.fecha_registro|date:"d/m/Y H:i" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vista previa de cambios -->
+                        <div class="card border-info mb-4" id="vistaPrevia" style="display: none;">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-eye"></i> Vista Previa de Cambios</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">ANTES</h6>
+                                        <p>Monto: ${{ detalle.monto_pago|floatformat:0 }}</p>
+                                        <p>Fecha: {{ detalle.fecha_pago|date:"d/m/Y" }}</p>
+                                        <p>Forma: {{ detalle.get_forma_pago_display }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">DESPUÉS</h6>
+                                        <p>Monto: <span id="nuevoMonto">$0</span></p>
+                                        <p>Fecha: <span id="nuevaFecha">-</span></p>
+                                        <p>Forma: <span id="nuevaForma">-</span></p>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h6 class="text-muted">IMPACTO EN EL PAGO PRINCIPAL</h6>
+                                    <p>Nuevo monto pagado total: <span id="nuevoTotalPagado" class="fw-bold text-success">$0</span></p>
+                                    <p>Nuevo monto pendiente: <span id="nuevoPendiente" class="fw-bold text-danger">$0</span></p>
+                                    <div class="progress" style="height: 15px;">
+                                        <div class="progress-bar bg-info" role="progressbar" id="nuevoBarra" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between flex-wrap gap-2">
+                            <div>
+                                <a href="{% url 'pago_cliente_detail' pago_cliente.pk %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Cancelar
+                                </a>
+                                <a href="{% url 'pago_cliente_detail' pago_cliente.pk %}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> Ver Pago Principal
+                                </a>
+                            </div>
+                            <button type="submit" class="btn btn-success" id="btnGuardar">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Variables originales
+    const montoOriginal = {{ detalle.monto_pago }};
+    const montoPagadoTotal = {{ pago_cliente.monto_pagado }};
+    const montoTotalPago = {{ pago_cliente.monto_total }};
+    const montoPendienteDisponible = {{ pago_cliente.monto_pendiente }} + montoOriginal;
+    
+    // Validación en tiempo real del monto
+    $('#id_monto_pago').on('input', function() {
+        const nuevoMonto = parseFloat($(this).val()) || 0;
+        const $feedback = $(this).siblings('.invalid-feedback');
+        
+        // Limpiar feedback previo
+        $feedback.remove();
+        $(this).removeClass('is-invalid border-warning');
+        
+        if (nuevoMonto <= 0) {
+            $(this).addClass('is-invalid');
+            $(this).after('<div class="invalid-feedback d-block">El monto debe ser mayor a 0</div>');
+        } else if (nuevoMonto > montoPendienteDisponible) {
+            $(this).addClass('is-invalid');
+            $(this).after(`<div class="invalid-feedback d-block">El monto no puede ser mayor al disponible: ${montoPendienteDisponible.toLocaleString()}</div>`);
+        } else if (Math.abs(nuevoMonto - montoOriginal) > montoOriginal * 0.5) {
+            // Advertencia si cambia más del 50%
+            $(this).addClass('border-warning');
+            $(this).after('<div class="form-text text-warning"><i class="fas fa-exclamation-triangle"></i> Cambio significativo en el monto</div>');
+        }
+        
+        // Actualizar vista previa
+        actualizarVistaPrevia();
+    });
+
+    // Actualizar vista previa cuando cambien otros campos
+    $('#id_fecha_pago, #id_forma_pago').on('change', actualizarVistaPrevia);
+
+    function actualizarVistaPrevia() {
+        const nuevoMonto = parseFloat($('#id_monto_pago').val()) || 0;
+        const nuevaFecha = $('#id_fecha_pago').val();
+        const nuevaFormaValue = $('#id_forma_pago').val();
+        const nuevaFormaText = $('#id_forma_pago option:selected').text();
+        
+        // Verificar si hay cambios
+        const hayCanzbios = 
+            nuevoMonto !== montoOriginal ||
+            nuevaFecha !== '{{ detalle.fecha_pago|date:"Y-m-d" }}' ||
+            nuevaFormaValue !== '{{ detalle.forma_pago }}';
+        
+        if (hayCanzbios && nuevoMonto > 0) {
+            $('#vistaPrevia').show();
+            
+            // Actualizar valores
+            $('#nuevoMonto').text(`${nuevoMonto.toLocaleString()}`);
+            $('#nuevaFecha').text(nuevaFecha ? new Date(nuevaFecha).toLocaleDateString('es-ES') : '-');
+            $('#nuevaForma').text(nuevaFormaText || '-');
+            
+            // Calcular impacto
+            const diferenciaMonto = nuevoMonto - montoOriginal;
+            const nuevoTotalPagado = montoPagadoTotal + diferenciaMonto;
+            const nuevoPendiente = montoTotalPago - nuevoTotalPagado;
+            const nuevoPorcentaje = (nuevoTotalPagado / montoTotalPago) * 100;
+            
+            $('#nuevoTotalPagado').text(`${nuevoTotalPagado.toLocaleString()}`);
+            $('#nuevoPendiente').text(`${nuevoPendiente.toLocaleString()}`);
+            $('#nuevoBarra').css('width', `${Math.max(0, Math.min(100, nuevoPorcentaje))}%`);
+            
+            // Cambiar colores según el resultado
+            if (nuevoPendiente < 0) {
+                $('#nuevoPendiente').removeClass('text-danger').addClass('text-warning');
+                $('#nuevoTotalPagado').removeClass('text-success').addClass('text-warning');
+            } else {
+                $('#nuevoPendiente').removeClass('text-warning').addClass('text-danger');
+                $('#nuevoTotalPagado').removeClass('text-warning').addClass('text-success');
+            }
+        } else {
+            $('#vistaPrevia').hide();
+        }
+    }
+
+    // Validación del formulario antes del envío
+    $('form').on('submit', function(e) {
+        let esValido = true;
+        const errores = [];
+        
+        // Limpiar validaciones previas
+        $('.is-invalid').removeClass('is-invalid');
+        $('.validation-error').remove();
+        
+        // Validar fecha
+        const fecha = $('#id_fecha_pago').val();
+        if (!fecha) {
+            $('#id_fecha_pago').addClass('is-invalid');
+            errores.push('Debe seleccionar una fecha de pago');
+            esValido = false;
+        }
+        
+        // Validar monto
+        const monto = parseFloat($('#id_monto_pago').val());
+        if (isNaN(monto) || monto <= 0) {
+            $('#id_monto_pago').addClass('is-invalid');
+            errores.push('El monto debe ser mayor a 0');
+            esValido = false;
+        } else if (monto > montoPendienteDisponible) {
+            $('#id_monto_pago').addClass('is-invalid');
+            errores.push(`El monto no puede ser mayor al disponible: ${montoPendienteDisponible.toLocaleString()}`);
+            esValido = false;
+        }
+        
+        // Confirmación para cambios significativos
+        if (esValido && Math.abs(monto - montoOriginal) > montoOriginal * 0.3) {
+            const confirmacion = confirm(
+                `¿Está seguro de cambiar el monto de ${montoOriginal.toLocaleString()} a ${monto.toLocaleString()}?\n\n` +
+                'Este es un cambio significativo que afectará el estado del pago principal.'
+            );
+            if (!confirmacion) {
+                esValido = false;
+            }
+        }
+        
+        if (!esValido && errores.length > 0) {
+            e.preventDefault();
+            
+            // Mostrar errores
+            let errorHtml = '<div class="alert alert-danger validation-error"><h6><i class="fas fa-exclamation-triangle"></i> Por favor, corrija los siguientes errores:</h6><ul class="mb-0">';
+            errores.forEach(function(error) {
+                errorHtml += '<li>' + error + '</li>';
+            });
+            errorHtml += '</ul></div>';
+            
+            $('form').prepend(errorHtml);
+            
+            // Scroll al primer error
+            $('html, body').animate({
+                scrollTop: $('.validation-error').offset().top - 100
+            }, 500);
+        } else if (esValido) {
+            // Deshabilitar botón para evitar doble envío
+            $('#btnGuardar').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+        }
+    });
+
+    // Formatear monto mientras se escribe
+    $('#id_monto_pago').on('blur', function() {
+        const valor = parseFloat($(this).val());
+        if (!isNaN(valor) && valor > 0) {
+            $(this).val(valor.toFixed(0));
+        }
+    });
+
+    // Permitir solo números en el campo de monto
+    $('#id_monto_pago').on('keypress', function(e) {
+        // Permitir: backspace, delete, tab, escape, enter, punto decimal
+        if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+            // Permitir: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+            return;
+        }
+        // Asegurar que es un número
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    // Seleccionar todo el texto al hacer focus en campos numéricos
+    $('#id_monto_pago').on('focus', function() {
+        $(this).select();
+    });
+
+    // Inicializar vista previa
+    actualizarVistaPrevia();
+});
+</script>
+
+<style>
+.border-left-info {
+    border-left: 4px solid #0dcaf0 !important;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+.border-warning {
+    border-color: #ffc107 !important;
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Efectos de transición suaves */
+#vistaPrevia {
+    transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .col-md-6, .col-md-4, .col-md-3 {
+        margin-bottom: 1rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .d-flex.justify-content-between .btn {
+        width: 100%;
+    }
+}
+
+/* Animaciones sutiles */
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    transition: box-shadow 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.1s ease-in-out;
+}
+
+/* Estilos para archivos */
+.form-control[type="file"] {
+    padding: 0.375rem 0.75rem;
+}
+
+.form-control[type="file"]:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
+{% endblock %}

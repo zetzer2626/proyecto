@@ -1,0 +1,355 @@
+<!-- pagos_cliente/reporte_pagos.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte de Pagos de Clientes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar"></i> Reporte de Pagos de Clientes</h2>
+        <div>
+            <button class="btn btn-success" onclick="exportarExcel()">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+            </button>
+            <button class="btn btn-danger" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf"></i> Exportar a PDF
+            </button>
+            <a href="{% url 'pago_cliente_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros de Búsqueda -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="fas fa-filter"></i> Filtros del Reporte</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    {{ form_buscar.cliente.label_tag }}
+                    {{ form_buscar.cliente }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_buscar.estado.label_tag }}
+                    {{ form_buscar.estado }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_buscar.proyecto.label_tag }}
+                    {{ form_buscar.proyecto }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_buscar.fecha_desde.label_tag }}
+                    {{ form_buscar.fecha_desde }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_buscar.fecha_hasta.label_tag }}
+                    {{ form_buscar.fecha_hasta }}
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Generar Reporte
+                    </button>
+                    <a href="{% url 'reporte_pagos_cliente' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Limpiar Filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resumen Ejecutivo -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-chart-pie"></i> Resumen Ejecutivo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-primary">${{ estadisticas.total_monto|floatformat:0 }}</h3>
+                                <p class="text-muted">Monto Total a Cobrar</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-success">${{ estadisticas.total_pagado|floatformat:0 }}</h3>
+                                <p class="text-muted">Total Cobrado</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-warning">${{ estadisticas.total_pendiente|floatformat:0 }}</h3>
+                                <p class="text-muted">Total Pendiente</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-info">{{ estadisticas.total_clientes }}</h3>
+                                <p class="text-muted">Clientes Activos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Porcentaje de cobranza -->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Porcentaje de Cobranza General:</strong></label>
+                            {% if estadisticas.total_monto > 0 %}
+                                {% widthratio estadisticas.total_pagado estadisticas.total_monto 100 as porcentaje_cobranza %}
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ porcentaje_cobranza }}%">
+                                        {{ porcentaje_cobranza }}% Cobrado
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 100%">
+                                        Sin datos
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas por Estado -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Distribución por Estado</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for estado, datos in estadisticas.por_estado.items %}
+                        <div class="col-md-3 mb-3">
+                            <div class="card 
+                                {% if estado == 'completo' %}border-success
+                                {% elif estado == 'parcial' %}border-warning
+                                {% elif estado == 'vencido' %}border-danger
+                                {% else %}border-secondary{% endif %}">
+                                <div class="card-body text-center">
+                                    <h5 class="
+                                        {% if estado == 'completo' %}text-success
+                                        {% elif estado == 'parcial' %}text-warning
+                                        {% elif estado == 'vencido' %}text-danger
+                                        {% else %}text-secondary{% endif %}">
+                                        {{ datos.count }}
+                                    </h5>
+                                    <p class="card-text">{{ datos.nombre }}</p>
+                                    <small class="text-muted">${{ datos.monto|floatformat:0 }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla Detallada -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fas fa-table"></i> Detalle de Pagos</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="tablaReporte">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Proyecto</th>
+                            <th>Monto Total</th>
+                            <th>Monto Pagado</th>
+                            <th>Monto Pendiente</th>
+                            <th>% Pagado</th>
+                            <th>Estado</th>
+                            <th>Vencimiento</th>
+                            <th>Fecha Creación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pago in pagos %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'pago_cliente_detail' pago.pk %}" class="text-decoration-none">
+                                    <strong>{{ pago.cliente_nombre }}</strong>
+                                </a>
+                                {% if pago.cliente_telefono %}
+                                <br><small class="text-muted">{{ pago.cliente_telefono }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ pago.proyecto.nombre }}</td>
+                            <td>${{ pago.monto_total|floatformat:0 }}</td>
+                            <td>${{ pago.monto_pagado|floatformat:0 }}</td>
+                            <td>${{ pago.monto_pendiente|floatformat:0 }}</td>
+                            <td>
+                                <div class="progress" style="height: 15px;">
+                                    <div class="progress-bar 
+                                        {% if pago.porcentaje_pagado == 100 %}bg-success
+                                        {% elif pago.porcentaje_pagado >= 50 %}bg-warning
+                                        {% else %}bg-danger{% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {{ pago.porcentaje_pagado }}%">
+                                    </div>
+                                </div>
+                                <small>{{ pago.porcentaje_pagado|floatformat:1 }}%</small>
+                            </td>
+                            <td>
+                                {% if pago.estado_pago == 'completo' %}
+                                    <span class="badge bg-success">Pagado Completo</span>
+                                {% elif pago.estado_pago == 'parcial' %}
+                                    <span class="badge bg-warning">Pago Parcial</span>
+                                {% elif pago.estado_pago == 'vencido' %}
+                                    <span class="badge bg-danger">Vencido</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pago.fecha_vencimiento %}
+                                    {{ pago.fecha_vencimiento|date:"d/m/Y" }}
+                                {% else %}
+                                    <span class="text-muted">Sin fecha</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ pago.fecha_creacion|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center">No hay datos para mostrar con los filtros aplicados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-secondary">
+                        <tr>
+                            <th colspan="2">TOTALES:</th>
+                            <th>${{ estadisticas.total_monto|floatformat:0 }}</th>
+                            <th>${{ estadisticas.total_pagado|floatformat:0 }}</th>
+                            <th>${{ estadisticas.total_pendiente|floatformat:0 }}</th>
+                            <th>
+                                {% if estadisticas.total_monto > 0 %}
+                                    {% widthratio estadisticas.total_pagado estadisticas.total_monto 100 as porcentaje_total %}
+                                    {{ porcentaje_total }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </th>
+                            <th colspan="3"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Inicializar DataTable
+    $('#tablaReporte').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
+        },
+        "pageLength": 50,
+        "order": [[ 7, "asc" ]], // Ordenar por fecha de vencimiento
+        "columnDefs": [
+            { "orderable": false, "targets": [5] } // Deshabilitar ordenamiento en columna de progreso
+        ],
+        "dom": 'Bfrtip',
+        "buttons": [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+
+    // Inicializar Select2
+    $('#id_proyecto').select2({
+        placeholder: 'Seleccione un proyecto...',
+        allowClear: true
+    });
+});
+
+function exportarExcel() {
+    // Función para exportar a Excel usando la funcionalidad de DataTables
+    $('#tablaReporte').DataTable().button(2).trigger();
+}
+
+function exportarPDF() {
+    // Función para exportar a PDF usando jsPDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Título del reporte
+    doc.setFontSize(16);
+    doc.text('Reporte de Pagos de Clientes', 20, 20);
+    
+    // Fecha del reporte
+    doc.setFontSize(10);
+    doc.text('Fecha: ' + new Date().toLocaleDateString(), 20, 30);
+    
+    // Resumen ejecutivo
+    doc.setFontSize(12);
+    doc.text('Resumen Ejecutivo:', 20, 45);
+    doc.setFontSize(10);
+    doc.text('Total a Cobrar: ${{ estadisticas.total_monto|floatformat:0 }}', 20, 55);
+    doc.text('Total Cobrado: ${{ estadisticas.total_pagado|floatformat:0 }}', 20, 65);
+    doc.text('Total Pendiente: ${{ estadisticas.total_pendiente|floatformat:0 }}', 20, 75);
+    
+    // Tabla usando autoTable
+    doc.autoTable({
+        html: '#tablaReporte',
+        startY: 85,
+        theme: 'striped',
+        headStyles: { fillColor: [52, 58, 64] },
+        margin: { top: 10 }
+    });
+    
+    doc.save('reporte_pagos_clientes.pdf');
+}
+
+// Función para imprimir el reporte
+function imprimirReporte() {
+    window.print();
+}
+</script>
+
+<style>
+@media print {
+    .btn, .card-header, .navbar, footer {
+        display: none !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .table {
+        font-size: 12px !important;
+    }
+}
+
+.border-left-success {
+    border-left: 4px solid #28a745 !important;
+}
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+.border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+.border-left-secondary {
+    border-left: 4px solid #6c757d !important;
+}
+</style>
+{% endblock %}

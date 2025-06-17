@@ -1,0 +1,644 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Crear Nuevo Pago de Cliente{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-plus-circle"></i> Crear Nuevo Pago de Cliente</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Mostrar errores del formulario -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Por favor, corrija los siguientes errores:</h6>
+                            <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ field|capfirst }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Información del Proyecto y Cliente -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_proyecto" class="form-label"><strong>Proyecto: <span class="text-danger">*</span></strong></label>
+                                {{ form.proyecto }}
+                                <div class="form-text">Seleccione el proyecto asociado a este pago</div>
+                                {% if form.proyecto.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.proyecto.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="id_cliente_nombre" class="form-label"><strong>Nombre del Cliente: <span class="text-danger">*</span></strong></label>
+                                {{ form.cliente_nombre }}
+                                {% if form.cliente_nombre.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.cliente_nombre.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_cliente_telefono" class="form-label">Teléfono:</label>
+                                {{ form.cliente_telefono }}
+                                {% if form.cliente_telefono.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.cliente_telefono.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_cliente_correo" class="form-label">Correo Electrónico:</label>
+                                {{ form.cliente_correo }}
+                                {% if form.cliente_correo.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.cliente_correo.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Información Financiera -->
+                        <hr>
+                        <h5><i class="fas fa-dollar-sign"></i> Información Financiera</h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_monto_total" class="form-label"><strong>Monto Total a Pagar: <span class="text-danger">*</span></strong></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    {{ form.monto_total }}
+                                </div>
+                                <div class="form-text">
+                                    Ingrese el monto con puntos como separadores de miles (ej: 900.000)
+                                    <br><small id="montoFormateado" class="text-success fw-bold"></small>
+                                    <br><small id="montoSinFormato" class="text-muted">Valor a guardar: <span id="valorGuardar">0</span></small>
+                                </div>
+                                {% if form.monto_total.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.monto_total.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_fecha_vencimiento" class="form-label">Fecha de Vencimiento:</label>
+                                {{ form.fecha_vencimiento }}
+                                <div class="form-text">Fecha límite para el pago (opcional)</div>
+                                {% if form.fecha_vencimiento.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.fecha_vencimiento.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Descripción y Observaciones -->
+                        <hr>
+                        <h5><i class="fas fa-file-text"></i> Detalles Adicionales</h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_descripcion" class="form-label">Descripción del Servicio/Producto:</label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.descripcion.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="id_observaciones" class="form-label">Observaciones:</label>
+                                {{ form.observaciones }}
+                                {% if form.observaciones.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.observaciones.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'pago_cliente_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success" id="btnGuardar">
+                                <i class="fas fa-save"></i> Guardar Pago
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Inicializar Select2 para el proyecto
+    $('#id_proyecto').select2({
+        placeholder: 'Seleccione un proyecto...',
+        allowClear: true,
+        width: '100%'
+    });
+
+    // Auto-completar datos del cliente cuando se selecciona un proyecto
+    $('#id_proyecto').on('change', function() {
+        const proyectoOption = $(this).find('option:selected');
+        const proyectoText = proyectoOption.text();
+        
+        // Si no hay nombre de cliente, usar el nombre del proyecto
+        if (!$('#id_cliente_nombre').val() && proyectoText && proyectoText !== 'Seleccione un proyecto...') {
+            const nombreProyecto = proyectoText.split(' - ')[0].split(' (')[0];
+            $('#id_cliente_nombre').val(nombreProyecto);
+        }
+    });
+
+    // Formatear y validar monto chileno en tiempo real
+    $('#id_monto_total').on('input', function() {
+        let valor = $(this).val();
+        
+        // Permitir solo números y puntos
+        valor = valor.replace(/[^\d.]/g, '');
+        
+        // Evitar múltiples puntos
+        const puntos = (valor.match(/\./g) || []).length;
+        if (puntos > 1) {
+            valor = valor.substring(0, valor.lastIndexOf('.'));
+        }
+        
+        // Actualizar el campo
+        $(this).val(valor);
+        
+        // Convertir a número para validaciones (remover puntos)
+        const numeroSinPuntos = parseInt(valor.replace(/\./g, '')) || 0;
+        
+        // Mostrar el valor formateado y el que se guardará
+        if (valor && numeroSinPuntos > 0) {
+            $('#montoFormateado').text(`Monto ingresado: ${valor}`);
+            $('#valorGuardar').text(numeroSinPuntos.toLocaleString('es-CL'));
+        } else {
+            $('#montoFormateado').text('');
+            $('#valorGuardar').text('0');
+        }
+        
+        // Validación en tiempo real
+        const $feedback = $(this).siblings('.invalid-feedback');
+        
+        if (numeroSinPuntos <= 0) {
+            $(this).addClass('is-invalid');
+            if ($feedback.length === 0) {
+                $(this).parent().after('<div class="invalid-feedback d-block">El monto debe ser mayor a 0</div>');
+            }
+        } else {
+            $(this).removeClass('is-invalid');
+            $feedback.remove();
+        }
+    });
+
+    // Formatear automáticamente mientras escribe
+    $('#id_monto_total').on('keyup', function() {
+        let valor = $(this).val();
+        
+        // Solo procesar si hay números
+        if (/^\d+$/.test(valor.replace(/\./g, ''))) {
+            const numeroLimpio = valor.replace(/\./g, '');
+            
+            // Formatear con puntos cada 3 dígitos desde la derecha
+            const numeroFormateado = numeroLimpio.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            // Solo actualizar si es diferente para evitar problemas con el cursor
+            if (valor !== numeroFormateado) {
+                const cursorPos = this.selectionStart;
+                $(this).val(numeroFormateado);
+                
+                // Mantener posición del cursor
+                const nuevaPos = cursorPos + (numeroFormateado.length - valor.length);
+                this.setSelectionRange(nuevaPos, nuevaPos);
+            }
+        }
+    });
+
+    // Función para formatear montos chilenos
+    function formatearMontoChileno(numero) {
+        if (numero === 0) return '';
+        return '
+
+    // Función para validar email
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Permitir solo números en el campo de teléfono
+    $('#id_cliente_telefono').on('keypress', function(e) {
+        // Permitir: backspace, delete, tab, escape, enter, +, -, espacio, paréntesis
+        if ([46, 8, 9, 27, 13, 43, 45, 32, 40, 41].indexOf(e.keyCode) !== -1 ||
+            // Permitir: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+            return;
+        }
+        // Asegurar que es un número
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    // Establecer fecha mínima para vencimiento (hoy)
+    const hoy = new Date().toISOString().split('T')[0];
+    $('#id_fecha_vencimiento').attr('min', hoy);
+
+    // Formateo inicial si hay valor
+    const valorInicial = $('#id_monto_total').val();
+    if (valorInicial) {
+        $('#id_monto_total').trigger('input');
+    }
+
+    // Ejemplo automático para ayudar al usuario
+    $('#id_monto_total').attr('placeholder', '900.000');
+    
+    // Agregar ejemplo visual
+    setTimeout(function() {
+        if (!$('#id_monto_total').val()) {
+            $('#montoFormateado').text('Ejemplo: ingrese 900.000 para $900.000').addClass('text-info');
+        }
+    }, 1000);
+});
+</script>
+
+<style>
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.375rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Estilos para Select2 */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    padding-left: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .col-md-4 {
+        margin-bottom: 1rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .d-flex.justify-content-between .btn {
+        width: 100%;
+    }
+}
+
+/* Destacar el campo de monto */
+#id_monto_total {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+#montoFormateado {
+    font-weight: 600;
+    color: #28a745 !important;
+    font-size: 0.9em;
+}
+
+#valorGuardar {
+    color: #6c757d;
+    font-family: 'Courier New', monospace;
+}
+
+#montoSinFormato {
+    font-size: 0.8em;
+}
+
+/* Placeholder más visible */
+#id_monto_total::placeholder {
+    color: #6c757d;
+    opacity: 0.8;
+}
+
+/* Estilo especial para el campo de monto */
+#id_monto_total {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+</style>
+{% endblock %} + numero.toLocaleString('es-CL');
+    }
+
+    // Permitir solo números y puntos en el campo de monto
+    $('#id_monto_total').on('keypress', function(e) {
+        // Permitir: backspace, delete, tab, escape, enter, punto
+        if ([46, 8, 9, 27, 13, 190, 110].indexOf(e.keyCode) !== -1 ||
+            // Permitir: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+            return;
+        }
+        // Asegurar que es un número o punto
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && e.keyCode !== 190) {
+            e.preventDefault();
+        }
+    });
+
+    // Validar y convertir antes del envío del formulario
+    $('form').on('submit', function(e) {
+        const montoField = $('#id_monto_total');
+        const montoConPuntos = montoField.val();
+        
+        // Convertir a número sin puntos para enviar al servidor
+        const montoSinPuntos = montoConPuntos.replace(/\./g, '');
+        
+        // Crear un campo oculto con el valor correcto
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'monto_total',
+            value: montoSinPuntos
+        }).appendTo(this);
+        
+        // Deshabilitar el campo original para que no se envíe
+        montoField.prop('disabled', true);
+        
+        // Continuar con validaciones normales
+        let esValido = true;
+        const errores = [];
+        
+        // Limpiar validaciones previas
+        $('.is-invalid').removeClass('is-invalid');
+        $('.validation-error').remove();
+        
+        // Validar proyecto
+        if (!$('#id_proyecto').val()) {
+            $('#id_proyecto').addClass('is-invalid');
+            errores.push('Debe seleccionar un proyecto');
+            esValido = false;
+        }
+        
+        // Validar nombre del cliente
+        const nombreCliente = $('#id_cliente_nombre').val().trim();
+        if (!nombreCliente) {
+            $('#id_cliente_nombre').addClass('is-invalid');
+            errores.push('Debe ingresar el nombre del cliente');
+            esValido = false;
+        }
+        
+        // Validar monto
+        const monto = parseInt(montoSinPuntos) || 0;
+        if (monto <= 0) {
+            montoField.prop('disabled', false).addClass('is-invalid');
+            errores.push('El monto debe ser mayor a 0');
+            esValido = false;
+        }
+        
+        // Validar email si se ingresó
+        const email = $('#id_cliente_correo').val().trim();
+        if (email && !isValidEmail(email)) {
+            $('#id_cliente_correo').addClass('is-invalid');
+            errores.push('El formato del correo electrónico no es válido');
+            esValido = false;
+        }
+        
+        if (!esValido) {
+            e.preventDefault();
+            
+            // Rehabilitar el campo si hay errores
+            montoField.prop('disabled', false);
+            $('input[name="monto_total"][type="hidden"]').remove();
+            
+            // Mostrar errores
+            let errorHtml = '<div class="alert alert-danger validation-error"><h6><i class="fas fa-exclamation-triangle"></i> Por favor, corrija los siguientes errores:</h6><ul class="mb-0">';
+            errores.forEach(function(error) {
+                errorHtml += '<li>' + error + '</li>';
+            });
+            errorHtml += '</ul></div>';
+            
+            $('form').prepend(errorHtml);
+            
+            // Scroll al primer error
+            $('html, body').animate({
+                scrollTop: $('.validation-error').offset().top - 100
+            }, 500);
+        } else {
+            // Deshabilitar botón para evitar doble envío
+            $('#btnGuardar').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+        }
+    });
+
+    // Función para validar email
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Permitir solo números en el campo de teléfono
+    $('#id_cliente_telefono').on('keypress', function(e) {
+        // Permitir: backspace, delete, tab, escape, enter, +, -, espacio, paréntesis
+        if ([46, 8, 9, 27, 13, 43, 45, 32, 40, 41].indexOf(e.keyCode) !== -1 ||
+            // Permitir: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+            return;
+        }
+        // Asegurar que es un número
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+    // Establecer fecha mínima para vencimiento (hoy)
+    const hoy = new Date().toISOString().split('T')[0];
+    $('#id_fecha_vencimiento').attr('min', hoy);
+
+    // Formateo inicial si hay valor
+    $('#id_monto_total').trigger('input');
+});
+</script>
+
+<style>
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.375rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Estilos para Select2 */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    padding-left: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .col-md-4 {
+        margin-bottom: 1rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .d-flex.justify-content-between .btn {
+        width: 100%;
+    }
+}
+
+/* Destacar el campo de monto */
+#id_monto_total {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+#montoFormateado {
+    font-weight: 600;
+    color: #28a745 !important;
+}
+</style>
+{% endblock %}

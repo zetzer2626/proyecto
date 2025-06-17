@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proyecto,Solicitud,Tramitacion,Pago_tramitacion,Contactos,Insumos
+from .models import Proyecto,Solicitud,Tramitacion,Pago_tramitacion,Contactos,Insumos,PagoCliente, DetallePago
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
@@ -141,3 +141,144 @@ class InsumoForm(forms.ModelForm):
             'pago': forms.FileInput(attrs={'class': 'form-control shadow-sm'}),
             'factura': forms.FileInput(attrs={'class': 'form-control shadow-sm'}),
         }
+
+
+class PagoClienteForm(forms.ModelForm):
+    class Meta:
+        model = PagoCliente
+        fields = [
+            'proyecto', 'cliente_nombre', 'cliente_telefono', 'cliente_correo',
+            'monto_total', 'fecha_vencimiento', 'descripcion', 'observaciones'
+        ]
+        widgets = {
+            'proyecto': forms.Select(attrs={'class': 'form-select select2'}),
+            'cliente_nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del cliente'}),
+            'cliente_telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+56 9 1234 5678'}),
+            'cliente_correo': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'cliente@email.com'}),
+            'monto_total': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'step': '0.01', 
+                'min': '0',
+                'placeholder': '0.00'
+            }),
+            'fecha_vencimiento': forms.DateInput(attrs={
+                'class': 'form-control', 
+                'type': 'date'
+            }),
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3,
+                'placeholder': 'Descripción del servicio o producto...'
+            }),
+            'observaciones': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 2,
+                'placeholder': 'Observaciones adicionales...'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Si hay un proyecto seleccionado, pre-llenar datos del cliente
+        if self.instance and self.instance.pk and hasattr(self.instance, 'proyecto') and self.instance.proyecto:
+            proyecto = self.instance.proyecto
+            if not self.instance.cliente_nombre:
+                self.fields['cliente_nombre'].initial = proyecto.nombre
+            if not self.instance.cliente_telefono:
+                self.fields['cliente_telefono'].initial = proyecto.telefono
+            if not self.instance.cliente_correo:
+                self.fields['cliente_correo'].initial = proyecto.correo
+
+
+class DetallePagoForm(forms.ModelForm):
+    class Meta:
+        model = DetallePago
+        fields = [
+            'fecha_pago', 'monto_pago', 'forma_pago', 
+            'numero_referencia', 'comprobante_pago', 'notas'
+        ]
+        widgets = {
+            'fecha_pago': forms.DateInput(attrs={
+                'class': 'form-control', 
+                'type': 'date'
+            }),
+            'monto_pago': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'step': '0.01', 
+                'min': '0.01',
+                'placeholder': '0.00'
+            }),
+            'forma_pago': forms.Select(attrs={'class': 'form-select'}),
+            'numero_referencia': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Número de transferencia, cheque, etc.'
+            }),
+            'comprobante_pago': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf,.jpg,.jpeg,.png'
+            }),
+            'notas': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3,
+                'placeholder': 'Notas sobre este pago...'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        pago_cliente = kwargs.pop('pago_cliente', None)
+        super().__init__(*args, **kwargs)
+        
+        if pago_cliente:
+            # Limitar el monto máximo al monto pendiente
+            monto_pendiente = pago_cliente.monto_pendiente
+            self.fields['monto_pago'].widget.attrs['max'] = str(monto_pendiente)
+            self.fields['monto_pago'].help_text = f"Monto pendiente: ${monto_pendiente:,.2f}"
+
+    def clean_monto_pago(self):
+        monto_pago = self.cleaned_data.get('monto_pago')
+        if hasattr(self, 'pago_cliente'):
+            if monto_pago > self.pago_cliente.monto_pendiente:
+                raise forms.ValidationError(
+                    f"El monto no puede ser mayor al pendiente: ${self.pago_cliente.monto_pendiente:,.2f}"
+                )
+        return monto_pago
+
+
+class BuscarPagoForm(forms.Form):
+    """Formulario para filtros de búsqueda"""
+    cliente = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Buscar por nombre de cliente...'
+        })
+    )
+    
+    estado = forms.ChoiceField(
+        choices=[('', 'Todos los estados')] + PagoCliente.ESTADO_PAGO_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    proyecto = forms.ModelChoiceField(
+        queryset=Proyecto.objects.all(),
+        required=False,
+        empty_label="Todos los proyectos",
+        widget=forms.Select(attrs={'class': 'form-select select2'})
+    )
+    
+    fecha_desde = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    
+    fecha_hasta = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )

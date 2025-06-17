@@ -85,6 +85,18 @@ urlpatterns = [
     path('exportar_tramitacion_excel/', views.exportar_tramitacion_excel, name='exportar_tramitacion_excel'),
 
 
+    # Pagos de Clientes
+    path('pagos-cliente/', PagoClienteListView.as_view(), name='pago_cliente_list'),
+    path('pagos-cliente/nuevo/', PagoClienteCreateView.as_view(), name='pago_cliente_create'),
+    path('pagos-cliente/<int:pk>/', PagoClienteDetailView.as_view(), name='pago_cliente_detail'),
+    path('pagos-cliente/<int:pk>/editar/', PagoClienteUpdateView.as_view(), name='pago_cliente_edit'),
+    path('pagos-cliente/<int:pk>/eliminar/', PagoClienteDeleteView.as_view(), name='pago_cliente_delete'),
+    # Detalles de Pago
+    path('pagos-cliente/<int:pago_id>/agregar-pago/', crear_detalle_pago, name='crear_detalle_pago'),
+    path('detalle-pago/<int:detalle_id>/editar/', editar_detalle_pago, name='editar_detalle_pago'),
+    path('detalle-pago/<int:detalle_id>/eliminar/', eliminar_detalle_pago, name='eliminar_detalle_pago'),
+
+    # Reportes
+    path('pagos-cliente/reporte/', reporte_pagos_cliente, name='reporte_pagos_cliente'),
 
 ]
-

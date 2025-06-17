@@ -2,8 +2,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView,View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Proyecto,Solicitud,Contactos,Tramitacion,Pago_tramitacion,Listado,Insumos,Evento,Enlace,Boleta
-from .forms import ProyectoForm, UserRegistrationForm,SolicitudForm,TramitacionForm,PagoTramitacionForm,ContactoForm,InsumoForm
+from .models import Proyecto,Solicitud,Contactos,Tramitacion,Pago_tramitacion,Listado,Insumos,Evento,Enlace,Boleta,PagoCliente, DetallePago
+from .forms import ProyectoForm, UserRegistrationForm,SolicitudForm,TramitacionForm,PagoTramitacionForm,ContactoForm,InsumoForm,PagoClienteForm, DetallePagoForm, BuscarPagoForm
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LoginView, LogoutView
@@ -25,6 +25,9 @@ from datetime import datetime
 from django.core.paginator import Paginator
 import openpyxl
 from openpyxl.styles import Font, Border, Side
+from django.db.models import Sum, Q
+from django.contrib import messages
+from decimal import Decimal
 
 
 
@@ -870,3 +873,269 @@ def exportar_tramitacion_excel(request):
     # Guardar el archivo en la respuesta
     wb.save(response)
     return response
+
+
+
+
+# ============ VISTAS PARA PAGOS DE CLIENTES ============
+
+@method_decorator(login_required, name='dispatch')
+class PagoClienteListView(ListView):
+    model = PagoCliente
+    template_name = 'pagos_cliente/pago_cliente_list.html'
+    context_object_name = 'pagos'
+    ordering = ['-fecha_creacion']
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Obtener parámetros de filtro
+        cliente = self.request.GET.get('cliente')
+        estado = self.request.GET.get('estado')
+        proyecto_id = self.request.GET.get('proyecto')
+        fecha_desde = self.request.GET.get('fecha_desde')
+        fecha_hasta = self.request.GET.get('fecha_hasta')
+
+        # Aplicar filtros
+        if cliente:
+            queryset = queryset.filter(
+                Q(cliente_nombre__icontains=cliente) |
+                Q(proyecto__nombre__icontains=cliente)
+            )
+        
+        if estado:
+            queryset = queryset.filter(estado_pago=estado)
+        
+        if proyecto_id:
+            queryset = queryset.filter(proyecto_id=proyecto_id)
+        
+        if fecha_desde:
+            queryset = queryset.filter(fecha_creacion__date__gte=fecha_desde)
+        
+        if fecha_hasta:
+            queryset = queryset.filter(fecha_creacion__date__lte=fecha_hasta)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Estadísticas generales
+        queryset = self.get_queryset()
+        context['total_pagos'] = queryset.count()
+        context['total_monto'] = queryset.aggregate(Sum('monto_total'))['monto_total__sum'] or 0
+        context['total_pagado'] = queryset.aggregate(Sum('monto_pagado'))['monto_pagado__sum'] or 0
+        context['total_pendiente'] = context['total_monto'] - context['total_pagado']
+        
+        # Calcular promedio por cliente
+        if context['total_pagos'] > 0:
+            context['promedio_por_cliente'] = context['total_monto'] / context['total_pagos']
+        else:
+            context['promedio_por_cliente'] = 0
+        
+        # Contadores por estado
+        context['pendientes_count'] = queryset.filter(estado_pago='pendiente').count()
+        context['parciales_count'] = queryset.filter(estado_pago='parcial').count()
+        context['completos_count'] = queryset.filter(estado_pago='completo').count()
+        context['vencidos_count'] = queryset.filter(estado_pago='vencido').count()
+        
+        # Formulario de búsqueda
+        context['form_buscar'] = BuscarPagoForm(self.request.GET)
+        
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class PagoClienteCreateView(CreateView):
+    model = PagoCliente
+    form_class = PagoClienteForm
+    template_name = 'pagos_cliente/pago_cliente_create.html'
+    success_url = reverse_lazy('pago_cliente_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pago de cliente creado exitosamente.')
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class PagoClienteUpdateView(UpdateView):
+    model = PagoCliente
+    form_class = PagoClienteForm
+    template_name = 'pagos_cliente/pago_cliente_edit.html'
+    success_url = reverse_lazy('pago_cliente_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Pago de cliente actualizado exitosamente.')
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class PagoClienteDetailView(DetailView):
+    model = PagoCliente
+    template_name = 'pagos_cliente/pago_cliente_detail.html'
+    context_object_name = 'pago'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['detalles_pago'] = self.object.detalles_pago.all().order_by('-fecha_pago')
+        context['form_detalle_pago'] = DetallePagoForm()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class PagoClienteDeleteView(DeleteView):
+    model = PagoCliente
+    template_name = 'pagos_cliente/pago_cliente_delete.html'
+    success_url = reverse_lazy('pago_cliente_list')
+    context_object_name = 'object'
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            pago = self.get_object()
+            nombre_cliente = pago.cliente_nombre
+            
+            # Eliminar el objeto
+            response = super().delete(request, *args, **kwargs)
+            
+            # Mensaje de éxito
+            messages.success(request, f'Pago de {nombre_cliente} eliminado exitosamente.')
+            return response
+            
+        except Exception as e:
+            messages.error(request, f'Error al eliminar el pago: {str(e)}')
+            return redirect('pago_cliente_detail', pk=self.kwargs['pk'])
+
+
+# ============ VISTAS PARA DETALLES DE PAGO ============
+
+@login_required
+def crear_detalle_pago(request, pago_id):
+    pago_cliente = get_object_or_404(PagoCliente, id=pago_id)
+    
+    if request.method == 'POST':
+        form = DetallePagoForm(request.POST, request.FILES, pago_cliente=pago_cliente)
+        if form.is_valid():
+            detalle = form.save(commit=False)
+            detalle.pago_cliente = pago_cliente
+            detalle.registrado_por = request.user
+            
+            # Verificar que no se exceda el monto pendiente
+            if detalle.monto_pago > pago_cliente.monto_pendiente:
+                messages.error(request, f'El monto no puede exceder el pendiente: ${pago_cliente.monto_pendiente:,.2f}')
+                return redirect('pago_cliente_detail', pk=pago_id)
+            
+            detalle.save()
+            messages.success(request, f'Pago de ${detalle.monto_pago:,.2f} registrado exitosamente.')
+            return redirect('pago_cliente_detail', pk=pago_id)
+        else:
+            messages.error(request, 'Error en el formulario. Verifique los datos.')
+    
+    return redirect('pago_cliente_detail', pk=pago_id)
+
+
+@login_required
+def editar_detalle_pago(request, detalle_id):
+    detalle = get_object_or_404(DetallePago, id=detalle_id)
+    pago_cliente = detalle.pago_cliente
+    
+    if request.method == 'POST':
+        form = DetallePagoForm(request.POST, request.FILES, instance=detalle, pago_cliente=pago_cliente)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Detalle de pago actualizado exitosamente.')
+            return redirect('pago_cliente_detail', pk=pago_cliente.id)
+    else:
+        form = DetallePagoForm(instance=detalle, pago_cliente=pago_cliente)
+    
+    return render(request, 'pagos_cliente/detalle_pago_edit.html', {
+        'form': form,
+        'detalle': detalle,
+        'pago_cliente': pago_cliente
+    })
+
+
+@login_required
+def eliminar_detalle_pago(request, detalle_id):
+    detalle = get_object_or_404(DetallePago, id=detalle_id)
+    pago_cliente = detalle.pago_cliente
+    
+    if request.method == 'POST':
+        detalle.delete()
+        messages.success(request, 'Detalle de pago eliminado exitosamente.')
+    
+    return redirect('pago_cliente_detail', pk=pago_cliente.id)
+
+
+# ============ REPORTES Y EXPORTACIONES ============
+
+@login_required
+def reporte_pagos_cliente(request):
+    """Vista para generar reportes de pagos"""
+    
+    # Obtener filtros
+    form_buscar = BuscarPagoForm(request.GET)
+    pagos = PagoCliente.objects.all()
+    
+    if form_buscar.is_valid():
+        cliente = form_buscar.cleaned_data.get('cliente')
+        estado = form_buscar.cleaned_data.get('estado')
+        proyecto = form_buscar.cleaned_data.get('proyecto')
+        fecha_desde = form_buscar.cleaned_data.get('fecha_desde')
+        fecha_hasta = form_buscar.cleaned_data.get('fecha_hasta')
+        
+        if cliente:
+            pagos = pagos.filter(
+                Q(cliente_nombre__icontains=cliente) |
+                Q(proyecto__nombre__icontains=cliente)
+            )
+        if estado:
+            pagos = pagos.filter(estado_pago=estado)
+        if proyecto:
+            pagos = pagos.filter(proyecto=proyecto)
+        if fecha_desde:
+            pagos = pagos.filter(fecha_creacion__date__gte=fecha_desde)
+        if fecha_hasta:
+            pagos = pagos.filter(fecha_creacion__date__lte=fecha_hasta)
+    
+    # Estadísticas del reporte
+    estadisticas = {
+        'total_clientes': pagos.values('cliente_nombre').distinct().count(),
+        'total_monto': pagos.aggregate(Sum('monto_total'))['monto_total__sum'] or 0,
+        'total_pagado': pagos.aggregate(Sum('monto_pagado'))['monto_pagado__sum'] or 0,
+        'total_pendiente': 0,
+        'por_estado': {}
+    }
+    
+    estadisticas['total_pendiente'] = estadisticas['total_monto'] - estadisticas['total_pagado']
+    
+    # Estadísticas por estado
+    for estado, nombre in PagoCliente.ESTADO_PAGO_CHOICES:
+        count = pagos.filter(estado_pago=estado).count()
+        monto = pagos.filter(estado_pago=estado).aggregate(Sum('monto_total'))['monto_total__sum'] or 0
+        estadisticas['por_estado'][estado] = {'count': count, 'monto': monto, 'nombre': nombre}
+    
+    context = {
+        'pagos': pagos.order_by('-fecha_creacion'),
+        'form_buscar': form_buscar,
+        'estadisticas': estadisticas,
+    }
+    
+# ============ API PARA OBTENER DATOS DEL PROYECTO ============
+
+@login_required
+def obtener_datos_proyecto(request, proyecto_id):
+    """API para obtener datos del proyecto para auto-completar formulario"""
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        data = {
+            'nombre': proyecto.nombre or '',
+            'telefono': proyecto.telefono or '',
+            'correo': proyecto.correo or '',
+            'direccion': proyecto.direccion or '',
+        }
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+

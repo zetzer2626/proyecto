@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+from decimal import Decimal
+
 
 
 
@@ -279,3 +282,143 @@ class Boleta(models.Model):
 
     def __str__(self):
         return f"Boleta {self.numero_talonario} - {self.nombre}"
+
+
+
+
+class PagoCliente(models.Model):
+    ESTADO_PAGO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('parcial', 'Pago Parcial'),
+        ('completo', 'Pagado Completo'),
+        ('vencido', 'Vencido'),
+    ]
+
+    FORMA_PAGO_CHOICES = [
+        ('efectivo', 'Efectivo'),
+        ('transferencia', 'Transferencia'),
+        ('debito', 'Débito'),
+        ('credito', 'Crédito'),
+        ('cheque', 'Cheque'),
+    ]
+
+    # Relación con el proyecto
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='pagos')
+    
+    # Información del cliente (se puede tomar del proyecto)
+    cliente_nombre = models.CharField(max_length=200)
+    cliente_telefono = models.CharField(max_length=255, null=True, blank=True)
+    cliente_correo = models.CharField(max_length=255, null=True, blank=True)
+    
+    # Información del pago - CORREGIDO PARA CHILE (sin decimales)
+    monto_total = models.PositiveIntegerField(help_text="Monto total a pagar en pesos chilenos")
+    monto_pagado = models.PositiveIntegerField(default=0, help_text="Monto ya pagado en pesos chilenos")
+    fecha_vencimiento = models.DateField(null=True, blank=True)
+    estado_pago = models.CharField(max_length=20, choices=ESTADO_PAGO_CHOICES, default='pendiente')
+    
+    # Metadatos
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    descripcion = models.TextField(max_length=1000, null=True, blank=True, help_text="Descripción del servicio o producto")
+    observaciones = models.TextField(max_length=1000, null=True, blank=True)
+
+    @property
+    def monto_pendiente(self):
+        """Calcula el monto pendiente de pago"""
+        return self.monto_total - self.monto_pagado
+
+    @property
+    def porcentaje_pagado(self):
+        """Calcula el porcentaje pagado"""
+        if self.monto_total > 0:
+            return (self.monto_pagado / self.monto_total) * 100
+        return 0
+    
+    @property
+    def monto_total_formateado(self):
+        """Devuelve el monto total formateado para Chile"""
+        return f"${self.monto_total:,}".replace(',', '.')
+    
+    @property
+    def monto_pagado_formateado(self):
+        """Devuelve el monto pagado formateado para Chile"""
+        return f"${self.monto_pagado:,}".replace(',', '.')
+    
+    @property
+    def monto_pendiente_formateado(self):
+        """Devuelve el monto pendiente formateado para Chile"""
+        return f"${self.monto_pendiente:,}".replace(',', '.')
+
+    def actualizar_estado(self):
+        """Actualiza automáticamente el estado según los pagos"""
+        if self.monto_pagado == 0:
+            self.estado_pago = 'pendiente'
+        elif self.monto_pagado >= self.monto_total:
+            self.estado_pago = 'completo'
+        else:
+            self.estado_pago = 'parcial'
+        
+        # Verificar si está vencido
+        if self.fecha_vencimiento and self.fecha_vencimiento < timezone.now().date() and self.estado_pago != 'completo':
+            self.estado_pago = 'vencido'
+        
+        self.save()
+
+    def __str__(self):
+        return f"{self.cliente_nombre} - {self.proyecto.nombre} - ${self.monto_total:,}".replace(',', '.')
+
+    class Meta:
+        verbose_name = "Pago de Cliente"
+        verbose_name_plural = "Pagos de Clientes"
+        ordering = ['-fecha_creacion']
+
+
+class DetallePago(models.Model):
+    """Modelo para registrar cada pago individual"""
+    pago_cliente = models.ForeignKey(PagoCliente, on_delete=models.CASCADE, related_name='detalles_pago')
+    
+    fecha_pago = models.DateField()
+    # CORREGIDO PARA CHILE (sin decimales)
+    monto_pago = models.PositiveIntegerField(help_text="Monto del pago en pesos chilenos")
+    forma_pago = models.CharField(max_length=20, choices=PagoCliente.FORMA_PAGO_CHOICES)
+    numero_referencia = models.CharField(max_length=100, null=True, blank=True, help_text="Número de transferencia, cheque, etc.")
+    
+    # Documentos
+    comprobante_pago = models.FileField(upload_to='comprobantes_pago/', null=True, blank=True)
+    
+    # Notas
+    notas = models.TextField(max_length=500, null=True, blank=True)
+    
+    # Metadatos
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    registrado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def monto_pago_formateado(self):
+        """Devuelve el monto del pago formateado para Chile"""
+        return f"${self.monto_pago:,}".replace(',', '.')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Actualizar el monto pagado en PagoCliente
+        self.pago_cliente.monto_pagado = self.pago_cliente.detalles_pago.aggregate(
+            total=models.Sum('monto_pago')
+        )['total'] or 0
+        self.pago_cliente.actualizar_estado()
+
+    def delete(self, *args, **kwargs):
+        pago_cliente = self.pago_cliente
+        super().delete(*args, **kwargs)
+        # Recalcular el monto pagado después de eliminar
+        pago_cliente.monto_pagado = pago_cliente.detalles_pago.aggregate(
+            total=models.Sum('monto_pago')
+        )['total'] or 0
+        pago_cliente.actualizar_estado()
+
+    def __str__(self):
+        return f"Pago {self.fecha_pago} - ${self.monto_pago:,} - {self.pago_cliente.cliente_nombre}".replace(',', '.')
+
+    class Meta:
+        verbose_name = "Detalle de Pago"
+        verbose_name_plural = "Detalles de Pago"
+        ordering = ['-fecha_pago']
