@@ -112,7 +112,6 @@
                     <th style="min-width: 110px;">F. Solicitud</th>
                     <th style="min-width: 110px;">F. Recepción</th>
                     <th style="min-width: 150px;">Descripción</th>
-                    <th style="min-width: 90px;">Documento</th>
                     <th style="min-width: 90px;">Drive</th>
                     <th style="min-width: 100px;">Estado</th>
                     <th style="min-width: 120px;">Acciones</th>
@@ -156,18 +155,9 @@
                             {% endif %}
                         </td>
                         <td>
-                            <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
+                            <div style="max-width: 150px; word-wrap: break-word; white-space: normal; font-weight: bold;">
                                 {{ solicitud.descripcion }}
                             </div>
-                        </td>
-                        <td class="text-center">
-                            {% if solicitud.documento_solicitud %}
-                                <a href="{{ solicitud.documento_solicitud.url }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Documento">
-                                    <i class="fas fa-file-alt"></i>
-                                </a>
-                            {% else %}
-                                <span class="text-muted">-</span>
-                            {% endif %}
                         </td>
                         <td class="text-center">
                             {% if solicitud.link_solicitud %}

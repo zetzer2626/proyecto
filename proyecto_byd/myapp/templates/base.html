@@ -63,18 +63,11 @@
                 <li class="nav-item">
                     <a class="nav-link {% if 'listado' in request.path %}active{% endif %}" href="{% url 'listado_list' %}">Listado Otros</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'pagotramitacion' in request.path %}active{% endif %}" href="{% url 'pago_tramitacion_list' %}"> Egreso|Ingreso</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'insumo' in request.path %}active{% endif %}" href="{% url 'insumo_list' %}">Insumos</a>
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link {% if 'enlace' in request.path %}active{% endif %}" href="{% url 'enlace_list' %}">Enlaces</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'boletas' in request.path %}active{% endif %}" href="{% url 'boleta_list' %}">Boleta</a>
-                </li>
+              
                 <li class="nav-item">
                     <a class="nav-link {% if 'actividad' in request.path %}active{% endif %}" href="{% url 'calendario' %}">Calendario</a>
                 </li>

@@ -194,12 +194,15 @@
                             {{ proyecto.get_estado_proyecto_display }}
                         </span>
                     </td>
+
+                    <td class="text-center">{{ proyecto.detalle }}</td>
+                    
                     <td>
                         <div style="max-width: 100px; word-wrap: break-word; white-space: normal;">
-                            {{ proyecto.detalle }}
+                            {{ proyecto.kardex }}
                         </div>
                     </td>
-                    <td class="text-center">{{ proyecto.kardex }}</td>
+                    
                     <td class="text-center">
                         {% if proyecto.enlace_documento %}
                             <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Presupuesto">
