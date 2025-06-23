@@ -174,20 +174,16 @@
                 <tr>
                     <td><span class="badge bg-danger">{{ proyecto.presupuesto }}</span></td>
                     <td class="text-center"><strong>{{ proyecto.año }}</strong></td>
-                    <td>
-                        <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
-                            {{ proyecto.nombre }}
-                        </div>
+                    <td class="text-center">
+                       {{ proyecto.nombre }}
                     </td>
                     <td>
                         <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
                             {{ proyecto.proyecto }}
                         </div>
                     </td>
-                    <td>
-                        <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
-                            {{ proyecto.direccion }}
-                        </div>
+                    <td class="text-center">
+                         {{ proyecto.direccion }}
                     </td>
                     <td>
                         <span class="badge {% if proyecto.estado_proyecto == 'aprobado' %}bg-success{% elif proyecto.estado_proyecto == 'no_concretado' %}bg-danger{% elif proyecto.estado_proyecto == 'trabajando' %}bg-warning{% elif proyecto.estado_proyecto == 'congelado' %}bg-info{% else %}bg-secondary{% endif %}">
