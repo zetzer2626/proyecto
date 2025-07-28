@@ -12,10 +12,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -24,17 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-7v3g5vm+ysn7w_v+j&j6k#^p3@e4b!(s8gvn$ttzymc1jqhs)u')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-
-
-
-LOGIN_URL = '/login/'  # URL para el formulario de inicio de sesión
-LOGIN_REDIRECT_URL = ''  # Redirige a la lista de proyectos después de iniciar sesión
-LOGOUT_REDIRECT_URL = '/login/'  # Redirects to the login page after logout
-
+DEBUG = False
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,9 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'widget_tweaks',
     'whitenoise.runserver_nostatic'
-
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,13 +75,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'proyecto_byd.wsgi.application'
 
-
-import os
-import dj_database_url
-from dotenv import load_dotenv
-
-load_dotenv()
-
+# Database
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv("DATABASE_PUBLIC_URL"),
@@ -95,9 +83,8 @@ DATABASES = {
         conn_max_age=600
     )
 }
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -113,49 +100,39 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'es-cl'  # Cambiado a español de Chile
+TIME_ZONE = 'America/Santiago'  # Zona horaria de Chile
 USE_I18N = True
-
 USE_TZ = True
-
-
-import os
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'myapp/static')
 ]
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Configuración para almacenamiento persistente en Railway
+# Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Esta carpeta será persistente en Railway Pro
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Asegurar que Railway pueda servir archivos estáticos y de medios correctamente
+# WhiteNoise configuration
 WHITENOISE_USE_FINDERS = True
 
+# Hosts and security
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,proyecto-production-e5a6.up.railway.app').split(',')
-
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://proyecto-production-e5a6.up.railway.app').split(',')
 
-# Configuraciones de seguridad para producción
+# Authentication settings
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Production security settings
 if not DEBUG:
-    # Configuraciones de seguridad HTTPS
+    # HTTPS settings
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000  # 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -165,8 +142,31 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
     
-    # Configuración de sesiones seguras
+    # Session security
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     CSRF_COOKIE_HTTPONLY = True
+    
+    # Additional security headers
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Logging configuration for production
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'django.log'),
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'INFO',
+                'propagate': True,
+            },
+        },
+    }
