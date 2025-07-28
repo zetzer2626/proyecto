@@ -1,118 +1,404 @@
 {% extends 'base.html' %}
-
 {% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Editar Boleta - {{ boleta.numero_talonario }}{% endblock %}
 
 {% block content %}
-    <div class="form-container">
-        <div class="form-header">Editar Boleta</div>
-
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="id" value="{{ boleta.id }}">
-
-            <label for="numero_talonario">N° Talonario:</label>
-            <input type="number" id="numero_talonario" name="numero_talonario" value="{{ boleta.numero_talonario }}">
-
-            <label for="año">Año:</label>
-            <input type="number" id="año" name="año" value="{{ boleta.año }}">
-
-            <label for="presupuesto">Presupuesto:</label>
-            <input type="text" id="presupuesto" name="presupuesto" value="{{ boleta.presupuesto }}" required maxlength="5">
-
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="{{ boleta.nombre }}" required maxlength="200">
-
-            <label for="monto">Monto:</label>
-            <input type="number" id="monto" name="monto" value="{{ boleta.monto }}">
-
-            <label for="correspondiente">Correspondiente:</label>
-            <textarea id="correspondiente" name="correspondiente" maxlength="1000">{{ boleta.correspondiente }}</textarea>
-
-            <label for="fecha">Fecha:</label>
-            <input type="text" id="fecha" name="fecha" value="{{ boleta.fecha }}">
-
-            <label for="forma_pago">Forma de Pago:</label>
-            <select id="forma_pago" name="forma_pago">
-                <option value="">Seleccione una opción</option>
-                {% for key, value in form.fields.forma_pago.choices %}
-                    <option value="{{ key }}" {% if boleta.forma_pago == key %}selected{% endif %}>{{ value }}</option>
-                {% endfor %}
-            </select>
-
-            <label for="cheque">N° Cheque:</label>
-            <input type="number" id="cheque" name="cheque" value="{{ boleta.cheque }}">
-
-
-            <button type="submit">Guardar Cambios</button>
-        </form>
-
-        <div class="cancel-button">
-            <a href="{% url 'boleta_list' %}">Cancelar</a>
+<div class="container-fluid py-4">
+    <!-- Header del Formulario -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 text-dark fw-bold mb-1">
+                            <i class="fas fa-edit me-2 text-primary"></i>Editar Boleta
+                        </h1>
+                        <p class="text-muted mb-0">Modifique la información de la boleta</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'boleta_list' %}" class="btn btn-outline-secondary btn-modern">
+                            <i class="fas fa-arrow-left me-2"></i>Regresar
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .form-container {
-            width: 50%;
-            margin: 50px auto;
-            background: #fff;
-            border: 2px solid #000;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .form-header {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, textarea, select {
-            margin-bottom: 15px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .cancel-button {
-            margin-top: 10px;
-            text-align: center;
-        }
-        .cancel-button a {
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-        .cancel-button a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h5 class="form-card-title">
+                        <i class="fas fa-receipt me-2 text-primary"></i>Información de la Boleta
+                    </h5>
+                </div>
+                <div class="form-card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ boleta.id }}">
+                        
+                        <!-- Información Básica -->
+                        <div class="form-section">
+                            <h6 class="form-section-title">
+                                <i class="fas fa-info-circle me-2"></i>Información Básica
+                            </h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="numero_talonario" class="form-label">
+                                            <i class="fas fa-hashtag me-1"></i>N° Talonario
+                                        </label>
+                                        <input type="number" id="numero_talonario" name="numero_talonario" value="{{ boleta.numero_talonario }}" class="form-control form-control-modern">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="año" class="form-label">
+                                            <i class="fas fa-calendar me-1"></i>Año
+                                        </label>
+                                        <input type="number" id="año" name="año" value="{{ boleta.año }}" class="form-control form-control-modern">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="presupuesto" class="form-label">
+                                            <i class="fas fa-file-invoice me-1"></i>Presupuesto
+                                        </label>
+                                        <input type="text" id="presupuesto" name="presupuesto" value="{{ boleta.presupuesto }}" required maxlength="5" class="form-control form-control-modern">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="fecha" class="form-label">
+                                            <i class="fas fa-calendar-day me-1"></i>Fecha
+                                        </label>
+                                        <input type="text" id="fecha" name="fecha" value="{{ boleta.fecha }}" class="form-control form-control-modern">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Cliente -->
+                        <div class="form-section">
+                            <h6 class="form-section-title">
+                                <i class="fas fa-user me-2"></i>Información del Cliente
+                            </h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="nombre" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Nombre del Cliente
+                                        </label>
+                                        <input type="text" id="nombre" name="nombre" value="{{ boleta.nombre }}" required maxlength="200" class="form-control form-control-modern">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="correspondiente" class="form-label">
+                                            <i class="fas fa-tasks me-1"></i>Corresponde a
+                                        </label>
+                                        <textarea id="correspondiente" name="correspondiente" maxlength="1000" class="form-control form-control-modern" rows="3">{{ boleta.correspondiente }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información del Pago -->
+                        <div class="form-section">
+                            <h6 class="form-section-title">
+                                <i class="fas fa-credit-card me-2"></i>Información del Pago
+                            </h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="monto" class="form-label">
+                                            <i class="fas fa-dollar-sign me-1"></i>Monto
+                                        </label>
+                                        <input type="number" id="monto" name="monto" value="{{ boleta.monto }}" class="form-control form-control-modern" step="0.01">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="forma_pago" class="form-label">
+                                            <i class="fas fa-credit-card me-1"></i>Forma de Pago
+                                        </label>
+                                        <select id="forma_pago" name="forma_pago" class="form-control form-control-modern">
+                                            <option value="">Seleccione una opción</option>
+                                            {% for key, value in form.fields.forma_pago.choices %}
+                                                <option value="{{ key }}" {% if boleta.forma_pago == key %}selected{% endif %}>{{ value }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="cheque" class="form-label">
+                                            <i class="fas fa-money-check me-1"></i>N° Cheque
+                                        </label>
+                                        <input type="number" id="cheque" name="cheque" value="{{ boleta.cheque }}" class="form-control form-control-modern">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="action-buttons">
+                            <a href="{% url 'boleta_list' %}" class="btn btn-outline-secondary btn-modern">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-modern">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Header del formulario */
+.form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.form-header h1 {
+    color: white !important;
+}
+
+.form-header p {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Botones modernos */
+.btn-modern {
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-warning.btn-modern {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    border-color: transparent;
+    color: white;
+}
+
+.btn-warning.btn-modern:hover {
+    background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+}
+
+.btn-outline-secondary.btn-modern {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    background: transparent;
+}
+
+.btn-outline-secondary.btn-modern:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Tarjetas de formulario */
+.form-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.form-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.form-card-title {
+    margin: 0;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.form-card-body {
+    padding: 1.5rem;
+}
+
+/* Secciones del formulario */
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section-title {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #667eea;
+}
+
+/* Grupos de formulario */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-label i {
+    color: #667eea;
+    width: 16px;
+    text-align: center;
+}
+
+/* Controles de formulario modernos */
+.form-control-modern {
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border: 2px solid #e2e8f0;
+    background: #f7fafc;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form-control-modern:focus {
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.form-control-modern:hover {
+    border-color: #667eea;
+    background: #fff;
+}
+
+/* Estilos específicos para el select personalizado */
+select.form-control-modern {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    appearance: none;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-header {
+        padding: 1.5rem;
+    }
+    
+    .form-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start !important;
+    }
+    
+    .form-card-header {
+        padding: 1rem;
+    }
+    
+    .form-card-body {
+        padding: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+
+/* Animaciones de entrada */
+.form-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para errores de formulario */
+.form-control-modern.is-invalid {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+.form-control-modern.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+</style>
 {% endblock %}

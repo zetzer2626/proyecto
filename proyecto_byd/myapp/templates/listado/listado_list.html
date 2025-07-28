@@ -1,221 +1,1035 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Listado de Proyectos{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
-    <h2 class="text-center mb-4 text-primary fw-bold">Listado de Proyectos</h2>
-
-    <!-- Botón de Acción -->
-    <div class="bg-white bg-opacity-90 rounded-3 shadow-lg p-3 mb-4">
-        <div class="d-flex">
-            <a href="{% url 'listado_create' %}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i> Crear Nuevo Proyecto
-            </a>
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Gestión de Listados</h1>
+                    <p class="text-muted mb-0">Administra y supervisa todos los listados de proyectos del sistema</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCrearListado">
+                        <i class="fas fa-plus"></i>
+                        <span>Nuevo Listado</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Tabla de Proyectos Optimizada -->
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total Listados -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-list text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Total</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ listados.count }}</h3>
+                            <small class="text-white">Listados</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Listados con Pagos -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-money-bill-wave text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Con Pagos</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ listados_con_pagos }}</h3>
+                            <small class="text-white">Listados</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Listados con Drive -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-cloud text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Con Drive</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ listados_con_drive }}</h3>
+                            <small class="text-white">Listados</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Año Actual -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-calendar text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Año Actual</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ año_actual }}</h3>
+                            <small class="text-white">{{ listados_año_actual }} listados</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-search me-1 text-primary"></i>
+                                Buscar Listado
+                            </label>
+                            <input type="text" class="form-control" id="buscarListado" 
+                                   placeholder="Presupuesto, nombre o gestión...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-calendar me-1 text-primary"></i>
+                                Año
+                            </label>
+                            <select class="form-select" id="filtroAño">
+                                <option value="">Todos los años</option>
+                                {% for año in años_disponibles %}
+                                <option value="{{ año }}">{{ año }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-filter me-1 text-primary"></i>
+                                Con Pagos
+                            </label>
+                            <select class="form-select" id="filtroPagos">
+                                <option value="">Todos</option>
+                                <option value="con_pagos">Con Pagos</option>
+                                <option value="sin_pagos">Sin Pagos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-cloud me-1 text-primary"></i>
+                                Con Drive
+                            </label>
+                            <select class="form-select" id="filtroDrive">
+                                <option value="">Todos</option>
+                                <option value="con_drive">Con Drive</option>
+                                <option value="sin_drive">Sin Drive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-primary w-100" id="btnFiltrar">
+                                <i class="fas fa-search me-1"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Proyectos -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-dark">
+                    <i class="fas fa-table me-2 text-primary"></i>
+                    Listado de Proyectos
+                </h5>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btnRefresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
     <div class="table-responsive">
-        <table id="example" class="table table-striped table-hover table-bordered" style="font-size: 0.85rem;">
-            <thead class="table-dark">
-                <tr>
-                    <th style="min-width: 100px;">N° Trabajo</th>
-                    <th style="min-width: 60px;">Año</th>
-                    <th style="min-width: 150px;">Nombre</th>
-                    <th style="min-width: 120px;">Gestión</th>
-                    <th style="min-width: 150px;">Nota</th>
-                    <th style="min-width: 90px;">Pagos</th>
-                    <th style="min-width: 90px;">Drive</th>
-                    <th style="min-width: 100px;">Acciones</th>
+                <table id="tablaListados" class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0 fw-semibold text-dark">
+                                <i class="fas fa-hashtag me-1 text-primary"></i>
+                                N° Trabajo
+                            </th>
+                            <th class="border-0 fw-semibold text-dark">
+                                <i class="fas fa-calendar me-1 text-primary"></i>
+                                Año
+                            </th>
+                            <th class="border-0 fw-semibold text-dark">
+                                <i class="fas fa-user me-1 text-primary"></i>
+                                Nombre
+                            </th>
+                            <th class="border-0 fw-semibold text-dark">
+                                <i class="fas fa-tasks me-1 text-primary"></i>
+                                Gestión
+                            </th>
+                            <th class="border-0 fw-semibold text-dark">
+                                <i class="fas fa-sticky-note me-1 text-primary"></i>
+                                Nota
+                            </th>
+                            <th class="border-0 fw-semibold text-dark text-center">
+                                <i class="fas fa-money-bill-wave me-1 text-primary"></i>
+                                Pagos
+                            </th>
+                            <th class="border-0 fw-semibold text-dark text-center">
+                                <i class="fas fa-cloud me-1 text-primary"></i>
+                                Drive
+                            </th>
+                            <th class="border-0 fw-semibold text-dark text-center">
+                                <i class="fas fa-cogs me-1 text-primary"></i>
+                                Acciones
+                            </th>
                 </tr>
             </thead>
             <tbody>
                 {% for listado in listados %}
-                <tr>
-                    <td><span class="badge bg-primary">{{ listado.presupuesto }}</span></td>
-                    <td class="text-center"><strong>{{ listado.año }}</strong></td>
-                    <td>
-                        <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
-                            {{ listado.nombre }}
+                        <tr class="align-middle">
+                            <td>
+                                <span class="badge bg-primary fs-6 px-3 py-2">{{ listado.presupuesto }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark">{{ listado.año }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                                            <i class="fas fa-user text-primary"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-0 fw-semibold text-dark">{{ listado.nombre }}</h6>
+                                    </div>
                         </div>
                     </td>
                     <td>
-                        <div style="max-width: 120px; word-wrap: break-word; white-space: normal;">
-                            {{ listado.gestion }}
+                                <div class="text-truncate" style="max-width: 200px;" title="{{ listado.gestion }}">
+                                    {{ listado.gestion|truncatechars:50 }}
                         </div>
                     </td>
                     <td>
-                        <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
-                            {{ listado.nota }}
+                                <div class="text-truncate" style="max-width: 200px;" title="{{ listado.nota }}">
+                                    {{ listado.nota|truncatechars:50 }}
                         </div>
                     </td>
                     <td class="text-center">
                         {% if listado.listado %}
-                            <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Listado">
-                                <i class="fas fa-list"></i>
+                                    <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-success btn-sm" title="Ver Listado de Pagos">
+                                        <i class="fas fa-external-link-alt"></i>
                             </a>
                         {% else %}
-                            <span class="text-muted">-</span>
+                                    <span class="badge bg-light text-muted">Sin enlace</span>
                         {% endif %}
                     </td>
                     <td class="text-center">
                         {% if listado.drive %}
-                            <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver en Drive">
-                                <i class="fas fa-folder"></i>
+                                    <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-info btn-sm" title="Ver en Google Drive">
+                                        <i class="fab fa-google-drive"></i>
                             </a>
                         {% else %}
-                            <span class="text-muted">-</span>
+                                    <span class="badge bg-light text-muted">Sin enlace</span>
                         {% endif %}
                     </td>
                     <td>
-                        <div class="action-buttons d-flex gap-1 justify-content-center">
-                            <a href="{% url 'listado_detail' listado.pk %}" class="btn-action btn-view" title="Ver Detalles" data-bs-toggle="tooltip">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" title="Ver Detalles" 
+                                            onclick="verDetallesListado({{ listado.pk }})">
                                 <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{% url 'listado_delete' listado.pk %}" class="btn-action btn-delete" title="Eliminar Proyecto" data-bs-toggle="tooltip" onclick="return confirm('¿Estás seguro de eliminar este proyecto?')">
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning btn-sm" title="Editar" 
+                                            onclick="editarListado({{ listado.pk }}, '{{ listado.presupuesto }}', '{{ listado.año }}', '{{ listado.nombre }}', '{{ listado.gestion|escapejs }}', '{{ listado.nota|escapejs }}', '{{ listado.listado|default:"" }}', '{{ listado.drive|default:"" }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" title="Eliminar" 
+                                            onclick="eliminarListado({{ listado.pk }}, '{{ listado.presupuesto }}', '{{ listado.nombre }}')">
                                 <i class="fas fa-trash-alt"></i>
-                            </a>   
-                             <a href="{% url 'listado_edit' listado.pk %}" class="btn-action btn-edit" title="Editar Proyecto" data-bs-toggle="tooltip">
-                                <i class="fas fa-edit"></i>
-                            </a>
+                                    </button>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center text-muted py-4">
-                        <i class="fas fa-search fa-2x mb-2"></i>
-                        <br>No se encontraron proyectos.
+                            <td colspan="8" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-search fa-3x mb-3"></i>
+                                    <h5>No se encontraron listados</h5>
+                                    <p class="mb-0">Crea tu primer listado para comenzar</p>
+                                </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear Listado -->
+<div class="modal fade" id="modalCrearListado" tabindex="-1" aria-labelledby="modalCrearListadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                            <i class="fas fa-plus text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5 class="modal-title fw-semibold" id="modalCrearListadoLabel">Crear Nuevo Listado</h5>
+                        <small class="opacity-75">Complete todos los campos requeridos</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formCrearListado" method="POST" action="{% url 'listado_create' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="presupuesto" class="form-label fw-semibold">
+                                <i class="fas fa-hashtag me-1 text-primary"></i>
+                                N° Presupuesto
+                            </label>
+                            <input type="text" id="presupuesto" name="presupuesto" class="form-control" 
+                                   placeholder="Ej: 2024-001" required>
+                            <div class="form-text">Número único del presupuesto</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="año" class="form-label fw-semibold">
+                                <i class="fas fa-calendar me-1 text-primary"></i>
+                                Año
+                            </label>
+                            <input type="text" id="año" name="año" class="form-control" 
+                                   placeholder="Ej: 2024" required>
+                            <div class="form-text">Año del proyecto</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="nombre" class="form-label fw-semibold">
+                                <i class="fas fa-user me-1 text-primary"></i>
+                                Nombre del Proyecto
+                            </label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" 
+                                   placeholder="Nombre completo del proyecto" required>
+                            <div class="form-text">Nombre descriptivo del proyecto</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="gestion" class="form-label fw-semibold">
+                                <i class="fas fa-tasks me-1 text-primary"></i>
+                                Gestión
+                            </label>
+                            <textarea id="gestion" name="gestion" rows="3" class="form-control" 
+                                      placeholder="Describa la gestión realizada en este proyecto..." required></textarea>
+                            <div class="form-text">Descripción detallada de la gestión</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="nota" class="form-label fw-semibold">
+                                <i class="fas fa-sticky-note me-1 text-primary"></i>
+                                Nota
+                            </label>
+                            <textarea id="nota" name="nota" rows="2" class="form-control" 
+                                      placeholder="Notas adicionales sobre el proyecto..." required></textarea>
+                            <div class="form-text">Información adicional o comentarios</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="listado" class="form-label fw-semibold">
+                                <i class="fas fa-money-bill-wave me-1 text-primary"></i>
+                                URL de Pagos
+                            </label>
+                            <input type="url" id="listado" name="listado" class="form-control" 
+                                   placeholder="https://ejemplo.com/pagos">
+                            <div class="form-text">Enlace al listado de pagos</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="drive" class="form-label fw-semibold">
+                                <i class="fab fa-google-drive me-1 text-primary"></i>
+                                URL de Google Drive
+                            </label>
+                            <input type="url" id="drive" name="drive" class="form-control" 
+                                   placeholder="https://drive.google.com/...">
+                            <div class="form-text">Enlace a la carpeta de Google Drive</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarCrear">
+                        <i class="fas fa-save me-2"></i>
+                        Guardar Listado
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Listado -->
+<div class="modal fade" id="modalEditarListado" tabindex="-1" aria-labelledby="modalEditarListadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                            <i class="fas fa-edit text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5 class="modal-title fw-semibold" id="modalEditarListadoLabel">Editar Listado</h5>
+                        <small class="opacity-75">Modifique los campos que desee actualizar</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarListado" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="edit_id" name="id">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="edit_presupuesto" class="form-label fw-semibold">
+                                <i class="fas fa-hashtag me-1 text-primary"></i>
+                                N° Presupuesto
+                            </label>
+                            <input type="text" id="edit_presupuesto" name="presupuesto" class="form-control" 
+                                   placeholder="Ej: 2024-001" required>
+                            <div class="form-text">Número único del presupuesto</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_año" class="form-label fw-semibold">
+                                <i class="fas fa-calendar me-1 text-primary"></i>
+                                Año
+                            </label>
+                            <input type="text" id="edit_año" name="año" class="form-control" 
+                                   placeholder="Ej: 2024" required>
+                            <div class="form-text">Año del proyecto</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_nombre" class="form-label fw-semibold">
+                                <i class="fas fa-user me-1 text-primary"></i>
+                                Nombre del Proyecto
+                            </label>
+                            <input type="text" id="edit_nombre" name="nombre" class="form-control" 
+                                   placeholder="Nombre completo del proyecto" required>
+                            <div class="form-text">Nombre descriptivo del proyecto</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_gestion" class="form-label fw-semibold">
+                                <i class="fas fa-tasks me-1 text-primary"></i>
+                                Gestión
+                            </label>
+                            <textarea id="edit_gestion" name="gestion" rows="3" class="form-control" 
+                                      placeholder="Describa la gestión realizada en este proyecto..." required></textarea>
+                            <div class="form-text">Descripción detallada de la gestión</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_nota" class="form-label fw-semibold">
+                                <i class="fas fa-sticky-note me-1 text-primary"></i>
+                                Nota
+                            </label>
+                            <textarea id="edit_nota" name="nota" rows="2" class="form-control" 
+                                      placeholder="Notas adicionales sobre el proyecto..." required></textarea>
+                            <div class="form-text">Información adicional o comentarios</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_listado" class="form-label fw-semibold">
+                                <i class="fas fa-money-bill-wave me-1 text-primary"></i>
+                                URL de Pagos
+                            </label>
+                            <input type="url" id="edit_listado" name="listado" class="form-control" 
+                                   placeholder="https://ejemplo.com/pagos">
+                            <div class="form-text">Enlace al listado de pagos</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_drive" class="form-label fw-semibold">
+                                <i class="fab fa-google-drive me-1 text-primary"></i>
+                                URL de Google Drive
+                            </label>
+                            <input type="url" id="edit_drive" name="drive" class="form-control" 
+                                   placeholder="https://drive.google.com/...">
+                            <div class="form-text">Enlace a la carpeta de Google Drive</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-warning" id="btnGuardarEditar">
+                        <i class="fas fa-save me-2"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Listado -->
+<div class="modal fade" id="modalEliminarListado" tabindex="-1" aria-labelledby="modalEliminarListadoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5 class="modal-title fw-semibold" id="modalEliminarListadoLabel">Confirmar Eliminación</h5>
+                        <small class="opacity-75">Esta acción no se puede deshacer</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEliminarListado" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="delete_id" name="id">
+                <div class="modal-body">
+                    <div class="alert alert-danger border-0 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-1">¡Atención!</h6>
+                                <p class="mb-0">Estás a punto de eliminar permanentemente el listado: <strong id="delete_presupuesto"></strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning bg-opacity-10 border-warning py-3">
+                            <h6 class="mb-0 fw-semibold text-warning">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Información del Listado
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-hashtag text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">N° Presupuesto</small>
+                                            <span class="fw-semibold" id="delete_presupuesto_info"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-user text-info"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Nombre del Proyecto</small>
+                                            <span class="fw-semibold" id="delete_nombre_info"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="confirmarEliminacion" required>
+                        <label class="form-check-label fw-semibold" for="confirmarEliminacion">
+                            <i class="fas fa-check-circle text-danger me-2"></i>
+                            Confirmo que entiendo que esta acción es <strong>irreversible</strong> y eliminará permanentemente este listado
+                        </label>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirmacionTexto" class="form-label fw-semibold">
+                            <i class="fas fa-keyboard me-1 text-danger"></i>
+                            Escriba "ELIMINAR" para confirmar
+                        </label>
+                        <input type="text" class="form-control" id="confirmacionTexto" 
+                               placeholder="Escriba ELIMINAR aquí" required>
+                        <div class="form-text">Debe escribir exactamente "ELIMINAR" para proceder</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger" id="btnEliminar" disabled>
+                        <i class="fas fa-trash-alt me-2"></i>
+                        Eliminar Definitivamente
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f8f9fa;
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
     
-    /* Optimizaciones para la tabla */
-    .table td, .table th {
-        vertical-align: top;
-        padding: 0.5rem 0.25rem;
-        word-wrap: break-word;
-    }
-    
-    /* Permitir que las celdas se expandan verticalmente */
-    .table td div {
-        line-height: 1.3;
-    }
-    
-    /* Botones de acción modernos y atractivos */
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
-        border: none;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        font-size: 14px;
-    }
-    
-    .btn-action::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
-    }
-    
-    .btn-action:hover::before {
-        left: 100%;
-    }
-    
-    .btn-view {
-        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    }
-    
-    .btn-view:hover {
-        background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+    .card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
-        color: white;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
     }
     
-    .btn-delete {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    .table tbody tr {
+        transition: background-color 0.2s ease-in-out;
     }
     
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        color: white;
+    .table tbody tr:hover {
+        background-color: rgba(79, 70, 229, 0.05) !important;
     }
     
-    .btn-action:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    .btn {
+        transition: all 0.2s ease-in-out;
     }
     
-    .action-buttons {
-        min-width: 80px;
+    .btn:hover {
+        transform: translateY(-1px);
     }
     
-    /* Animación de pulso para botón de eliminar */
-    .btn-delete:hover {
-        animation: pulse-delete 2s infinite;
-    }
-    
-    @keyframes pulse-delete {
-        0% {
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-        50% {
-            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.6);
-        }
-        100% {
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-    }
-    
-    /* Mejorar legibilidad en dispositivos pequeños */
-    @media (max-width: 768px) {
-        .table {
-            font-size: 0.75rem;
-        }
-        
-        .btn-action {
-            width: 30px;
-            height: 30px;
-            font-size: 12px;
-        }
-    }
-    
-    /* Scroll horizontal suave */
-    .table-responsive {
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Badges más pequeños */
     .badge {
-        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+    }
+    
+    .modal-content {
+        border: none;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+    
+    .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .alert {
+        border-radius: 0.5rem;
     }
 </style>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar DataTable
+    const table = $('#tablaListados').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+        },
+        pageLength: 25,
+        order: [[1, 'desc']], // Ordenar por año descendente
+        responsive: true,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        columnDefs: [
+            { orderable: false, targets: [5, 6, 7] } // Columnas no ordenables
+        ]
+    });
+
+    // Filtros
+    $('#btnFiltrar').click(function() {
+        const busqueda = $('#buscarListado').val();
+        const año = $('#filtroAño').val();
+        const pagos = $('#filtroPagos').val();
+        const drive = $('#filtroDrive').val();
+        
+        // Aplicar filtros
+        table.search(busqueda).draw();
+        
+        // Filtros adicionales se pueden implementar aquí
+    });
+
+    // Botón refresh
+    $('#btnRefresh').click(function() {
+        location.reload();
+    });
+
+    // Búsqueda en tiempo real
+    $('#buscarListado').on('keyup', function() {
+        table.search(this.value).draw();
+    });
+
+    // Validación del formulario de crear
+    const formCrear = document.getElementById('formCrearListado');
+    const añoInput = document.getElementById('año');
+    const presupuestoInput = document.getElementById('presupuesto');
+    
+    añoInput.addEventListener('input', function() {
+        const año = this.value;
+        if (año && !/^\d{4}$/.test(año)) {
+            this.setCustomValidity('El año debe tener 4 dígitos');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    presupuestoInput.addEventListener('input', function() {
+        const presupuesto = this.value;
+        if (presupuesto && presupuesto.length < 3) {
+            this.setCustomValidity('El presupuesto debe tener al menos 3 caracteres');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // Envío del formulario de crear
+    formCrear.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const requiredFields = formCrear.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            alert('Por favor, complete todos los campos requeridos');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('btnGuardarCrear');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+        submitBtn.disabled = true;
+        
+        // Crear FormData
+        const formData = new FormData(formCrear);
+        
+        // Enviar petición AJAX
+        fetch('{% url "listado_crear_ajax" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                mostrarAlerta('success', data.message);
+                
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalCrearListado'));
+                modal.hide();
+                
+                // Limpiar formulario
+                formCrear.reset();
+                
+                // Recargar página después de un delay
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                mostrarAlerta('danger', data.message);
+                submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Listado';
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarAlerta('danger', 'Error al guardar el listado');
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Listado';
+            submitBtn.disabled = false;
+        });
+    });
+
+    // Validación del formulario de editar
+    const formEditar = document.getElementById('formEditarListado');
+    const editAñoInput = document.getElementById('edit_año');
+    const editPresupuestoInput = document.getElementById('edit_presupuesto');
+    
+    editAñoInput.addEventListener('input', function() {
+        const año = this.value;
+        if (año && !/^\d{4}$/.test(año)) {
+            this.setCustomValidity('El año debe tener 4 dígitos');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    editPresupuestoInput.addEventListener('input', function() {
+        const presupuesto = this.value;
+        if (presupuesto && presupuesto.length < 3) {
+            this.setCustomValidity('El presupuesto debe tener al menos 3 caracteres');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // Envío del formulario de editar
+    formEditar.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const requiredFields = formEditar.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            alert('Por favor, complete todos los campos requeridos');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('btnGuardarEditar');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+        submitBtn.disabled = true;
+        
+        // Obtener el ID del listado
+        const listadoId = document.getElementById('edit_id').value;
+        
+        // Crear FormData
+        const formData = new FormData(formEditar);
+        
+        // Enviar petición AJAX
+        fetch(`/api/listado/editar/${listadoId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                mostrarAlerta('success', data.message);
+                
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarListado'));
+                modal.hide();
+                
+                // Recargar página después de un delay
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                mostrarAlerta('danger', data.message);
+                submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarAlerta('danger', 'Error al actualizar el listado');
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
+            submitBtn.disabled = false;
+        });
+    });
+
+    // Validación del formulario de eliminar
+    const formEliminar = document.getElementById('formEliminarListado');
+    const checkbox = document.getElementById('confirmarEliminacion');
+    const textoInput = document.getElementById('confirmacionTexto');
+    const btnEliminar = document.getElementById('btnEliminar');
+    
+    function validarConfirmacion() {
+        const checkboxChecked = checkbox.checked;
+        const textoCorrecto = textoInput.value.trim() === 'ELIMINAR';
+        
+        btnEliminar.disabled = !(checkboxChecked && textoCorrecto);
+        
+        if (checkboxChecked && textoCorrecto) {
+            btnEliminar.classList.remove('btn-outline-danger');
+            btnEliminar.classList.add('btn-danger');
+        } else {
+            btnEliminar.classList.remove('btn-danger');
+            btnEliminar.classList.add('btn-outline-danger');
+        }
+    }
+    
+    checkbox.addEventListener('change', validarConfirmacion);
+    textoInput.addEventListener('input', validarConfirmacion);
+    
+    // Envío del formulario de eliminar
+    formEliminar.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!checkbox.checked || textoInput.value.trim() !== 'ELIMINAR') {
+            alert('Debe marcar la casilla de confirmación y escribir "ELIMINAR" para proceder.');
+            return;
+        }
+        
+        // Confirmación final
+        if (!confirm('¿Está completamente seguro de que desea eliminar este listado? Esta acción no se puede deshacer.')) {
+            return;
+        }
+        
+        // Mostrar indicador de eliminación
+        btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
+        btnEliminar.disabled = true;
+        
+        // Obtener el ID del listado
+        const listadoId = document.getElementById('delete_id').value;
+        
+        // Crear FormData
+        const formData = new FormData(formEliminar);
+        
+        // Enviar petición AJAX
+        fetch(`/api/listado/eliminar/${listadoId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                mostrarAlerta('success', data.message);
+                
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarListado'));
+                modal.hide();
+                
+                // Recargar página después de un delay
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                mostrarAlerta('danger', data.message);
+                btnEliminar.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Eliminar Definitivamente';
+                btnEliminar.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarAlerta('danger', 'Error al eliminar el listado');
+            btnEliminar.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Eliminar Definitivamente';
+            btnEliminar.disabled = false;
+        });
+    });
+});
+
+// Función para mostrar alertas
+function mostrarAlerta(tipo, mensaje) {
+    // Crear el elemento de alerta
+    const alerta = document.createElement('div');
+    alerta.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+    alerta.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alerta.innerHTML = `
+        <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Agregar al body
+    document.body.appendChild(alerta);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+        if (alerta.parentNode) {
+            alerta.remove();
+        }
+    }, 5000);
+}
+
+// Funciones para los modales
+function editarListado(id, presupuesto, año, nombre, gestion, nota, listado, drive) {
+    document.getElementById('edit_id').value = id;
+    document.getElementById('edit_presupuesto').value = presupuesto;
+    document.getElementById('edit_año').value = año;
+    document.getElementById('edit_nombre').value = nombre;
+    document.getElementById('edit_gestion').value = gestion;
+    document.getElementById('edit_nota').value = nota;
+    document.getElementById('edit_listado').value = listado;
+    document.getElementById('edit_drive').value = drive;
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalEditarListado'));
+    modal.show();
+}
+
+function eliminarListado(id, presupuesto, nombre) {
+    document.getElementById('delete_id').value = id;
+    document.getElementById('delete_presupuesto').textContent = presupuesto;
+    document.getElementById('delete_presupuesto_info').textContent = presupuesto;
+    document.getElementById('delete_nombre_info').textContent = nombre;
+    
+    // Resetear formulario
+    document.getElementById('confirmarEliminacion').checked = false;
+    document.getElementById('confirmacionTexto').value = '';
+    document.getElementById('btnEliminar').disabled = true;
+    document.getElementById('btnEliminar').classList.remove('btn-danger');
+    document.getElementById('btnEliminar').classList.add('btn-outline-danger');
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalEliminarListado'));
+    modal.show();
+}
+
+function verDetallesListado(id) {
+    // Redirigir a la página de detalles
+    window.location.href = `/detalles/${id}/`;
+}
+</script>
 {% endblock %}

@@ -1,90 +1,298 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
-{% block title %}Detalle del Trámite{% endblock %}
+{% block title %}Detalle de Tramitación{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <!-- Tarjeta estilizada con sombras y bordes -->
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #4e73df, #6610f2);">
-                    <h4 class="mb-0 fw-bold">Detalle del Trámite</h4>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Detalle de Tramitación</h1>
+                    <p class="text-muted mb-0">Información completa de la tramitación seleccionada</p>
                 </div>
-                <div class="card-body px-5 py-4">
-                    <p class="text-muted text-center mb-4">Información completa del trámite seleccionado.</p>
-                    
-                    <!-- Detalles del trámite -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Presupuesto</h6>
-                            <p class="form-control-plaintext">{{ tramitacion.presupuesto }}</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'tramitacion-update' tramitacion.pk %}" class="btn btn-warning d-flex align-items-center gap-2">
+                        <i class="fas fa-edit"></i>
+                        <span>Editar</span>
+                    </a>
+                    <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Information Card -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Nombre</h6>
-                            <p class="form-control-plaintext">{{ tramitacion.nombre }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Direccion</h6>
-                            <p class="form-control-plaintext">{{ tramitacion.direccion }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Año</h6>
-                            <p class="form-control-plaintext">{{ tramitacion.año }}</p>
+                        <div>
+                            <h4 class="mb-1 text-dark fw-bold">Información General</h4>
+                            <p class="text-muted mb-0">Datos principales de la tramitación</p>
                         </div>
                     </div>
-
-                    <div class="row mb-4">
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Presupuesto -->
                         <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Fecha de Entrega</h6>
-                            <p class="form-control-plaintext">{{ tramitacion.fecha_recepcion }}</p>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-hashtag text-primary me-2"></i>
+                                    Presupuesto
+                                </div>
+                                <div class="info-value">
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                                        {{ tramitacion.presupuesto }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Año -->
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-calendar text-primary me-2"></i>
+                                    Año
+                                </div>
+                                <div class="info-value">
+                                    <span class="fw-bold text-dark">{{ tramitacion.año }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Nombre -->
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-user text-primary me-2"></i>
+                                    Nombre
+                                </div>
+                                <div class="info-value">
+                                    <span class="fw-bold text-dark">{{ tramitacion.nombre }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dirección -->
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    Dirección
+                                </div>
+                                <div class="info-value">
+                                    <span class="text-dark">{{ tramitacion.direccion }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fecha de Entrega -->
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-calendar-check text-primary me-2"></i>
+                                    Fecha de Entrega
+                                </div>
+                                <div class="info-value">
+                                    {% if tramitacion.fecha_recepcion %}
+                                        <span class="badge rounded-pill" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                                            {{ tramitacion.fecha_recepcion }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge rounded-pill" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+                                            Sin Fecha
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Estado -->
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-flag text-primary me-2"></i>
+                                    Estado
+                                </div>
+                                <div class="info-value">
+                                    {% if tramitacion.fecha_recepcion %}
+                                        <span class="badge rounded-pill" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            Completado
+                                        </span>
+                                    {% else %}
+                                        <span class="badge rounded-pill" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Pendiente
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="mb-4">
-                        <h6 class="fw-bold text-primary">Descripción</h6>
-                        <p class="form-control-plaintext">{{ tramitacion.descripcion }}</p>
-
-                        <h6 class="fw-bold text-primary">nota</h6>
-                        <p class="form-control-plaintext">{{ tramitacion.nota }}</p>
-                    </div>
-                   
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Documento de Tramitación</h6>
-                            {% if tramitacion.documento_tramitacion %}
-                                <a href="{{ tramitacion.documento_tramitacion.url }}" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm" target="_blank">
-                                    <i class="fas fa-download me-2"></i> Descargar Documento
-                                </a>
-                            {% else %}
-                                <p class="form-control-plaintext text-muted">No disponible</p>
-                            {% endif %}
+            <!-- Description and Notes -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3" style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-align-left"></i>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-primary">Enlace de Tramitación</h6>
-                            {% if tramitacion.link_tramitacion %}
-                                <a href="{{ tramitacion.link_tramitacion }}" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm" target="_blank">
-                                    <i class="fas fa-link me-2"></i> Ver Enlace
-                                </a>
-                            {% else %}
-                                <p class="form-control-plaintext text-muted">No disponible</p>
-                            {% endif %}
+                        <div>
+                            <h4 class="mb-1 text-dark fw-bold">Descripción y Notas</h4>
+                            <p class="text-muted mb-0">Información adicional del trámite</p>
                         </div>
                     </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Descripción -->
+                        <div class="col-12">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-align-left text-primary me-2"></i>
+                                    Descripción
+                                </div>
+                                <div class="info-value">
+                                    <div class="content-box">
+                                        {% if tramitacion.descripcion %}
+                                            {{ tramitacion.descripcion }}
+                                        {% else %}
+                                            <span class="text-muted">Sin descripción disponible</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Nota -->
+                        <div class="col-12">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-sticky-note text-primary me-2"></i>
+                                    Nota
+                                </div>
+                                <div class="info-value">
+                                    <div class="content-box">
+                                        {% if tramitacion.nota %}
+                                            {{ tramitacion.nota }}
+                                        {% else %}
+                                            <span class="text-muted">Sin notas adicionales</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Botón para regresar -->
-                    <div class="text-center mt-5">
-                        <a href="{% url 'tramitacion-list' %}" class="btn btn-secondary btn-lg rounded-pill px-5 shadow-sm">
-                            <i class="fas fa-arrow-left me-2"></i> Volver a la Lista
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Documents and Links -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-paperclip"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 text-dark fw-bold">Documentos</h4>
+                            <p class="text-muted mb-0">Archivos y enlaces relacionados</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <!-- Documento -->
+                        <div class="document-item">
+                            <div class="document-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="document-content">
+                                <h6 class="document-title">Documento de Tramitación</h6>
+                                {% if tramitacion.documento_tramitacion %}
+                                    <a href="{{ tramitacion.documento_tramitacion.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-download me-2"></i>
+                                        Descargar
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No disponible</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Enlace -->
+                        <div class="document-item">
+                            <div class="document-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="document-content">
+                                <h6 class="document-title">Enlace de Tramitación</h6>
+                                {% if tramitacion.link_tramitacion %}
+                                    <a href="{{ tramitacion.link_tramitacion }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-external-link-alt me-2"></i>
+                                        Ver Enlace
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No disponible</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 text-dark fw-bold">Acciones Rápidas</h4>
+                            <p class="text-muted mb-0">Gestionar esta tramitación</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'tramitacion-update' tramitacion.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>
+                            Editar Tramitación
                         </a>
-                        <a href="{% url 'tramitacion-update' tramitacion.pk %}" class="btn btn-warning btn-sm" title="Editar">
-                            <i class="fas fa-edit"></i>Editar
+                        <a href="{% url 'tramitacion-delete' tramitacion.pk %}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta tramitación?')">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            Eliminar Tramitación
                         </a>
-                        <a href="{% url 'tramitacion-delete' tramitacion.pk %}" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Seguro que desea eliminar este trámite?')">
-                            <i class="fas fa-trash-alt"></i>Eliminar
+                        <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>
+                            Ver Todas las Tramitaciones
                         </a>
                     </div>
                 </div>
@@ -93,6 +301,262 @@
     </div>
 </div>
 
-<!-- Font Awesome -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<style>
+    /* Professional Detail Page Styling */
+    .container-fluid {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    /* Card Enhancements */
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Header Icon */
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .header-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    /* Info Items */
+    .info-item {
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-color: #cbd5e1;
+    }
+    
+    .info-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: #1e293b;
+    }
+    
+    /* Content Box */
+    .content-box {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        border-left: 4px solid #667eea;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    /* Document Items */
+    .document-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .document-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-color: #cbd5e1;
+    }
+    
+    .document-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+    
+    .document-content {
+        flex: 1;
+    }
+    
+    .document-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+    
+    .btn-warning:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        color: white;
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+    }
+    
+    .btn-outline-secondary {
+        border: 2px solid #e5e7eb;
+        color: #6b7280;
+        background: #ffffff;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        color: #374151;
+        transform: translateY(-1px);
+    }
+    
+    .btn-outline-primary {
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+        background: #ffffff;
+    }
+    
+    .btn-outline-primary:hover {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-outline-info {
+        border: 2px solid #06b6d4;
+        color: #06b6d4;
+        background: #ffffff;
+    }
+    
+    .btn-outline-info:hover {
+        background: #06b6d4;
+        border-color: #06b6d4;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    /* Badge Enhancements */
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.75em;
+        font-size: 0.75rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .info-item {
+            padding: 1rem;
+        }
+        
+        .document-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .document-icon {
+            width: 60px;
+            height: 60px;
+        }
+    }
+    
+    /* Animation for cards */
+    .card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Icon animations */
+    .header-icon {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
 {% endblock %}

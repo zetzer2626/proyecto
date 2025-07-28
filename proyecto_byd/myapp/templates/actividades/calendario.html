@@ -4,232 +4,717 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario</title>
+    <title>Calendario de Actividades</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        table {
-            font-size: 0.9rem;
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
-        td {
-            width: 13.5%;
-            padding: 10px;
-            vertical-align: top;
-            height: 80px;
+
+        * {
+            font-family: 'Inter', sans-serif;
         }
-        .btn-sm {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.8rem;
-            min-width: 32px;
-            min-height: 32px;
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
         }
-        .badge {
-            font-size: 0.8rem;
-            padding: 5px;
+
+        .calendar-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin: 0 auto;
+            max-width: 1200px;
         }
-        .modal-content {
-            font-size: 0.9rem;
-        }
-        .modal-header .btn-close {
-            font-size: 1.2rem;
-        }
-        .form-control {
-            font-size: 0.9rem;
-        }
-        .card-body {
-            font-size: 0.9rem;
-        }
-        .table-gradient {
-            background: linear-gradient(135deg, #6e7dff, #76e3f5);
-        }
-        .btn-outline-primary {
-            background-color: #6e7dff;
+
+        .calendar-header {
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
             color: white;
-            border-color: #6e7dff;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
         }
-        .btn-outline-primary:hover {
-            background-color: #5a6fd9;
+
+        .calendar-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
+        .calendar-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .navigation-buttons {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .nav-btn.prev {
+            left: 2rem;
+        }
+
+        .nav-btn.next {
+            right: 2rem;
+        }
+
+        .calendar-body {
+            padding: 2rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .calendar-day-header {
+            background: var(--light-bg);
+            padding: 1rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .calendar-day {
+            background: white;
+            min-height: 120px;
+            padding: 0.75rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calendar-day.other-month {
+            background: #f8fafc;
+            color: var(--text-secondary);
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border: 2px solid var(--primary-color);
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .event-item {
+            background: var(--success-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-item:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .event-item.completed {
+            background: var(--success-color);
+            opacity: 0.8;
+        }
+
+        .event-item.pending {
+            background: var(--warning-color);
+        }
+
+        .event-item.urgent {
+            background: var(--danger-color);
+        }
+
+        .event-actions {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            display: none;
+            gap: 0.25rem;
+        }
+
+        .event-item:hover .event-actions {
+            display: flex;
+        }
+
+        .action-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            color: white;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .add-event-section {
+            background: var(--light-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), #5855eb);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
         .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
+            background: var(--success-color);
+            border: none;
+            border-radius: 10px;
         }
-        .btn-success:hover {
-            background-color: #218838;
-        }
+
         .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
+            background: var(--warning-color);
+            border: none;
+            border-radius: 10px;
         }
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
+
         .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
+            background: var(--danger-color);
+            border: none;
+            border-radius: 10px;
         }
-        .btn-danger:hover {
-            background-color: #c82333;
+
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: var(--shadow-lg);
         }
-        .bg-gradient-light {
-            background: linear-gradient(135deg, #f7e4c4, #d7e6ff);
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .calendar-container {
+                margin: 0 10px;
+                border-radius: 16px;
+            }
+
+            .calendar-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .calendar-title {
+                font-size: 1.8rem;
+            }
+
+            .navigation-buttons {
+                position: static;
+                transform: none;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+
+            .nav-btn.prev, .nav-btn.next {
+                left: auto;
+                right: auto;
+            }
+
+            .calendar-body {
+                padding: 1rem;
+            }
+
+            .calendar-day {
+                min-height: 80px;
+                padding: 0.5rem;
+            }
+
+            .day-number {
+                font-size: 0.9rem;
+            }
+
+            .event-item {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <div class="text-center">
-        <h1 class="mb-4 display-4 text-gradient">Calendario - {{ nombre_mes }} {{ anio }}</h1>
-    </div>
+    <div class="calendar-container fade-in">
+        <!-- Header del Calendario -->
+        <div class="calendar-header">
+            <div class="navigation-buttons">
+                <a href="?anio={{ anio_anterior }}&mes={{ mes_anterior }}" class="nav-btn prev">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <a href="?anio={{ anio_siguiente }}&mes={{ mes_siguiente }}" class="nav-btn next">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            <h1 class="calendar-title">{{ nombre_mes }} {{ anio }}</h1>
+            <p class="calendar-subtitle">Gestiona tus actividades y eventos</p>
+        </div>
 
-    <div class="d-flex justify-content-between mb-4">
-        <a href="?anio={{ anio_anterior }}&mes={{ mes_anterior }}" class="btn btn-outline-primary btn-lg shadow-sm">
-            <i class="bi bi-arrow-left-circle"></i> Mes anterior
-        </a>
-        <a href="?anio={{ anio_siguiente }}&mes={{ mes_siguiente }}" class="btn btn-outline-primary btn-lg shadow-sm">
-            Mes siguiente <i class="bi bi-arrow-right-circle"></i>
-        </a>
-    </div>
+        <!-- Estadísticas -->
+        <div class="calendar-body">
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-events">0</div>
+                    <div class="stat-label">Total Eventos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completed-events">0</div>
+                    <div class="stat-label">Completados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-events">0</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="today-events">0</div>
+                    <div class="stat-label">Hoy</div>
+                </div>
+            </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered text-center shadow-lg rounded w-100">
-            <thead class="table-gradient text-white">
-                <tr>
-                    <th>Lunes</th>
-                    <th>Martes</th>
-                    <th>Miércoles</th>
-                    <th>Jueves</th>
-                    <th>Viernes</th>
-                    <th class="text-primary">Sábado</th>
-                    <th class="text-danger">Domingo</th>
-                </tr>
-            </thead>
-            <tbody>
+            <!-- Grid del Calendario -->
+            <div class="calendar-grid">
+                <!-- Headers de días -->
+                <div class="calendar-day-header">Lun</div>
+                <div class="calendar-day-header">Mar</div>
+                <div class="calendar-day-header">Mié</div>
+                <div class="calendar-day-header">Jue</div>
+                <div class="calendar-day-header">Vie</div>
+                <div class="calendar-day-header">Sáb</div>
+                <div class="calendar-day-header">Dom</div>
+
+                <!-- Días del calendario -->
                 {% for semana in dias %}
-                    <tr>
-                        {% for dia in semana %}
-                            <td class="p-2 {% if dia.dia %}bg-white{% else %}bg-light{% endif %} align-top rounded">
-                                {% if dia.dia %}
-                                    <div class="fw-bold">{{ dia.dia }}</div>
-                                    <ul class="list-unstyled mt-2">
-                                        {% for evento in dia.eventos %}
-                                            <li class="mb-1">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-success text-white">{{ evento.titulo }}</span>
+                    {% for dia in semana %}
+                        <div class="calendar-day {% if not dia.dia %}other-month{% endif %} {% if dia.es_hoy %}today{% endif %}">
+                            {% if dia.dia %}
+                                <div class="day-number">{{ dia.dia }}</div>
+                                <ul class="event-list">
+                                    {% for evento in dia.eventos %}
+                                        <li class="event-item {% if evento.completado %}completed{% else %}pending{% endif %} {% if evento.es_urgente %}urgent{% endif %}" 
+                                            data-event-id="{{ evento.id }}"
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top" 
+                                            title="{{ evento.descripcion|default:evento.titulo }}">
+                                            <span class="event-title">{{ evento.titulo }}</span>
+                                            <div class="event-actions">
+                                                <form method="post" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                                                    {% if evento.completado %}
+                                                        <button type="submit" name="desmarcar_ticket" class="action-btn" title="Marcar como pendiente">
+                                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                                        </button>
+                                                    {% else %}
+                                                        <button type="submit" name="marcar_ticket" class="action-btn" title="Marcar como completado">
+                                                            <i class="bi bi-check"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </form>
+                                                <button class="action-btn" data-bs-toggle="modal" data-bs-target="#editarModal{{ evento.id }}" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="action-btn" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ evento.id }}" title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </li>
 
-                                                    <form method="post" style="display: inline;">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="evento_id" value="{{ evento.id }}">
-                                                        {% if evento.completado %}
-                                                            <button type="submit" name="desmarcar_ticket" class="btn btn-sm btn-warning" title="Trabajando">
-                                                                <i class="bi bi-hourglass-split"></i>
-                                                            </button>
-                                                        {% else %}
-                                                            <button type="submit" name="marcar_ticket" class="btn btn-sm btn-success" title="Completado">
-                                                                <i class="bi bi-check-circle"></i>
-                                                            </button>
-                                                        {% endif %}
-                                                    </form>
-
-                                                    <button class="btn btn-sm btn-warning ms-2" data-bs-toggle="modal" data-bs-target="#editarModal{{ evento.id }}">
-                                                        <i class="bi bi-pencil-fill"></i>
-                                                    </button>
-                                                    
-                                                    <button class="btn btn-sm btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ evento.id }}">
-                                                        <i class="bi bi-trash-fill"></i>
-                                                    </button>
-                                                </div>
-                                            </li>
-
-                                            <div class="modal fade" id="editarModal{{ evento.id }}" tabindex="-1" aria-labelledby="editarModalLabel{{ evento.id }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="editarModalLabel{{ evento.id }}">Editar evento</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form method="post">
-                                                                {% csrf_token %}
-                                                                <input type="hidden" name="evento_id" value="{{ evento.id }}">
-                                                                <div class="mb-3">
-                                                                    <label for="titulo{{ evento.id }}" class="form-label">Título:</label>
-                                                                    <input type="text" id="titulo{{ evento.id }}" name="titulo" value="{{ evento.titulo }}" class="form-control" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="descripcion{{ evento.id }}" class="form-label">Descripción:</label>
-                                                                    <textarea id="descripcion{{ evento.id }}" name="descripcion" class="form-control">{{ evento.descripcion }}</textarea>
-                                                                </div>
-                                                                <button type="submit" name="editar_evento" class="btn btn-primary">Guardar cambios</button>
-                                                            </form>
-                                                        </div>
+                                        <!-- Modal de Edición -->
+                                        <div class="modal fade" id="editarModal{{ evento.id }}" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            <i class="bi bi-pencil-square me-2"></i>Editar Evento
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post" id="editForm{{ evento.id }}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                                                            <div class="form-floating mb-3">
+                                                                <input type="text" id="titulo{{ evento.id }}" name="titulo" value="{{ evento.titulo }}" class="form-control" required>
+                                                                <label for="titulo{{ evento.id }}">Título del evento</label>
+                                                            </div>
+                                                            <div class="form-floating mb-3">
+                                                                <textarea id="descripcion{{ evento.id }}" name="descripcion" class="form-control" style="height: 100px">{{ evento.descripcion }}</textarea>
+                                                                <label for="descripcion{{ evento.id }}">Descripción (opcional)</label>
+                                                            </div>
+                                                            <div class="form-floating mb-3">
+                                                                <input type="date" id="fecha{{ evento.id }}" name="fecha" value="{{ evento.fecha|date:'Y-m-d' }}" class="form-control" required>
+                                                                <label for="fecha{{ evento.id }}">Fecha</label>
+                                                            </div>
+                                                            <div class="d-flex gap-2">
+                                                                <button type="submit" name="editar_evento" class="btn btn-primary flex-fill">
+                                                                    <i class="bi bi-check-circle me-2"></i>Guardar Cambios
+                                                                </button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                                                                </button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="modal fade" id="eliminarModal{{ evento.id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ evento.id }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="eliminarModalLabel{{ evento.id }}">Eliminar evento</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>¿Estás seguro de que deseas eliminar este evento?</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <form method="post">
-                                                                {% csrf_token %}
-                                                                <input type="hidden" name="evento_id" value="{{ evento.id }}">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <button type="submit" name="eliminar_evento" class="btn btn-danger">Eliminar</button>
-                                                            </form>
-                                                        </div>
+                                        <!-- Modal de Eliminación -->
+                                        <div class="modal fade" id="eliminarModal{{ evento.id }}" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+                                                        <h6 class="mt-3">¿Estás seguro de que deseas eliminar este evento?</h6>
+                                                        <p class="text-muted">{{ evento.titulo }}</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form method="post" style="display: inline;">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="evento_id" value="{{ evento.id }}">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                                                            </button>
+                                                            <button type="submit" name="eliminar_evento" class="btn btn-danger">
+                                                                <i class="bi bi-trash me-2"></i>Eliminar
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
+                                        </div>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            </div>
 
-    <div class="card mt-5 shadow-lg border-0">
-        <div class="card-body bg-gradient-light">
-            <h5 class="card-title text-center text-gradient">Agregar un nuevo evento</h5>
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="titulo" class="form-label">Título:</label>
-                    <input type="text" id="titulo" name="titulo" class="form-control form-control-sm shadow-sm" required>
-                </div>
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción:</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control form-control-sm shadow-sm"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="fecha" class="form-label">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control form-control-sm shadow-sm" required>
-                </div>
-                <button type="submit" name="agregar_evento" class="btn btn-success w-100 btn-lg shadow-sm">
-                    <i class="bi bi-check-circle-fill"></i> Agregar evento
-                </button>
-            </form>
+            <!-- Sección para agregar eventos -->
+            <div class="add-event-section">
+                <h5 class="text-center mb-4">
+                    <i class="bi bi-plus-circle me-2"></i>Agregar Nuevo Evento
+                </h5>
+                <form method="post" id="addEventForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" id="titulo" name="titulo" class="form-control" required>
+                                <label for="titulo">Título del evento</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="date" id="fecha" name="fecha" class="form-control" required>
+                                <label for="fecha">Fecha</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea id="descripcion" name="descripcion" class="form-control" style="height: 100px"></textarea>
+                        <label for="descripcion">Descripción (opcional)</label>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" name="agregar_evento" class="btn btn-primary btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>Agregar Evento
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    
 
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-primary btn-lg shadow-sm">
-            <i class="bi bi-house-door-fill"></i> Volver al inicio
+    <!-- Botón de regreso -->
+    <div class="text-center mt-4">
+        <a href="{% url 'proyecto-list' %}" class="back-btn">
+            <i class="bi bi-house-door me-2"></i>Volver al Inicio
         </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        // Inicializar tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Establecer fecha actual en el formulario de agregar evento
+        document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const events = document.querySelectorAll('.event-item');
+            const completed = document.querySelectorAll('.event-item.completed');
+            const today = new Date().toISOString().split('T')[0];
+            const todayEvents = document.querySelectorAll(`[data-fecha="${today}"]`);
+
+            document.getElementById('total-events').textContent = events.length;
+            document.getElementById('completed-events').textContent = completed.length;
+            document.getElementById('pending-events').textContent = events.length - completed.length;
+            document.getElementById('today-events').textContent = todayEvents.length;
+        }
+
+        // Actualizar estadísticas al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            
+            // Agregar animación de carga a formularios
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    this.classList.add('loading');
+                });
+            });
+
+            // Efecto hover en días del calendario
+            const calendarDays = document.querySelectorAll('.calendar-day');
+            calendarDays.forEach(day => {
+                day.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px)';
+                });
+                day.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        // Confirmación antes de eliminar
+        document.querySelectorAll('[name="eliminar_evento"]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('¿Estás seguro de que deseas eliminar este evento?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Validación de formularios
+        document.getElementById('addEventForm').addEventListener('submit', function(e) {
+            const titulo = document.getElementById('titulo').value.trim();
+            const fecha = document.getElementById('fecha').value;
+            
+            if (!titulo) {
+                e.preventDefault();
+                alert('Por favor ingresa un título para el evento');
+                return;
+            }
+            
+            if (!fecha) {
+                e.preventDefault();
+                alert('Por favor selecciona una fecha');
+                return;
+            }
+        });
+
+        // Auto-guardado de formularios (opcional)
+        let autoSaveTimeout;
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    // Aquí se podría implementar auto-guardado
+                    console.log('Auto-guardado...');
+                }, 2000);
+            });
+        });
+    </script>
 </body>
 </html>

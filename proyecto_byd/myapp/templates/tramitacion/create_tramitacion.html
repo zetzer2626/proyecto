@@ -1,114 +1,264 @@
 {% extends 'base.html' %}
-
 {% load static %}
 {% load widget_tweaks %}
 
-{% block title %}Registrar Listado 2 Etapa{% endblock %}
+{% block title %}Crear Nueva Tramitación{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <!-- Tarjeta estilizada con sombras y bordes -->
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #4e73df, #6610f2);">
-                    <h4 class="mb-0 fw-bold">Registrar Listado 2 Etapa</h4>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Crear Nueva Tramitación</h1>
+                    <p class="text-muted mb-0">Complete el formulario para registrar una nueva tramitación</p>
                 </div>
-                <div class="card-body px-5 py-4">
-                    <p class="text-muted text-center mb-4">Complete el formulario a continuación para registrar su trámite.</p>
-                    <form method="post" enctype="multipart/form-data" novalidate>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 text-dark fw-bold">Información de la Tramitación</h4>
+                            <p class="text-muted mb-0">Complete todos los campos requeridos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate class="needs-validation">
                         {% csrf_token %}
-                        {{ form.non_field_errors }}
                         
-                        <!-- Fila para los primeros campos en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.presupuesto.id_for_label }}" class="form-label fw-bold">{{ form.presupuesto.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-user text-primary"></i>
-                                        </span>
-                                        {{ form.presupuesto|add_class:"form-control" }}
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <!-- Información Básica -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-primary fw-semibold mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Información Básica
+                                </h5>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.presupuesto.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-hashtag me-1 text-primary"></i>
+                                            {{ form.presupuesto.label }}
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-file-invoice text-primary"></i>
+                                            </span>
+                                            {{ form.presupuesto|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.presupuesto.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.presupuesto.errors }}
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.año.id_for_label }}" class="form-label fw-bold">{{ form.año.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-file-alt text-primary"></i>
-                                        </span>
-                                        {{ form.año|add_class:"form-control" }}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.año.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-calendar me-1 text-primary"></i>
+                                            {{ form.año.label }}
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-calendar-alt text-primary"></i>
+                                            </span>
+                                            {{ form.año|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.año.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.año.errors }}
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold">{{ form.nombre.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-file-alt text-primary"></i>
-                                        </span>
-                                        {{ form.nombre|add_class:"form-control" }}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-user me-1 text-primary"></i>
+                                            {{ form.nombre.label }}
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </span>
+                                            {{ form.nombre|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.nombre.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.nombre.errors }}
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.direccion.id_for_label }}" class="form-label fw-bold">{{ form.direccion.label }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="fas fa-file-alt text-primary"></i>
-                                        </span>
-                                        {{ form.direccion|add_class:"form-control" }}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.direccion.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                            {{ form.direccion.label }}
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-map-marker-alt text-primary"></i>
+                                            </span>
+                                            {{ form.direccion|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.direccion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.direccion.errors }}
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Fila para fechas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label fw-bold">Fecha Entrega</label>
-                                    {{ form.fecha_recepcion|add_class:"form-control" }}
+                        <!-- Fechas y Descripción -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-primary fw-semibold mb-0">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Fechas y Descripción
+                                </h5>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-calendar-check me-1 text-primary"></i>
+                                            Fecha de Entrega
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-calendar text-primary"></i>
+                                            </span>
+                                            {{ form.fecha_recepcion|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.fecha_recepcion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.fecha_recepcion.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-align-left me-1 text-primary"></i>
+                                            {{ form.descripcion.label }}
+                                        </label>
+                                        {{ form.descripcion|add_class:"form-control" }}
+                                        {% if form.descripcion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.descripcion.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.nota.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-sticky-note me-1 text-primary"></i>
+                                            {{ form.nota.label }}
+                                        </label>
+                                        {{ form.nota|add_class:"form-control" }}
+                                        {% if form.nota.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.nota.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Descripción -->
-                        <div class="form-group mb-4">
-                            <label for="{{ form.nota.id_for_label }}" class="form-label fw-bold">{{ form.nota.label }}</label>
-                            {{ form.nota|add_class:"form-control" }}
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">{{ form.descripcion.label }}</label>
-                            {{ form.descripcion|add_class:"form-control" }}
-                        </div>
-
-                        <!-- Fila para archivo y enlace -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.documento_tramitacion.id_for_label }}" class="form-label fw-bold">{{ form.documento_tramitacion.label }}</label>
-                                    {{ form.documento_tramitacion|add_class:"form-control" }}
+                        <!-- Archivos y Enlaces -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-primary fw-semibold mb-0">
+                                    <i class="fas fa-paperclip me-2"></i>
+                                    Documentos y Enlaces
+                                </h5>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.documento_tramitacion.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-file-upload me-1 text-primary"></i>
+                                            {{ form.documento_tramitacion.label }}
+                                        </label>
+                                        <div class="file-upload-wrapper">
+                                            {{ form.documento_tramitacion|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.documento_tramitacion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.documento_tramitacion.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.link_tramitacion.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-link me-1 text-primary"></i>
+                                            {{ form.link_tramitacion.label }}
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-link text-primary"></i>
+                                            </span>
+                                            {{ form.link_tramitacion|add_class:"form-control" }}
+                                        </div>
+                                        {% if form.link_tramitacion.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.link_tramitacion.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-4">
-                                    <label for="{{ form.link_tramitacion.id_for_label }}" class="form-label fw-bold">{{ form.link_tramitacion.label }}</label>
-                                    {{ form.link_tramitacion|add_class:"form-control" }}
-                                </div>
-                            </div>
                         </div>
 
-                        <!-- Botón de envío centrado -->
-                        <div class="text-center mt-5">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
-                                <i class="fas fa-paper-plane me-2"></i> Crear Listado
-                            </button>
+                        <!-- Action Buttons -->
+                        <div class="form-actions">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'tramitacion-list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    Crear Tramitación
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -117,6 +267,242 @@
     </div>
 </div>
 
-<!-- Font Awesome -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<style>
+    /* Professional Form Styling */
+    .container-fluid {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    /* Card Enhancements */
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Header Icon */
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .header-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    /* Form Sections */
+    .form-section {
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-header {
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.75rem;
+    }
+    
+    .section-header h5 {
+        color: #4f46e5;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    /* Form Controls */
+    .form-label {
+        color: #374151;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: #ffffff;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: #ffffff;
+    }
+    
+    .input-group-text {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 2px solid #e5e7eb;
+        border-right: none;
+        color: #667eea;
+        font-weight: 500;
+    }
+    
+    .input-group .form-control {
+        border-left: none;
+    }
+    
+    .input-group:focus-within .input-group-text {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+    }
+    
+    /* File Upload Styling */
+    .file-upload-wrapper {
+        position: relative;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-wrapper:hover {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+    }
+    
+    .file-upload-wrapper input[type="file"] {
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+    }
+    
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+    
+    .btn-outline-secondary {
+        border: 2px solid #e5e7eb;
+        color: #6b7280;
+        background: #ffffff;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+        color: #374151;
+        transform: translateY(-1px);
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        margin-top: 2rem;
+    }
+    
+    /* Alert Styling */
+    .alert {
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .alert-danger {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #dc2626;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .form-section {
+            padding: 1rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-actions .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+    
+    /* Animation for form sections */
+    .form-section {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Icon animations */
+    .header-icon {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
 {% endblock %}

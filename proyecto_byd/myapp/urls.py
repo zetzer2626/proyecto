@@ -52,11 +52,16 @@ urlpatterns = [
 
 
     # Listado
-    path('listado/', views.ListadoListView.as_view(), name='listado_list'),  # Lista de objetos
-    path('nuevo/', views.ListadoCreateView.as_view(), name='listado_create'),  # Crear nuevo objeto
-    path('editarlo/<int:pk>/', views.ListadoUpdateView.as_view(), name='listado_edit'),  # Editar objeto
-    path('detalles/<int:pk>/', views.ListadoDetailView.as_view(), name='listado_detail'),  # Ver detalles del objeto
-    path('eliminarlo/<int:pk>/', ListadoDeleteView.as_view(), name='listado_delete'),
+path('listado/', views.ListadoListView.as_view(), name='listado_list'),  # Lista de objetos
+path('nuevo/', views.ListadoCreateView.as_view(), name='listado_create'),  # Crear nuevo objeto
+path('editarlo/<int:pk>/', views.ListadoUpdateView.as_view(), name='listado_edit'),  # Editar objeto
+path('detalles/<int:pk>/', views.ListadoDetailView.as_view(), name='listado_detail'),  # Ver detalles del objeto
+path('eliminarlo/<int:pk>/', ListadoDeleteView.as_view(), name='listado_delete'),
+
+# URLs AJAX para modales
+path('api/listado/crear/', views.crear_listado_ajax, name='listado_crear_ajax'),
+path('api/listado/editar/<int:pk>/', views.editar_listado_ajax, name='listado_editar_ajax'),
+path('api/listado/eliminar/<int:pk>/', views.eliminar_listado_ajax, name='listado_eliminar_ajax'),
 
     #insumo
     path('insumo/', InsumosListView.as_view(), name='insumo_list'),  
@@ -68,9 +73,13 @@ urlpatterns = [
     #Enlace
     path('enlace/', EnlaceListView.as_view(), name='enlace_list'),
     path('nuevo_enlace/', EnlaceCreateView.as_view(), name='enlace_create'),
-    path('boletadetalle<int:pk>/', BoletaDetailView.as_view(), name='boleta_detail'), 
+    path('enlace/<int:pk>/', EnlaceDetailView.as_view(), name='enlace_detail'),
     path('editar_enlace/<int:pk>/', EnlaceUpdateView.as_view(), name='enlace_update'),
     path('eliminar_enlace/<int:pk>/', EnlaceDeleteView.as_view(), name='enlace_delete'),
+    # URLs AJAX para enlaces
+    path('api/enlace/crear/', views.crear_enlace_ajax, name='enlace_crear_ajax'),
+    path('api/enlace/editar/<int:pk>/', views.editar_enlace_ajax, name='enlace_editar_ajax'),
+    path('api/enlace/eliminar/<int:pk>/', views.eliminar_enlace_ajax, name='enlace_eliminar_ajax'),
 
     #Boletas
     path('boletas/', BoletaListView.as_view(), name='boleta_list'),
@@ -98,5 +107,30 @@ urlpatterns = [
 
     # Reportes
     path('pagos-cliente/reporte/', reporte_pagos_cliente, name='reporte_pagos_cliente'),
+    
+    # API para actualizar notas de proyectos
+    path('proyecto/<int:proyecto_id>/actualizar-notas/', actualizar_notas_proyecto, name='actualizar_notas_proyecto'),
+
+    # APIs AJAX para sistema de pagos
+    path('api/buscar-proyectos/', buscar_proyectos_ajax, name='buscar_proyectos_ajax'),
+    path('api/proyecto/<int:proyecto_id>/datos/', obtener_datos_proyecto_ajax, name='obtener_datos_proyecto_ajax'),
+    path('api/crear-pago-cliente/', crear_pago_cliente_ajax, name='crear_pago_cliente_ajax'),
+    path('api/crear-detalle-pago/', crear_detalle_pago_ajax, name='crear_detalle_pago_ajax'),
+    path('api/proyecto/<int:proyecto_id>/historial-pagos/', obtener_historial_pagos_ajax, name='obtener_historial_pagos_ajax'),
+    
+    # APIs AJAX para sistema dinámico
+    path('api/pagos-clientes/', obtener_pagos_clientes_ajax, name='obtener_pagos_clientes_ajax'),
+    path('api/pago-cliente/<int:pago_cliente_id>/info/', obtener_info_pago_cliente_ajax, name='obtener_info_pago_cliente_ajax'),
+    path('api/pago-cliente/<int:pago_cliente_id>/detalles/', obtener_detalles_pago_cliente_ajax, name='obtener_detalles_pago_cliente_ajax'),
+    
+    # APIs AJAX para sistema de proyectos
+    path('api/proyectos-con-pagos/', obtener_proyectos_con_pagos_ajax, name='obtener_proyectos_con_pagos_ajax'),
+    path('api/proyecto/<int:proyecto_id>/info-completa/', obtener_info_proyecto_completa_ajax, name='obtener_info_proyecto_completa_ajax'),
+    path('api/proyecto/<int:proyecto_id>/detalles-completos/', obtener_detalles_proyecto_completos_ajax, name='obtener_detalles_proyecto_completos_ajax'),
+    
+    # Sistema de pagos principal
+    path('sistema-pagos/', sistema_pagos_view, name='sistema_pagos'),
+    path('api/establecer-monto-total/', establecer_monto_total_ajax, name='establecer_monto_total_ajax'),
+    path('api/recalcular-montos/', recalcular_montos_pagados, name='recalcular_montos_pagados'),
 
 ]

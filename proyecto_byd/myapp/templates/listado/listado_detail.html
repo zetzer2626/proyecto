@@ -1,62 +1,325 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalles del Listado - {{ listado.presupuesto }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4 text-center text-primary">Detalles del Proyecto</h1>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Detalles del Listado</h1>
+                    <p class="text-muted mb-0">Información completa del listado: {{ listado.presupuesto }}</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-warning d-flex align-items-center gap-2">
+                        <i class="fas fa-edit"></i>
+                        <span>Editar</span>
+                    </a>
+                    <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3 font-weight-bold">Presupuesto</dt>
-                <dd class="col-sm-9">{{ listado.presupuesto }}</dd>
+    <!-- Información Principal -->
+    <div class="row g-4">
+        <!-- Detalles del Listado -->
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                                <i class="fas fa-info-circle text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0 fw-semibold">Información del Listado</h5>
+                            <small class="opacity-75">Detalles completos del proyecto</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Presupuesto -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-hashtag text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fw-semibold text-muted">N° Presupuesto</h6>
+                                    <h5 class="mb-0 fw-bold text-dark">{{ listado.presupuesto }}</h5>
+                                </div>
+                            </div>
+                        </div>
 
-                <dt class="col-sm-3 font-weight-bold">Año</dt>
-                <dd class="col-sm-9">{{ listado.año }}</dd>
+                        <!-- Año -->
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-calendar text-success"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fw-semibold text-muted">Año</h6>
+                                    <h5 class="mb-0 fw-bold text-dark">{{ listado.año }}</h5>
+                                </div>
+                            </div>
+                        </div>
 
-                <dt class="col-sm-3 font-weight-bold">Nombre</dt>
-                <dd class="col-sm-9">{{ listado.nombre }}</dd>
+                        <!-- Nombre -->
+                        <div class="col-12">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-user text-info"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fw-semibold text-muted">Nombre del Proyecto</h6>
+                                    <h5 class="mb-0 fw-bold text-dark">{{ listado.nombre }}</h5>
+                                </div>
+                            </div>
+                        </div>
 
-                <dt class="col-sm-3 font-weight-bold">Nota</dt>
-                <dd class="col-sm-9">{{ listado.nota }}</dd>
+                        <!-- Gestión -->
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle p-2">
+                                        <i class="fas fa-tasks text-warning"></i>
+                                    </div>
+                                    <h6 class="mb-0 ms-2 fw-semibold text-muted">Gestión</h6>
+                                </div>
+                                <div class="ps-4">
+                                    <p class="mb-0 text-dark">{{ listado.gestion|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
 
-                <dt class="col-sm-3 font-weight-bold">Gestión</dt>
-                <dd class="col-sm-9">{{ listado.gestion }}</dd>
+                        <!-- Nota -->
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-secondary bg-opacity-10 rounded-circle p-2">
+                                        <i class="fas fa-sticky-note text-secondary"></i>
+                                    </div>
+                                    <h6 class="mb-0 ms-2 fw-semibold text-muted">Nota</h6>
+                                </div>
+                                <div class="ps-4">
+                                    <p class="mb-0 text-dark">{{ listado.nota|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <dt class="col-sm-3 font-weight-bold">Pagos</dt>
-                <dd class="col-sm-9">
+        <!-- Enlaces y Acciones -->
+        <div class="col-12 col-lg-4">
+            <!-- Enlaces -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-success text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                                <i class="fas fa-link text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0 fw-semibold">Enlaces</h5>
+                            <small class="opacity-75">Accesos directos</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Enlace de Pagos -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-money-bill-wave text-success me-2"></i>
+                            <h6 class="mb-0 fw-semibold">Listado de Pagos</h6>
+                        </div>
                     {% if listado.listado %}
-                        <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-primary">
-                            Ver Documento
+                            <a href="{{ listado.listado }}" target="_blank" class="btn btn-outline-success w-100">
+                                <i class="fas fa-external-link-alt me-2"></i>
+                                Ver Listado de Pagos
                         </a>
                     {% else %}
-                        <span>No disponible</span>
+                            <div class="alert alert-warning mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay enlace disponible
+                            </div>
                     {% endif %}
-                </dd>
+                    </div>
 
-                <dt class="col-sm-3 font-weight-bold">Drive</dt>
-                <dd class="col-sm-9">
+                    <!-- Enlace de Drive -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fab fa-google-drive text-info me-2"></i>
+                            <h6 class="mb-0 fw-semibold">Google Drive</h6>
+                        </div>
                     {% if listado.drive %}
-                        <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-success">
-                            Ver en Google Drive
+                            <a href="{{ listado.drive }}" target="_blank" class="btn btn-outline-info w-100">
+                                <i class="fab fa-google-drive me-2"></i>
+                                Abrir en Drive
                         </a>
                     {% else %}
-                        <span>No disponible</span>
+                            <div class="alert alert-warning mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay enlace disponible
+                            </div>
                     {% endif %}
-                </dd>
-            </dl>
+                    </div>
+                </div>
+            </div>
 
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-warning btn-lg">
-                    <i class="fas fa-edit"></i> Editar
-                </a>
-                <a href="{% url 'listado_delete' listado.pk %}" class="btn btn-danger btn-lg">
-                    <i class="fas fa-trash"></i> Eliminar
-                </a>
-                <a href="{% url 'listado_list' %}" class="btn btn-secondary btn-lg">
-                    <i class="fas fa-arrow-left"></i> Volver a la lista
-                </a>
+            <!-- Acciones Rápidas -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                                <i class="fas fa-cogs text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0 fw-semibold">Acciones</h5>
+                            <small class="opacity-75">Opciones disponibles</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'listado_edit' listado.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>
+                            Editar Listado
+                        </a>
+                        <a href="{% url 'listado_delete' listado.pk %}" class="btn btn-outline-danger" 
+                           onclick="return confirm('¿Estás seguro de eliminar este listado? Esta acción no se puede deshacer.')">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            Eliminar Listado
+                        </a>
+                        <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>
+                            Ver Todos los Listados
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de Auditoría -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-secondary bg-opacity-10 rounded-circle p-2">
+                                <i class="fas fa-history text-secondary"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0 fw-semibold text-dark">Información de Auditoría</h5>
+                            <small class="text-muted">Historial del registro</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-plus text-primary me-2"></i>
+                                <div>
+                                    <small class="text-muted d-block">Fecha de Creación</small>
+                                    <span class="fw-semibold">{{ listado.created_at|default:"No disponible" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-check text-success me-2"></i>
+                                <div>
+                                    <small class="text-muted d-block">Última Modificación</small>
+                                    <span class="fw-semibold">{{ listado.updated_at|default:"No disponible" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    }
+    
+    .btn {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    
+    .rounded-circle {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Confirmar eliminación
+    const deleteBtn = document.querySelector('a[href*="delete"]');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+            if (!confirm('¿Estás seguro de eliminar este listado? Esta acción no se puede deshacer.')) {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    // Tooltips para enlaces externos
+    const externalLinks = document.querySelectorAll('a[target="_blank"]');
+    externalLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Opcional: mostrar notificación de que se abre en nueva pestaña
+            console.log('Abriendo enlace externo:', this.href);
+        });
+    });
+});
+</script>
 {% endblock %}

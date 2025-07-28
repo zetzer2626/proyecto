@@ -1,13 +1,172 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Eliminar Enlace</h1>
-    <p>¿Estás seguro de que deseas eliminar el enlace <strong>{{ object.titulo }}</strong>?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="{% url 'enlace_list' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<div class="container-fluid px-4 py-5">
+    <!-- Header Moderno -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-0 text-danger fw-bold">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Enlace
+                    </h1>
+                    <p class="text-muted mb-0">Confirmar eliminación del enlace</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmación -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trash-alt me-2"></i>Confirmar Eliminación
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-exclamation-triangle text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>¡Atención!
+                        </h6>
+                        <p class="mb-0">Estás a punto de eliminar el enlace "<strong>{{ object.titulo }}</strong>". Esta acción no se puede deshacer.</p>
+                    </div>
+                    
+                    <!-- Información del Enlace -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-info-circle text-primary me-2"></i>Información del Enlace
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Título:</strong></p>
+                                    <p class="text-muted">{{ object.titulo }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Descripción:</strong></p>
+                                    <p class="text-muted">{{ object.description|default:"Sin descripción"|truncatewords:10 }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Enlace:</strong></p>
+                                    <p class="text-muted">{{ object.link|default:"No especificado" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Archivos:</strong></p>
+                                    <p class="text-muted">
+                                        {% if object.documento_pdf %}PDF: Sí{% else %}PDF: No{% endif %}<br>
+                                        {% if object.avatar %}Avatar: Sí{% else %}Avatar: No{% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advertencias -->
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-warning me-2"></i>Advertencias
+                        </h6>
+                        <ul class="mb-0">
+                            <li>Esta acción eliminará permanentemente el enlace y toda su información</li>
+                            <li>Si hay archivos PDF o avatars asociados, también serán eliminados</li>
+                            <li>No se puede recuperar la información una vez eliminada</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Formulario de Confirmación -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirmarEliminacion" required>
+                            <label class="form-check-label" for="confirmarEliminacion">
+                                <strong>Entiendo que esta acción es irreversible y deseo continuar</strong>
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmacionTexto" class="form-label">
+                                <strong>Escribe "ELIMINAR" para confirmar:</strong>
+                            </label>
+                            <input type="text" class="form-control" id="confirmacionTexto" 
+                                   placeholder="Escribe ELIMINAR aquí" required 
+                                   pattern="ELIMINAR" title="Debes escribir exactamente 'ELIMINAR'">
+                            <div class="form-text">Esta es una medida de seguridad adicional</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center pt-3">
+                            <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger" id="btnEliminar" disabled>
+                                <i class="fas fa-trash-alt me-2"></i>Eliminar Definitivamente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+.card {
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+</style>
+
+<script>
+// Validación de confirmación
+document.getElementById('confirmarEliminacion').addEventListener('change', function() {
+    validarConfirmacion();
+});
+
+document.getElementById('confirmacionTexto').addEventListener('input', function() {
+    validarConfirmacion();
+});
+
+function validarConfirmacion() {
+    const checkbox = document.getElementById('confirmarEliminacion');
+    const texto = document.getElementById('confirmacionTexto');
+    const boton = document.getElementById('btnEliminar');
+    
+    if (checkbox.checked && texto.value === 'ELIMINAR') {
+        boton.disabled = false;
+    } else {
+        boton.disabled = true;
+    }
+}
+</script>
 {% endblock %}

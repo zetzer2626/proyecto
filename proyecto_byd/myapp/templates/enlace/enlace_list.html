@@ -1,170 +1,597 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">Lista de Enlaces</h1>
-    <!-- Resumen -->
-    <div class="mb-4 text-center">
-        <p class="text-muted">
-            Total de Carpetas: <strong>{{ total_enlaces }}</strong> | Enlaces en esta página: <strong>{{ current_page_count }}</strong>
-        </p>
-    </div>
-    <div class="d-flex justify-content-center align-items-center mb-4" style="min-height: 200px;">
-        <form method="get" class="text-center w-100" style="max-width: 800px;">
-            <!-- Campo de Búsqueda -->
-            <div class="input-group mb-3">
-                <input type="text" name="q" value="{{ query }}" 
-                       class="form-control form-control-lg" 
-                       placeholder="Buscar por título o descripción">
-                <button type="submit" class="btn btn-success btn-lg">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
+<div class="container-fluid px-4 py-5">
+    <!-- Header Moderno -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-0 text-primary fw-bold">
+                        <i class="fas fa-link me-2"></i>Gestión de Enlaces
+                    </h1>
+                    <p class="text-muted mb-0">Administra tus enlaces y documentos importantes</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCrearEnlace">
+                        <i class="fas fa-plus"></i>
+                        <span>Nuevo Enlace</span>
+                    </button>
+                </div>
             </div>
-            <!-- Botones Adicionales -->
-            <div class="d-flex justify-content-center gap-3">
-                <a href="{% url 'enlace_list' %}" class="btn btn-secondary btn-lg">
-                    <i class="fas fa-times-circle"></i> Limpiar
-                </a>
-                <a href="{% url 'enlace_create' %}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus-circle"></i> Crear Nuevo
-                </a>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-link text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Total Enlaces</h6>
+                            <h3 class="mb-0 fw-bold text-primary">{{ total_enlaces }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-file-pdf text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Con PDF</h6>
+                            <h3 class="mb-0 fw-bold text-success">{{ enlaces_con_pdf|default:0 }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-external-link-alt text-info fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Con Enlaces</h6>
+                            <h3 class="mb-0 fw-bold text-info">{{ enlaces_con_link|default:0 }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-user-circle text-warning fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="card-title text-muted mb-1">Con Avatar</h6>
+                            <h3 class="mb-0 fw-bold text-warning">{{ enlaces_con_avatar|default:0 }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" name="q" value="{{ query }}" 
+                                       class="form-control border-start-0" 
+                                       placeholder="Buscar por título o descripción...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-fill">
+                                    <i class="fas fa-search me-2"></i>Buscar
+                                </button>
+                                <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
             </div>
         </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+
+    <!-- Lista de Enlaces -->
+    <div class="row">
         {% for enlace in enlaces %}
-        <div class="col">
-            <div class="card enlace-card">
-                <!-- Avatar en la parte superior -->
-                <div class="text-center mt-3">
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 enlace-card">
+                <!-- Avatar -->
+                <div class="text-center pt-3">
                     {% if enlace.avatar %}
                     <img src="{{ enlace.avatar.url }}" alt="{{ enlace.titulo }}" 
-                         class="enlace-avatar">
+                         class="enlace-avatar rounded-circle shadow-sm">
+                    {% else %}
+                    <div class="enlace-avatar-placeholder rounded-circle shadow-sm d-flex align-items-center justify-content-center">
+                        <i class="fas fa-link text-muted"></i>
+                    </div>
                     {% endif %}
                 </div>
                 
                 <div class="card-body text-center">
                     <!-- Título -->
-                    <h5 class="card-title enlace-titulo">{{ enlace.titulo }}</h5>
+                    <h5 class="card-title enlace-titulo mb-2">{{ enlace.titulo }}</h5>
                     
                     <!-- Descripción -->
-                    <p class="enlace-descripcion">{{ enlace.description|truncatewords:10 }}</p>
+                    <p class="enlace-descripcion text-muted small mb-3">
+                        {{ enlace.description|truncatewords:15|default:"Sin descripción" }}
+                    </p>
                     
                     <!-- Links -->
-                    <div class="d-flex justify-content-center gap-2 my-3">
+                    <div class="d-flex justify-content-center gap-2 mb-3">
                         {% if enlace.link %}
                         <a href="{{ enlace.link }}" target="_blank" 
-                           class="btn enlace-btn enlace-btn-link">Ver Enlace</a>
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>Enlace
+                        </a>
                         {% else %}
-                        <span class="btn enlace-btn enlace-btn-disabled" disabled>Sin Enlace</span>
+                        <span class="btn btn-outline-secondary btn-sm disabled">
+                            <i class="fas fa-link me-1"></i>Sin Enlace
+                        </span>
                         {% endif %}
                         
                         {% if enlace.documento_pdf %}
                         <a href="{{ enlace.documento_pdf.url }}" target="_blank" 
-                           class="btn enlace-btn enlace-btn-pdf">Ver PDF</a>
+                           class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-file-pdf me-1"></i>PDF
+                        </a>
                         {% else %}
-                        <span class="btn enlace-btn enlace-btn-disabled" disabled>Sin PDF</span>
+                        <span class="btn btn-outline-secondary btn-sm disabled">
+                            <i class="fas fa-file-pdf me-1"></i>Sin PDF
+                        </span>
                         {% endif %}
                     </div>
                     
                     <!-- Acciones -->
-                    <div class="d-flex justify-content-around mt-3">
-                        <a href="{% url 'enlace_update' enlace.pk %}" 
-                           class="btn enlace-btn enlace-btn-edit">Editar</a>
-                        <a href="{% url 'enlace_delete' enlace.pk %}" 
-                           class="btn enlace-btn enlace-btn-delete">Eliminar</a>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" title="Ver Detalles" 
+                                onclick="verDetallesEnlace({{ enlace.pk }})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm" title="Editar" 
+                                data-enlace-id="{{ enlace.pk }}" 
+                                data-enlace-titulo="{{ enlace.titulo }}" 
+                                data-enlace-description="{{ enlace.description }}" 
+                                data-enlace-link="{{ enlace.link|default:"" }}"
+                                onclick="editarEnlace(this)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" title="Eliminar" 
+                                data-enlace-id="{{ enlace.pk }}" 
+                                data-enlace-titulo="{{ enlace.titulo }}"
+                                onclick="eliminarEnlace(this)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-12">
-            <p class="text-center text-muted">No hay enlaces disponibles.</p>
+            <div class="text-center py-5">
+                <i class="fas fa-link text-muted" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mt-3">No hay enlaces disponibles</h4>
+                <p class="text-muted">Crea tu primer enlace para comenzar</p>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearEnlace">
+                    <i class="fas fa-plus me-2"></i>Crear Primer Enlace
+                </button>
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
 
+<!-- Modal Crear Enlace -->
+<div class="modal fade" id="modalCrearEnlace" tabindex="-1" aria-labelledby="modalCrearEnlaceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalCrearEnlaceLabel">
+                    <i class="fas fa-plus me-2"></i>Crear Nuevo Enlace
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCrearEnlace" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="titulo" class="form-label">
+                                    <i class="fas fa-heading text-primary me-2"></i>Título *
+                                </label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="link" class="form-label">
+                                    <i class="fas fa-link text-info me-2"></i>Enlace
+                                </label>
+                                <input type="url" class="form-control" id="link" name="link" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left text-success me-2"></i>Descripción
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Describe el contenido del enlace..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="documento_pdf" class="form-label">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>Documento PDF
+                                </label>
+                                <input type="file" class="form-control" id="documento_pdf" name="documento_pdf" accept=".pdf">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="avatar" class="form-label">
+                                    <i class="fas fa-user-circle text-secondary me-2"></i>Avatar (Opcional)
+                                </label>
+                                <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="crearEnlace()">
+                    <i class="fas fa-save me-2"></i>Crear Enlace
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Enlace -->
+<div class="modal fade" id="modalEditarEnlace" tabindex="-1" aria-labelledby="modalEditarEnlaceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="modalEditarEnlaceLabel">
+                    <i class="fas fa-edit me-2"></i>Editar Enlace
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarEnlace" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit_enlace_id" name="enlace_id">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_titulo" class="form-label">
+                                    <i class="fas fa-heading text-primary me-2"></i>Título *
+                                </label>
+                                <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_link" class="form-label">
+                                    <i class="fas fa-link text-info me-2"></i>Enlace
+                                </label>
+                                <input type="url" class="form-control" id="edit_link" name="link" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">
+                            <i class="fas fa-align-left text-success me-2"></i>Descripción
+                        </label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3" placeholder="Describe el contenido del enlace..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_documento_pdf" class="form-label">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>Documento PDF
+                                </label>
+                                <input type="file" class="form-control" id="edit_documento_pdf" name="documento_pdf" accept=".pdf">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_avatar" class="form-label">
+                                    <i class="fas fa-user-circle text-secondary me-2"></i>Avatar (Opcional)
+                                </label>
+                                <input type="file" class="form-control" id="edit_avatar" name="avatar" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-warning" onclick="guardarEdicionEnlace()">
+                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Enlace -->
+<div class="modal fade" id="modalEliminarEnlace" tabindex="-1" aria-labelledby="modalEliminarEnlaceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalEliminarEnlaceLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-center mb-3">¿Estás seguro de que deseas eliminar este enlace?</h5>
+                <p class="text-center text-muted mb-4">
+                    Esta acción no se puede deshacer. El enlace "<strong id="enlace_a_eliminar"></strong>" será eliminado permanentemente.
+                </p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Advertencia:</strong> Esta acción eliminará también cualquier archivo PDF o avatar asociado.
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="confirmarEliminacion">
+                    <label class="form-check-label" for="confirmarEliminacion">
+                        Entiendo que esta acción es irreversible
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminacion" onclick="confirmarEliminacionEnlace()" disabled>
+                    <i class="fas fa-trash-alt me-2"></i>Eliminar Definitivamente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-/* Estilos generales para tarjetas */
 .enlace-card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más oscura */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    max-width: 300px;
-    margin: 0 auto;
-    padding: 15px;
+    border-radius: 15px;
 }
 
 .enlace-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Sombra más prominente */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Estilo del avatar */
 .enlace-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
-    border: 3px solid #f8f9fa;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Título */
-.enlace-titulo {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #343a40;
-    margin-top: 0.5rem;
-}
-
-/* Descripción */
-.enlace-descripcion {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 1rem;
-}
-
-/* Botones */
-.enlace-btn {
-    border-radius: 20px;
-    padding: 0.4rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-transform: capitalize;
+    border: 3px solid #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.enlace-btn-link {
-    background-color: #17a2b8;
-    color: #fff;
+.enlace-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 3px solid #fff;
+    font-size: 1.5rem;
 }
 
-.enlace-btn-pdf {
-    background-color: #28a745;
-    color: #fff;
+.enlace-titulo {
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.3;
 }
 
-.enlace-btn-edit {
-    background-color: #ffc107;
-    color: #212529;
+.enlace-descripcion {
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
-.enlace-btn-delete {
-    background-color: #dc3545;
-    color: #fff;
+.modal-content {
+    border-radius: 15px;
 }
 
-.enlace-btn-disabled {
-    background-color: #6c757d;
-    color: #fff;
-    cursor: not-allowed;
+.modal-header {
+    border-radius: 15px 15px 0 0;
+}
+
+.btn-close-white {
+    filter: brightness(0) invert(1);
 }
 </style>
 
+<script>
+// Función para mostrar alertas
+function mostrarAlerta(tipo, mensaje) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Función para editar enlace
+function editarEnlace(button) {
+    const id = button.getAttribute('data-enlace-id');
+    const titulo = button.getAttribute('data-enlace-titulo');
+    const description = button.getAttribute('data-enlace-description');
+    const link = button.getAttribute('data-enlace-link');
+    
+    document.getElementById('edit_enlace_id').value = id;
+    document.getElementById('edit_titulo').value = titulo;
+    document.getElementById('edit_description').value = description;
+    document.getElementById('edit_link').value = link;
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalEditarEnlace'));
+    modal.show();
+}
+
+// Función para eliminar enlace
+function eliminarEnlace(button) {
+    const id = button.getAttribute('data-enlace-id');
+    const titulo = button.getAttribute('data-enlace-titulo');
+    
+    document.getElementById('enlace_a_eliminar').textContent = titulo;
+    document.getElementById('btnConfirmarEliminacion').setAttribute('data-enlace-id', id);
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalEliminarEnlace'));
+    modal.show();
+}
+
+// Función para ver detalles
+function verDetallesEnlace(id) {
+    window.location.href = `/enlace/${id}/`;
+}
+
+// Confirmar eliminación
+document.getElementById('confirmarEliminacion').addEventListener('change', function() {
+    document.getElementById('btnConfirmarEliminacion').disabled = !this.checked;
+});
+
+// Crear enlace
+function crearEnlace() {
+    const formData = new FormData(document.getElementById('formCrearEnlace'));
+    
+    fetch('{% url "enlace_crear_ajax" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarAlerta('success', data.message);
+            bootstrap.Modal.getInstance(document.getElementById('modalCrearEnlace')).hide();
+            document.getElementById('formCrearEnlace').reset();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            mostrarAlerta('danger', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarAlerta('danger', 'Error al crear el enlace');
+    });
+}
+
+// Guardar edición
+function guardarEdicionEnlace() {
+    const formData = new FormData(document.getElementById('formEditarEnlace'));
+    const enlaceId = document.getElementById('edit_enlace_id').value;
+    
+    fetch(`{% url "enlace_editar_ajax" 0 %}`.replace('0', enlaceId), {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarAlerta('success', data.message);
+            bootstrap.Modal.getInstance(document.getElementById('modalEditarEnlace')).hide();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            mostrarAlerta('danger', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarAlerta('danger', 'Error al editar el enlace');
+    });
+}
+
+// Confirmar eliminación
+function confirmarEliminacionEnlace() {
+    const enlaceId = document.getElementById('btnConfirmarEliminacion').getAttribute('data-enlace-id');
+    
+    fetch(`{% url "enlace_eliminar_ajax" 0 %}`.replace('0', enlaceId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarAlerta('success', data.message);
+            bootstrap.Modal.getInstance(document.getElementById('modalEliminarEnlace')).hide();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            mostrarAlerta('danger', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarAlerta('danger', 'Error al eliminar el enlace');
+    });
+}
+</script>
 {% endblock %}

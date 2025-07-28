@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sistema de Pagos de Clientes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sistema_pagos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 sistema-pagos">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">
+                    <i class="fas fa-money-bill-wave text-success me-2"></i>
+                    Sistema de Pagos Dinámico
+                </h4>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="sistemaPagos.recalcularMontos()" title="Recalcular montos">
+                        <i class="fas fa-calculator"></i> Recalcular
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="sistemaPagos.cargarProyectos()" title="Actualizar datos">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Sistema de Pagos de Clientes</h1>
+                    <p class="text-muted mb-0">Gestiona pagos de proyectos de manera dinámica</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <!-- Botón removido ya que los proyectos aparecen en la tabla -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-search me-1 text-primary"></i>
+                                Buscar Proyecto/Cliente
+                            </label>
+                            <input type="text" class="form-control" id="buscarProyecto" 
+                                   placeholder="Nombre, correo o presupuesto...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-filter me-1 text-primary"></i>
+                                Estado de Pago
+                            </label>
+                            <select class="form-select" id="filtroEstado">
+                                <option value="">Todos</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="parcial">Pago Parcial</option>
+                                <option value="completo">Pagado Completo</option>
+                                <option value="vencido">Vencido</option>
+                                <option value="sin_pago">Sin Pago</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-calendar me-1 text-primary"></i>
+                                Año
+                            </label>
+                            <select class="form-select" id="filtroAño">
+                                <option value="">Todos</option>
+                                {% for año in años_disponibles %}
+                                <option value="{{ año }}">{{ año }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-tag me-1 text-primary"></i>
+                                Estado Proyecto
+                            </label>
+                            <select class="form-select" id="filtroEstadoProyecto">
+                                <option value="">Todos</option>
+                                <option value="no_concretado">No Concretado</option>
+                                <option value="trabajando">Trabajando</option>
+                                <option value="ingreso_dom">Ingresado DOM</option>
+                                <option value="ingresado_sag">Ingresado SAG</option>
+                                <option value="ingresado_minvu">Ingresado Minvu</option>
+                                <option value="aprobado">Aprobado</option>
+                                <option value="realizado">Realizado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-primary w-100" id="btnFiltrar">
+                                <i class="fas fa-search me-1"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Proyectos con Pagos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-dark fw-semibold">
+                            <i class="fas fa-table me-2"></i>
+                            Proyectos y Pagos
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <span class="badge badge-stats bg-primary" id="totalProyectos">0 proyectos</span>
+                            <span class="badge badge-stats bg-success" id="totalPagado">$0</span>
+                            <span class="badge badge-stats bg-warning" id="totalPendiente">$0</span>
+                            <span class="badge badge-stats bg-info" id="proyectosConPago">0 con pago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="tablaProyectos">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0">
+                                        <i class="fas fa-user me-1"></i>
+                                        Cliente/Proyecto
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-dollar-sign me-1"></i>
+                                        Pagos Registrados
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-percentage me-1"></i>
+                                        Progreso
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Último Pago
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-tag me-1"></i>
+                                        Estado Proyecto
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Año
+                                    </th>
+                                    <th class="border-0 text-center">
+                                        <i class="fas fa-cogs me-1"></i>
+                                        Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyProyectos">
+                                <!-- Los datos se cargan dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Agregar Pago -->
+<div class="modal fade" id="modalAgregarPago" tabindex="-1" aria-labelledby="modalAgregarPagoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white border-0">
+                <div class="d-flex align-items-center">
+                    <div class="modal-icon me-3">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalAgregarPagoLabel">Agregar Pago</h5>
+                        <small class="opacity-75">Registrar un nuevo pago</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Información del Proyecto -->
+                <div id="infoProyectoModal" class="alert alert-info mb-4">
+                    <!-- Información del proyecto -->
+                </div>
+
+                <!-- Información del Pago Cliente -->
+                <div id="infoPagoClienteModal" class="alert alert-success mb-4" style="display: none;">
+                    <!-- Información del pago -->
+                </div>
+
+                <form id="formAgregarPago" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="proyectoIdPagoModal" name="proyecto_id">
+                    <input type="hidden" id="pagoClienteIdModal" name="pago_cliente_id">
+                    
+                    <!-- Detalles del Pago -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-calendar me-1 text-primary"></i>
+                                Fecha de Pago *
+                            </label>
+                            <input type="date" class="form-control" id="fechaPagoModal" name="fecha_pago" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-dollar-sign me-1 text-primary"></i>
+                                Monto del Pago *
+                            </label>
+                            <input type="number" class="form-control" id="montoPagoModal" name="monto_pago" 
+                                   placeholder="0" min="0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-credit-card me-1 text-primary"></i>
+                                Forma de Pago *
+                            </label>
+                            <select class="form-select" id="formaPagoModal" name="forma_pago" required>
+                                <option value="">Seleccione forma de pago...</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="debito">Débito</option>
+                                <option value="credito">Crédito</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-hashtag me-1 text-primary"></i>
+                                Número de Referencia
+                            </label>
+                            <input type="text" class="form-control" id="numeroReferenciaModal" name="numero_referencia" 
+                                   placeholder="Número de transferencia, cheque, etc.">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-file-upload me-1 text-primary"></i>
+                                Comprobante de Pago
+                            </label>
+                            <input type="file" class="form-control" id="comprobantePagoModal" name="comprobante_pago" 
+                                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-sticky-note me-1 text-primary"></i>
+                                Notas
+                            </label>
+                            <textarea class="form-control" id="notasPagoModal" name="notas" rows="2" 
+                                      placeholder="Notas adicionales sobre el pago"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-success" id="btnGuardarPago">
+                    <i class="fas fa-check me-2"></i>
+                    Guardar Pago
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ver Detalles -->
+<div class="modal fade" id="modalVerDetalles" tabindex="-1" aria-labelledby="modalVerDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-info text-white border-0">
+                <div class="d-flex align-items-center">
+                    <div class="modal-icon me-3">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalVerDetallesLabel">Detalles del Proyecto</h5>
+                        <small class="opacity-75">Información completa y historial de pagos</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="contenidoDetalles">
+                    <!-- Contenido de detalles -->
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertas -->
+<div id="alertContainer" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999;"></div>
+
+<!-- Modal Establecer Monto Total -->
+<div class="modal fade" id="modalEstablecerMonto" tabindex="-1" aria-labelledby="modalEstablecerMontoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white border-0">
+                <div class="d-flex align-items-center">
+                    <div class="modal-icon me-3">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalEstablecerMontoLabel">Establecer Monto Total</h5>
+                        <small class="opacity-75">Define el monto total que debe pagar el cliente por este proyecto</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formEstablecerMonto">
+                    {% csrf_token %}
+                    <input type="hidden" id="proyectoIdEstablecerMonto" name="proyecto_id">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-dollar-sign me-1 text-success"></i>
+                            Monto Total a Pagar *
+                        </label>
+                        <input type="number" class="form-control" id="montoTotalEstablecer" name="monto_total" min="1" placeholder="Ingrese el monto total" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-align-left me-1 text-success"></i>
+                            Descripción (opcional)
+                        </label>
+                        <textarea class="form-control" id="descripcionEstablecer" name="descripcion" rows="2" placeholder="Descripción del pago o acuerdo"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-success" id="btnGuardarMontoTotal">
+                    <i class="fas fa-check me-2"></i>
+                    Guardar Monto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/sistema_pagos_dinamico.js' %}"></script>
+{% endblock %} 

@@ -41,6 +41,7 @@ class Proyecto(models.Model):
     descripcion = models.TextField(max_length=10000,null=True,blank=True)
     kardex = models.CharField(max_length=255,null=True,blank=True)
     proceso = models.CharField(max_length=20, choices=PROCESO_CHOICES,null=True,blank=True)
+    notas_internas = models.TextField(max_length=1000, null=True, blank=True, help_text="Notas internas del proyecto")
     
     # Documentos adicionales
     levantamiento = models.FileField(upload_to='documentos/', null=True , blank=True)
@@ -405,6 +406,7 @@ class DetallePago(models.Model):
             total=models.Sum('monto_pago')
         )['total'] or 0
         self.pago_cliente.actualizar_estado()
+        self.pago_cliente.save()
 
     def delete(self, *args, **kwargs):
         pago_cliente = self.pago_cliente
@@ -414,6 +416,7 @@ class DetallePago(models.Model):
             total=models.Sum('monto_pago')
         )['total'] or 0
         pago_cliente.actualizar_estado()
+        pago_cliente.save()
 
     def __str__(self):
         return f"Pago {self.fecha_pago} - ${self.monto_pago:,} - {self.pago_cliente.cliente_nombre}".replace(',', '.')

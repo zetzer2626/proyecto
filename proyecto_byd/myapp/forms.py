@@ -76,7 +76,7 @@ class SolicitudForm(forms.ModelForm):
         fields = [
             'solicitante', 'nombre_documento', 'nombre', 'direccion', 
             'fecha_solicitud', 'fecha_recepcion', 'descripcion', 
-            'documento_solicitud', 'link_solicitud'
+            'link_solicitud'
         ]
         widgets = {
             'solicitante': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del solicitante'}),
@@ -86,7 +86,6 @@ class SolicitudForm(forms.ModelForm):
             'fecha_solicitud': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fecha_recepcion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripción', 'rows': 4}),
-            'documento_solicitud': forms.FileInput(attrs={'class': 'form-control-file'}),
             'link_solicitud': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Enlace al documento'}),
         }
 
@@ -111,7 +110,22 @@ class UserRegistrationForm(forms.ModelForm):
 class TramitacionForm(forms.ModelForm):
     class Meta:
         model = Tramitacion
-        fields = '__all__'
+        fields = [
+            'presupuesto', 'año', 'nombre', 'direccion', 
+            'fecha_solicitud', 'fecha_recepcion', 'nota', 
+            'descripcion', 'link_tramitacion'
+        ]
+        widgets = {
+            'presupuesto': forms.TextInput(attrs={'class': 'form-control'}),
+            'año': forms.NumberInput(attrs={'class': 'form-control'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_solicitud': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_recepcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'nota': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'link_tramitacion': forms.URLInput(attrs={'class': 'form-control'}),
+        }
 
 
 

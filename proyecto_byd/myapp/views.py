@@ -28,6 +28,7 @@ from openpyxl.styles import Font, Border, Side
 from django.db.models import Sum, Q
 from django.contrib import messages
 from decimal import Decimal
+from django.views.decorators.http import require_POST
 
 
 
@@ -158,22 +159,101 @@ def register(request):
 
 
 def analisis(request):
-    # Contar proyectos en diferentes estados
+    from django.db.models import Count, Q
+    from datetime import datetime, timedelta
+    import json
+    
+    # Estadísticas básicas
+    total_proyectos = Proyecto.objects.count()
     proyectos_completados = Proyecto.objects.filter(estado_proyecto='aprobado').count()
     proyectos_no_concretados = Proyecto.objects.filter(estado_proyecto='no_concretado').count()
-    proyectos_obserbados = Proyecto.objects.filter(estado_proyecto='observado').count()
-    ingresado = Proyecto.objects.filter(estado_proyecto='ingresado').count()
+    proyectos_trabajando = Proyecto.objects.filter(estado_proyecto='trabajando').count()
+    proyectos_observados = Proyecto.objects.filter(estado_proyecto='observado').count()
+    proyectos_congelados = Proyecto.objects.filter(estado_proyecto='congelado').count()
     
-    # Contar clientes
-    total_clientes = Proyecto.objects.count()  # Asegúrate de que el modelo Cliente existe
-
+    # Estadísticas por proceso
+    procesos_terminados = Proyecto.objects.filter(proceso='terminado').count()
+    procesos_pendientes = Proyecto.objects.filter(proceso='pendiente').count()
+    procesos_no_aplica = Proyecto.objects.filter(proceso='no aplica').count()
+    
+    # Estadísticas por año
+    proyectos_por_año = Proyecto.objects.values('año').annotate(
+        count=Count('id')
+    ).order_by('año')
+    
+    # Proyectos del último mes
+    fecha_limite = datetime.now() - timedelta(days=30)
+    proyectos_recientes = Proyecto.objects.filter(
+        Q(estado_proyecto='aprobado') | Q(estado_proyecto='trabajando')
+    ).count()
+    
+    # Distribución por estado
+    estados_data = {
+        'Aprobados': proyectos_completados,
+        'No Concretados': proyectos_no_concretados,
+        'Trabajando': proyectos_trabajando,
+        'Observados': proyectos_observados,
+        'Congelados': proyectos_congelados
+    }
+    
+    # Distribución por proceso
+    procesos_data = {
+        'Terminados': procesos_terminados,
+        'Pendientes': procesos_pendientes,
+        'No Aplica': procesos_no_aplica
+    }
+    
+    # Datos para gráficos
+    chart_data = {
+        'estados': {
+            'labels': list(estados_data.keys()),
+            'data': list(estados_data.values()),
+            'colors': ['#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6c757d']
+        },
+        'procesos': {
+            'labels': list(procesos_data.keys()),
+            'data': list(procesos_data.values()),
+            'colors': ['#28a745', '#ffc107', '#6c757d']
+        },
+        'por_año': {
+            'labels': [str(item['año']) for item in proyectos_por_año],
+            'data': [item['count'] for item in proyectos_por_año],
+            'colors': ['#007bff']
+        }
+    }
+    
+    # Calcular porcentajes
+    porcentaje_completados = (proyectos_completados / total_proyectos * 100) if total_proyectos > 0 else 0
+    porcentaje_no_concretados = (proyectos_no_concretados / total_proyectos * 100) if total_proyectos > 0 else 0
+    porcentaje_trabajando = (proyectos_trabajando / total_proyectos * 100) if total_proyectos > 0 else 0
+    
+    # Proyectos más recientes (últimos 5)
+    proyectos_recientes_list = Proyecto.objects.order_by('-id')[:5]
+    
+    # Top 5 años con más proyectos
+    top_años = Proyecto.objects.values('año').annotate(
+        count=Count('id')
+    ).order_by('-count')[:5]
+    
     context = {
+        'total_proyectos': total_proyectos,
         'proyectos_completados': proyectos_completados,
         'proyectos_no_concretados': proyectos_no_concretados,
-        'total_clientes': total_clientes,
-        'proyectos_obserbados': proyectos_obserbados,
-        'ingresado': ingresado,
-
+        'proyectos_trabajando': proyectos_trabajando,
+        'proyectos_observados': proyectos_observados,
+        'proyectos_congelados': proyectos_congelados,
+        'procesos_terminados': procesos_terminados,
+        'procesos_pendientes': procesos_pendientes,
+        'procesos_no_aplica': procesos_no_aplica,
+        'proyectos_recientes': proyectos_recientes,
+        'porcentaje_completados': round(porcentaje_completados, 1),
+        'porcentaje_no_concretados': round(porcentaje_no_concretados, 1),
+        'porcentaje_trabajando': round(porcentaje_trabajando, 1),
+        'proyectos_recientes_list': proyectos_recientes_list,
+        'top_años': top_años,
+        'chart_data': json.dumps(chart_data),
+        'estados_data': estados_data,
+        'procesos_data': procesos_data,
     }
     
     return render(request, 'myapp/analisis.html', context)
@@ -233,6 +313,41 @@ class SolicitudCreateView(CreateView):
     form_class = SolicitudForm
     template_name = 'solicitud/create_solicitud.html'
     success_url = reverse_lazy('solicitud-list')
+    
+    def form_valid(self, form):
+        try:
+            # Save the form
+            self.object = form.save()
+            
+            # Check if it's an AJAX request
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Solicitud creada exitosamente',
+                    'redirect_url': self.success_url
+                })
+            
+            # For non-AJAX requests, redirect
+            return redirect(self.success_url)
+        except Exception as e:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al crear la solicitud: {str(e)}',
+                    'errors': {}
+                })
+            raise
+    
+    def form_invalid(self, form):
+        # Check if it's an AJAX request
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'Error al crear la solicitud',
+                'errors': form.errors
+            })
+        
+        return super().form_invalid(form)
 
 @method_decorator(login_required, name='dispatch')
 class SolicitudUpdateView(UpdateView):
@@ -240,6 +355,41 @@ class SolicitudUpdateView(UpdateView):
     form_class = SolicitudForm
     template_name = 'solicitud/edit_solicitud.html'
     success_url = reverse_lazy('solicitud-list')
+    
+    def form_valid(self, form):
+        try:
+            # Save the form
+            self.object = form.save()
+            
+            # Check if it's an AJAX request
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Solicitud actualizada exitosamente',
+                    'redirect_url': self.success_url
+                })
+            
+            # For non-AJAX requests, redirect
+            return redirect(self.success_url)
+        except Exception as e:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al actualizar la solicitud: {str(e)}',
+                    'errors': {}
+                })
+            raise
+    
+    def form_invalid(self, form):
+        # Check if it's an AJAX request
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'Error al actualizar la solicitud',
+                'errors': form.errors
+            })
+        
+        return super().form_invalid(form)
 
 @method_decorator(login_required, name='dispatch')
 class SolicitudDetailView(DetailView):
@@ -252,6 +402,19 @@ class SolicitudDeleteView(DeleteView):
     model = Solicitud
     template_name = 'solicitud/delete_solicitud.html'
     success_url = reverse_lazy('solicitud-list')
+    
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        
+        # Check if it's an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': 'Solicitud eliminada exitosamente',
+                'redirect_url': self.success_url
+            })
+        
+        return response
 
 
 
@@ -291,6 +454,12 @@ class ContactosListView(ListView):
         total_profesionales = Contactos.objects.filter(tipo='PROFESIONAL').count()  # Cambiado a 'tipo'  
         total_otros = Contactos.objects.filter(tipo='OTROS').count()  # Cambiado a 'tipo'  
 
+        # Debug: imprimir información
+        print(f"DEBUG: Total contactos: {total_contactos}")
+        print(f"DEBUG: Total clientes: {total_clientes}")
+        print(f"DEBUG: Total profesionales: {total_profesionales}")
+        print(f"DEBUG: Total otros: {total_otros}")
+
         # Agregar los contadores al contexto  
         context['total_contactos'] = total_contactos  
         context['total_clientes'] = total_clientes  
@@ -313,6 +482,41 @@ class ContactosCreateView(CreateView):
     template_name = 'contacto/contactos_create.html'
     fields = '__all__'
     success_url = reverse_lazy('contacto-list')  # Redirigir a la lista tras la creación
+    
+    def form_valid(self, form):
+        try:
+            # Save the form
+            self.object = form.save()
+            
+            # Check if it's an AJAX request
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Contacto creado exitosamente',
+                    'redirect_url': self.success_url
+                })
+            
+            # For non-AJAX requests, redirect
+            return redirect(self.success_url)
+        except Exception as e:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al crear el contacto: {str(e)}',
+                    'errors': {}
+                })
+            raise
+    
+    def form_invalid(self, form):
+        # Check if it's an AJAX request
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'Error al crear el contacto',
+                'errors': form.errors
+            })
+        
+        return super().form_invalid(form)
 
 # Vista de actualización (editar)
 @method_decorator(login_required, name='dispatch')
@@ -321,6 +525,41 @@ class ContactosUpdateView(UpdateView):
     template_name = 'contacto/contactos_edit.html'
     fields = '__all__'
     success_url = reverse_lazy('contacto-list')
+    
+    def form_valid(self, form):
+        try:
+            # Save the form
+            self.object = form.save()
+            
+            # Check if it's an AJAX request
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Contacto actualizado exitosamente',
+                    'redirect_url': self.success_url
+                })
+            
+            # For non-AJAX requests, redirect
+            return redirect(self.success_url)
+        except Exception as e:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al actualizar el contacto: {str(e)}',
+                    'errors': {}
+                })
+            raise
+    
+    def form_invalid(self, form):
+        # Check if it's an AJAX request
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'Error al actualizar el contacto',
+                'errors': form.errors
+            })
+        
+        return super().form_invalid(form)
 
 # Vista de eliminación (eliminar)
 @method_decorator(login_required, name='dispatch')
@@ -328,6 +567,19 @@ class ContactosDeleteView(DeleteView):
     model = Contactos
     template_name = 'contacto/contactos_delete.html'
     success_url = reverse_lazy('contacto-list')
+    
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        
+        # Check if it's an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': 'Contacto eliminado exitosamente',
+                'redirect_url': self.success_url
+            })
+        
+        return response
 
 
 ################## Vista de TRAMITACIONES ##########################33
@@ -343,19 +595,31 @@ class TramitacionListView(ListView):
         queryset = super().get_queryset()
         query = self.request.GET.get('q')
         estado = self.request.GET.get('estado')
+        año = self.request.GET.get('año')
+        fecha_desde = self.request.GET.get('fecha_desde')
 
-        # Filtro de búsqueda por profesional y nombre de documento
+        # Filtro de búsqueda general
         if query:
             queryset = queryset.filter(
-                Q(profesional__icontains=query) | 
-                Q(nombre_documento__icontains=query)
+                Q(presupuesto__icontains=query) | 
+                Q(nombre__icontains=query) |
+                Q(direccion__icontains=query) |
+                Q(nota__icontains=query)
             )
+        
+        # Filtro por año
+        if año:
+            queryset = queryset.filter(año=año)
+        
+        # Filtro por fecha desde
+        if fecha_desde:
+            queryset = queryset.filter(fecha_recepcion__gte=fecha_desde)
         
         # Filtro por estado basado en 'fecha_recepcion'
         if estado:
             if estado == "completado":
                 queryset = queryset.filter(fecha_recepcion__isnull=False)
-            elif estado == "sin_fecha":
+            elif estado == "pendiente":
                 queryset = queryset.filter(fecha_recepcion__isnull=True)
 
         return queryset
@@ -370,10 +634,13 @@ class TramitacionListView(ListView):
         # Mantener los parámetros de búsqueda en el contexto
         context['query'] = self.request.GET.get('q', '')
         context['estado'] = self.request.GET.get('estado', '')
+        context['año'] = self.request.GET.get('año', '')
+        context['fecha_desde'] = self.request.GET.get('fecha_desde', '')
 
         return context
 
     
+@method_decorator(login_required, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class TramitacionCreateView(CreateView):
     model = Tramitacion
@@ -381,12 +648,106 @@ class TramitacionCreateView(CreateView):
     template_name = 'tramitacion/create_tramitacion.html'
     success_url = reverse_lazy('tramitacion-list')
 
+    def form_valid(self, form):
+        try:
+            # Guardar la tramitación
+            self.object = form.save()
+            
+            # Verificar si es una solicitud AJAX
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Tramitación creada exitosamente',
+                    'id': self.object.id
+                })
+            
+            # Para solicitudes normales, usar el comportamiento por defecto
+            return super().form_valid(form)
+        except Exception as e:
+            print(f"Error en form_valid (create): {e}")
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al crear la tramitación: {str(e)}'
+                }, status=500)
+            else:
+                raise
+
+    def form_invalid(self, form):
+        try:
+            # Verificar si es una solicitud AJAX
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Error al crear la tramitación. Verifique los datos.',
+                    'errors': form.errors
+                }, status=400)
+            
+            # Para solicitudes normales, usar el comportamiento por defecto
+            return super().form_invalid(form)
+        except Exception as e:
+            print(f"Error en form_invalid (create): {e}")
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al procesar el formulario: {str(e)}'
+                }, status=500)
+            else:
+                raise
+
 @method_decorator(login_required, name='dispatch')
 class TramitacionUpdateView(UpdateView):
     model = Tramitacion
     form_class = TramitacionForm
     template_name = 'tramitacion/edit_tramitacion.html'
     success_url = reverse_lazy('tramitacion-list')
+
+    def form_valid(self, form):
+        try:
+            # Guardar la tramitación
+            self.object = form.save()
+            
+            # Verificar si es una solicitud AJAX
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Tramitación actualizada exitosamente',
+                    'id': self.object.id
+                })
+            
+            # Para solicitudes normales, usar el comportamiento por defecto
+            return super().form_valid(form)
+        except Exception as e:
+            print(f"Error en form_valid: {e}")
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al actualizar la tramitación: {str(e)}'
+                }, status=500)
+            else:
+                raise
+
+    def form_invalid(self, form):
+        try:
+            # Verificar si es una solicitud AJAX
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Error al actualizar la tramitación. Verifique los datos.',
+                    'errors': form.errors
+                }, status=400)
+            
+            # Para solicitudes normales, usar el comportamiento por defecto
+            return super().form_invalid(form)
+        except Exception as e:
+            print(f"Error en form_invalid: {e}")
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al procesar el formulario: {str(e)}'
+                }, status=500)
+            else:
+                raise
 
 @method_decorator(login_required, name='dispatch')
 class TramitacionDetailView(DetailView):
@@ -399,6 +760,39 @@ class TramitacionDeleteView(DeleteView):
     model = Tramitacion
     template_name = 'tramitacion/delete_tramitacion.html'
     success_url = reverse_lazy('tramitacion-list')
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+            
+            # Verificar si es una solicitud AJAX
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                try:
+                    self.object.delete()
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'Tramitación eliminada exitosamente'
+                    })
+                except Exception as e:
+                    print(f"Error al eliminar tramitación: {e}")
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Error al eliminar la tramitación: {str(e)}'
+                    }, status=400)
+            
+            # Para solicitudes normales, usar el comportamiento por defecto
+            return super().delete(request, *args, **kwargs)
+            
+        except Exception as e:
+            print(f"Error general en delete: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al procesar la solicitud: {str(e)}'
+                }, status=500)
+            else:
+                # Para solicitudes normales, re-raise la excepción
+                raise
 
 
 
@@ -493,6 +887,28 @@ class ListadoListView(ListView):
     template_name = 'listado/listado_list.html'
     context_object_name = 'listados'
     ordering = ['-id']  # Orden descendente id
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Obtener todos los listados para estadísticas
+        listados = Listado.objects.all()
+        
+        # Estadísticas
+        context['listados_con_pagos'] = listados.filter(listado__isnull=False).exclude(listado='').count()
+        context['listados_con_drive'] = listados.filter(drive__isnull=False).exclude(drive='').count()
+        
+        # Año actual y listados del año actual
+        from datetime import datetime
+        año_actual = datetime.now().year
+        context['año_actual'] = año_actual
+        context['listados_año_actual'] = listados.filter(año=str(año_actual)).count()
+        
+        # Años disponibles para filtros
+        años_disponibles = listados.values_list('año', flat=True).distinct().order_by('-año')
+        context['años_disponibles'] = años_disponibles
+        
+        return context
 
 # Vista para crear un nuevo objeto
 @method_decorator(login_required, name='dispatch')
@@ -523,6 +939,90 @@ class ListadoDeleteView(DeleteView):
     model = Listado
     template_name = 'listado/listado_delete.html'
     success_url = reverse_lazy('listado_list')
+
+# Vistas AJAX para modales
+@login_required
+def crear_listado_ajax(request):
+    if request.method == 'POST':
+        try:
+            # Crear el listado
+            listado = Listado.objects.create(
+                presupuesto=request.POST.get('presupuesto'),
+                año=request.POST.get('año'),
+                nombre=request.POST.get('nombre'),
+                gestion=request.POST.get('gestion'),
+                nota=request.POST.get('nota'),
+                listado=request.POST.get('listado') or None,
+                drive=request.POST.get('drive') or None
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Listado "{listado.presupuesto}" creado exitosamente',
+                'listado_id': listado.id
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al crear listado: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
+
+@login_required
+def editar_listado_ajax(request, pk):
+    try:
+        listado = Listado.objects.get(pk=pk)
+    except Listado.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Listado no encontrado'})
+    
+    if request.method == 'POST':
+        try:
+            # Actualizar el listado
+            listado.presupuesto = request.POST.get('presupuesto')
+            listado.año = request.POST.get('año')
+            listado.nombre = request.POST.get('nombre')
+            listado.gestion = request.POST.get('gestion')
+            listado.nota = request.POST.get('nota')
+            listado.listado = request.POST.get('listado') or None
+            listado.drive = request.POST.get('drive') or None
+            listado.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Listado "{listado.presupuesto}" actualizado exitosamente'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al actualizar listado: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
+
+@login_required
+def eliminar_listado_ajax(request, pk):
+    try:
+        listado = Listado.objects.get(pk=pk)
+    except Listado.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Listado no encontrado'})
+    
+    if request.method == 'POST':
+        try:
+            presupuesto = listado.presupuesto
+            listado.delete()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Listado "{presupuesto}" eliminado exitosamente'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al eliminar listado: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
 #################################--FIN--######################################################
 
 
@@ -688,6 +1188,12 @@ class EnlaceListView(ListView):
         context['query'] = query
         context['total_enlaces'] = self.get_queryset().count()  # Total de enlaces
         context['current_page_count'] = len(context['enlaces'])  # Enlaces en la página actual
+        
+        # Estadísticas adicionales
+        context['enlaces_con_pdf'] = Enlace.objects.filter(documento_pdf__isnull=False).exclude(documento_pdf='').count()
+        context['enlaces_con_link'] = Enlace.objects.filter(link__isnull=False).exclude(link='').count()
+        context['enlaces_con_avatar'] = Enlace.objects.filter(avatar__isnull=False).exclude(avatar='').count()
+        
         return context
 
 # Vista para crear un nuevo enlace
@@ -710,6 +1216,92 @@ class EnlaceDeleteView(DeleteView):
     template_name = 'enlace/enlace_delete.html'  # Cambia según la ubicación de tu plantilla
     success_url = reverse_lazy('enlace_list')
 
+# Vista para ver detalles de un enlace
+class EnlaceDetailView(DetailView):
+    model = Enlace
+    template_name = 'enlace/enlace_detail.html'
+    context_object_name = 'enlace'
+
+# Vistas AJAX para enlaces
+@login_required
+def crear_enlace_ajax(request):
+    if request.method == 'POST':
+        try:
+            enlace = Enlace.objects.create(
+                titulo=request.POST.get('titulo'),
+                description=request.POST.get('description'),
+                link=request.POST.get('link') or None,
+                documento_pdf=request.FILES.get('documento_pdf'),
+                avatar=request.FILES.get('avatar')
+            )
+            return JsonResponse({
+                'success': True,
+                'message': f'Enlace "{enlace.titulo}" creado exitosamente',
+                'enlace_id': enlace.id
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al crear enlace: {str(e)}'
+            })
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
+
+@login_required
+def editar_enlace_ajax(request, pk):
+    if request.method == 'POST':
+        try:
+            enlace = Enlace.objects.get(pk=pk)
+            enlace.titulo = request.POST.get('titulo')
+            enlace.description = request.POST.get('description')
+            enlace.link = request.POST.get('link') or None
+            
+            # Manejar archivos
+            if 'documento_pdf' in request.FILES:
+                enlace.documento_pdf = request.FILES['documento_pdf']
+            if 'avatar' in request.FILES:
+                enlace.avatar = request.FILES['avatar']
+            
+            enlace.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Enlace "{enlace.titulo}" actualizado exitosamente'
+            })
+        except Enlace.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Enlace no encontrado'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al editar enlace: {str(e)}'
+            })
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
+
+@login_required
+def eliminar_enlace_ajax(request, pk):
+    if request.method == 'POST':
+        try:
+            enlace = Enlace.objects.get(pk=pk)
+            titulo = enlace.titulo
+            enlace.delete()
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Enlace "{titulo}" eliminado exitosamente'
+            })
+        except Enlace.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Enlace no encontrado'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al eliminar enlace: {str(e)}'
+            })
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
 #################################--FIN--######################################################
 
 
@@ -1137,5 +1729,731 @@ def obtener_datos_proyecto(request, proyecto_id):
         return JsonResponse(data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+def actualizar_notas_proyecto(request, proyecto_id):
+    """Vista para actualizar las notas internas de un proyecto via AJAX"""
+    if request.method == 'POST':
+        try:
+            import json
+            proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+            data = json.loads(request.body)
+            notas_internas = data.get('notas_internas', '').strip()
+            
+            proyecto.notas_internas = notas_internas
+            proyecto.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Notas actualizadas exitosamente',
+                'notas_internas': notas_internas
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+
+@login_required
+def buscar_proyectos_ajax(request):
+    """Vista AJAX para buscar proyectos por nombre o correo"""
+    query = request.GET.get('q', '').strip()
+    
+    if not query or len(query) < 2:
+        return JsonResponse({
+            'success': False,
+            'message': 'Debe ingresar al menos 2 caracteres para buscar'
+        })
+    
+    try:
+        # Buscar proyectos que coincidan con nombre o correo
+        proyectos = Proyecto.objects.filter(
+            Q(nombre__icontains=query) | 
+            Q(correo__icontains=query)
+        )[:10]  # Limitar a 10 resultados
+        
+        resultados = []
+        for proyecto in proyectos:
+            resultados.append({
+                'id': proyecto.id,
+                'nombre': proyecto.nombre,
+                'correo': proyecto.correo or '',
+                'telefono': proyecto.telefono or '',
+                'direccion': proyecto.direccion or '',
+                'presupuesto': proyecto.presupuesto or '',
+                'estado': proyecto.estado_proyecto or '',
+                'texto_busqueda': f"{proyecto.nombre} - {proyecto.correo or 'Sin correo'}"
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'resultados': resultados,
+            'total': len(resultados)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al buscar proyectos: {str(e)}'
+        })
+
+@login_required
+def obtener_datos_proyecto_ajax(request, proyecto_id):
+    """Vista AJAX para obtener datos completos de un proyecto"""
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        
+        return JsonResponse({
+            'success': True,
+            'proyecto': {
+                'id': proyecto.id,
+                'nombre': proyecto.nombre,
+                'correo': proyecto.correo or '',
+                'telefono': proyecto.telefono or '',
+                'direccion': proyecto.direccion or '',
+                'presupuesto': proyecto.presupuesto or '',
+                'estado': proyecto.estado_proyecto or '',
+                'descripcion': proyecto.descripcion or '',
+                'año': proyecto.año or '',
+            }
+        })
+        
+    except Proyecto.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Proyecto no encontrado'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener datos del proyecto: {str(e)}'
+        })
+
+@login_required
+def crear_pago_cliente_ajax(request):
+    """Vista AJAX para crear un nuevo PagoCliente"""
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'message': 'Método no permitido'
+        })
+    
+    try:
+        # Obtener datos del formulario
+        proyecto_id = request.POST.get('proyecto_id')
+        cliente_nombre = request.POST.get('cliente_nombre')
+        cliente_telefono = request.POST.get('cliente_telefono', '')
+        cliente_correo = request.POST.get('cliente_correo', '')
+        monto_total = request.POST.get('monto_total')
+        fecha_vencimiento = request.POST.get('fecha_vencimiento', '')
+        descripcion = request.POST.get('descripcion', '')
+        observaciones = request.POST.get('observaciones', '')
+        
+        # Validaciones básicas
+        if not proyecto_id or not cliente_nombre or not monto_total:
+            return JsonResponse({
+                'success': False,
+                'message': 'Faltan campos obligatorios'
+            })
+        
+        # Obtener proyecto
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        
+        # Crear PagoCliente
+        pago_cliente = PagoCliente.objects.create(
+            proyecto=proyecto,
+            cliente_nombre=cliente_nombre,
+            cliente_telefono=cliente_telefono,
+            cliente_correo=cliente_correo,
+            monto_total=int(monto_total),
+            fecha_vencimiento=fecha_vencimiento if fecha_vencimiento else None,
+            descripcion=descripcion,
+            observaciones=observaciones
+        )
+        
+        # Actualizar estado automáticamente
+        pago_cliente.actualizar_estado()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Pago de cliente creado exitosamente',
+            'pago_cliente': {
+                'id': pago_cliente.id,
+                'cliente_nombre': pago_cliente.cliente_nombre,
+                'monto_total': pago_cliente.monto_total,
+                'monto_pagado': pago_cliente.monto_pagado,
+                'monto_pendiente': pago_cliente.monto_pendiente,
+                'estado_pago': pago_cliente.estado_pago,
+                'fecha_creacion': pago_cliente.fecha_creacion.strftime('%d/%m/%Y'),
+                'porcentaje_pagado': pago_cliente.porcentaje_pagado
+            }
+        })
+        
+    except ValueError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error en el formato de datos: {str(e)}'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al crear pago de cliente: {str(e)}'
+        })
+
+@login_required
+def crear_detalle_pago_ajax(request):
+    """Vista AJAX para crear un nuevo DetallePago"""
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'message': 'Método no permitido'
+        })
+    
+    try:
+        # Obtener datos del formulario
+        pago_cliente_id = request.POST.get('pago_cliente_id')
+        fecha_pago = request.POST.get('fecha_pago')
+        monto_pago = request.POST.get('monto_pago')
+        forma_pago = request.POST.get('forma_pago')
+        numero_referencia = request.POST.get('numero_referencia', '')
+        notas = request.POST.get('notas', '')
+        
+        print(f"DEBUG - Datos recibidos: pago_cliente_id={pago_cliente_id}, fecha_pago={fecha_pago}, monto_pago={monto_pago}, forma_pago={forma_pago}")
+        
+        # Validaciones básicas
+        if not pago_cliente_id or not fecha_pago or not monto_pago or not forma_pago:
+            print(f"DEBUG - Faltan campos: pago_cliente_id={bool(pago_cliente_id)}, fecha_pago={bool(fecha_pago)}, monto_pago={bool(monto_pago)}, forma_pago={bool(forma_pago)}")
+            return JsonResponse({
+                'success': False,
+                'message': 'Faltan campos obligatorios'
+            })
+        
+        # Obtener PagoCliente
+        pago_cliente = get_object_or_404(PagoCliente, id=pago_cliente_id)
+        
+        # Validar formato de fecha
+        try:
+            from datetime import datetime
+            fecha_pago_obj = datetime.strptime(fecha_pago, '%Y-%m-%d').date()
+        except ValueError:
+            return JsonResponse({
+                'success': False,
+                'message': f'Formato de fecha inválido: {fecha_pago}. Use formato YYYY-MM-DD'
+            })
+        
+        # Procesar monto_pago - puede venir con formato (ej: "80.000")
+        try:
+            # Remover puntos y comas, luego convertir a float y luego a int
+            monto_limpio = monto_pago.replace('.', '').replace(',', '')
+            monto_pago_int = int(float(monto_limpio))
+        except (ValueError, AttributeError):
+            return JsonResponse({
+                'success': False,
+                'message': f'Formato de monto inválido: {monto_pago}. Use números sin formato (ej: 80000)'
+            })
+        
+        # Validar que no se exceda el monto total
+        if pago_cliente.monto_pagado + monto_pago_int > pago_cliente.monto_total:
+            return JsonResponse({
+                'success': False,
+                'message': f'El monto excede el total pendiente (${pago_cliente.monto_pendiente:,})'
+            })
+        
+        # Manejar archivo si se subió
+        comprobante_pago = None
+        if 'comprobante_pago' in request.FILES:
+            comprobante_pago = request.FILES['comprobante_pago']
+        
+        # Crear DetallePago
+        detalle_pago = DetallePago.objects.create(
+            pago_cliente=pago_cliente,
+            fecha_pago=fecha_pago_obj,  # Usar el objeto date validado
+            monto_pago=monto_pago_int,
+            forma_pago=forma_pago,
+            numero_referencia=numero_referencia,
+            comprobante_pago=comprobante_pago,
+            notas=notas,
+            registrado_por=request.user
+        )
+        
+        # El modelo DetallePago ya actualiza automáticamente el monto_pagado en PagoCliente
+        # Solo necesitamos refrescar el objeto para obtener los valores actualizados
+        pago_cliente.refresh_from_db()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Pago registrado exitosamente',
+            'detalle_pago': {
+                'id': detalle_pago.id,
+                'fecha_pago': detalle_pago.fecha_pago.strftime('%d/%m/%Y'),
+                'monto_pago': detalle_pago.monto_pago,
+                'monto_pago_formateado': detalle_pago.monto_pago_formateado,
+                'forma_pago': detalle_pago.get_forma_pago_display(),
+                'numero_referencia': detalle_pago.numero_referencia or '',
+                'notas': detalle_pago.notas or '',
+                'fecha_registro': detalle_pago.fecha_registro.strftime('%d/%m/%Y %H:%M')
+            },
+            'pago_cliente_actualizado': {
+                'monto_pagado': pago_cliente.monto_pagado,
+                'monto_pendiente': pago_cliente.monto_pendiente,
+                'estado_pago': pago_cliente.estado_pago,
+                'porcentaje_pagado': pago_cliente.porcentaje_pagado
+            }
+        })
+        
+    except ValueError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error en el formato de datos: {str(e)}'
+        })
+    except Exception as e:
+        import traceback
+        print(f"Error completo: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al registrar pago: {str(e)}'
+        })
+
+@login_required
+def obtener_historial_pagos_ajax(request, proyecto_id):
+    """Vista AJAX para obtener historial de pagos de un proyecto"""
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        pagos_cliente = PagoCliente.objects.filter(proyecto=proyecto).order_by('-fecha_creacion')
+        
+        historial = []
+        for pago in pagos_cliente:
+            detalles = []
+            for detalle in pago.detalles_pago.all():
+                detalles.append({
+                    'fecha_pago': detalle.fecha_pago.strftime('%d/%m/%Y'),
+                    'monto_pago': detalle.monto_pago_formateado,
+                    'forma_pago': detalle.get_forma_pago_display(),
+                    'numero_referencia': detalle.numero_referencia or '',
+                    'notas': detalle.notas or '',
+                    'fecha_registro': detalle.fecha_registro.strftime('%d/%m/%Y %H:%M')
+                })
+            
+            historial.append({
+                'id': pago.id,
+                'cliente_nombre': pago.cliente_nombre,
+                'monto_total': pago.monto_total_formateado,
+                'monto_pagado': pago.monto_pagado_formateado,
+                'monto_pendiente': pago.monto_pendiente_formateado,
+                'estado_pago': pago.get_estado_pago_display(),
+                'porcentaje_pagado': pago.porcentaje_pagado,
+                'fecha_creacion': pago.fecha_creacion.strftime('%d/%m/%Y'),
+                'fecha_vencimiento': pago.fecha_vencimiento.strftime('%d/%m/%Y') if pago.fecha_vencimiento else '',
+                'descripcion': pago.descripcion or '',
+                'observaciones': pago.observaciones or '',
+                'detalles': detalles
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'proyecto': {
+                'nombre': proyecto.nombre,
+                'correo': proyecto.correo or '',
+                'telefono': proyecto.telefono or ''
+            },
+            'historial': historial,
+            'total_pagos': len(historial)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener historial: {str(e)}'
+        })
+
+@login_required
+def obtener_pagos_clientes_ajax(request):
+    """Vista AJAX para obtener todos los pagos de clientes"""
+    try:
+        pagos_clientes = PagoCliente.objects.select_related('proyecto').prefetch_related('detalles_pago').order_by('-fecha_creacion')
+        
+        pagos_data = []
+        for pago in pagos_clientes:
+            pagos_data.append({
+                'id': pago.id,
+                'cliente_nombre': pago.cliente_nombre,
+                'monto_total': pago.monto_total,
+                'monto_pagado': pago.monto_pagado,
+                'monto_pendiente': pago.monto_pendiente,
+                'monto_total_formateado': pago.monto_total_formateado,
+                'monto_pagado_formateado': pago.monto_pagado_formateado,
+                'monto_pendiente_formateado': pago.monto_pendiente_formateado,
+                'estado_pago': pago.get_estado_pago_display(),
+                'porcentaje_pagado': pago.porcentaje_pagado,
+                'fecha_creacion': pago.fecha_creacion.strftime('%d/%m/%Y'),
+                'fecha_vencimiento': pago.fecha_vencimiento.strftime('%d/%m/%Y') if pago.fecha_vencimiento else '',
+                'descripcion': pago.descripcion or '',
+                'observaciones': pago.observaciones or '',
+                'proyecto': {
+                    'id': pago.proyecto.id,
+                    'nombre': pago.proyecto.nombre,
+                    'correo': pago.proyecto.correo or '',
+                    'telefono': pago.proyecto.telefono or '',
+                    'presupuesto': pago.proyecto.presupuesto or '',
+                    'año': pago.proyecto.año
+                } if pago.proyecto else None
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'pagos_clientes': pagos_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener pagos de clientes: {str(e)}'
+        })
+
+@login_required
+def obtener_info_pago_cliente_ajax(request, pago_cliente_id):
+    """Vista AJAX para obtener información de un pago de cliente específico"""
+    try:
+        pago_cliente = get_object_or_404(PagoCliente, id=pago_cliente_id)
+        
+        return JsonResponse({
+            'success': True,
+            'pago_cliente': {
+                'id': pago_cliente.id,
+                'cliente_nombre': pago_cliente.cliente_nombre,
+                'monto_total': pago_cliente.monto_total,
+                'monto_pagado': pago_cliente.monto_pagado,
+                'monto_pendiente': pago_cliente.monto_pendiente,
+                'monto_total_formateado': pago_cliente.monto_total_formateado,
+                'monto_pagado_formateado': pago_cliente.monto_pagado_formateado,
+                'monto_pendiente_formateado': pago_cliente.monto_pendiente_formateado,
+                'estado_pago': pago_cliente.get_estado_pago_display(),
+                'porcentaje_pagado': pago_cliente.porcentaje_pagado,
+                'fecha_creacion': pago_cliente.fecha_creacion.strftime('%d/%m/%Y'),
+                'fecha_vencimiento': pago_cliente.fecha_vencimiento.strftime('%d/%m/%Y') if pago_cliente.fecha_vencimiento else '',
+                'descripcion': pago_cliente.descripcion or '',
+                'observaciones': pago_cliente.observaciones or ''
+            }
+        })
+        
+    except PagoCliente.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Pago de cliente no encontrado'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener información del pago: {str(e)}'
+        })
+
+@login_required
+def obtener_detalles_pago_cliente_ajax(request, pago_cliente_id):
+    """Vista AJAX para obtener detalles de un pago de cliente"""
+    try:
+        pago_cliente = get_object_or_404(PagoCliente, id=pago_cliente_id)
+        detalles_pago = pago_cliente.detalles_pago.all().order_by('-fecha_pago')
+        
+        detalles_data = []
+        for detalle in detalles_pago:
+            detalles_data.append({
+                'id': detalle.id,
+                'fecha_pago': detalle.fecha_pago.strftime('%d/%m/%Y'),
+                'monto_pago': detalle.monto_pago,
+                'monto_pago_formateado': detalle.monto_pago_formateado,
+                'forma_pago': detalle.get_forma_pago_display(),
+                'numero_referencia': detalle.numero_referencia or '',
+                'notas': detalle.notas or '',
+                'fecha_registro': detalle.fecha_registro.strftime('%d/%m/%Y %H:%M'),
+                'comprobante_pago': detalle.comprobante_pago.url if detalle.comprobante_pago else ''
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'pago_cliente': {
+                'id': pago_cliente.id,
+                'cliente_nombre': pago_cliente.cliente_nombre,
+                'monto_total': pago_cliente.monto_total,
+                'monto_pagado': pago_cliente.monto_pagado,
+                'monto_pendiente': pago_cliente.monto_pendiente,
+                'monto_total_formateado': pago_cliente.monto_total_formateado,
+                'monto_pagado_formateado': pago_cliente.monto_pagado_formateado,
+                'monto_pendiente_formateado': pago_cliente.monto_pendiente_formateado,
+                'estado_pago': pago_cliente.get_estado_pago_display(),
+                'porcentaje_pagado': pago_cliente.porcentaje_pagado,
+                'fecha_creacion': pago_cliente.fecha_creacion.strftime('%d/%m/%Y'),
+                'fecha_vencimiento': pago_cliente.fecha_vencimiento.strftime('%d/%m/%Y') if pago_cliente.fecha_vencimiento else '',
+                'descripcion': pago_cliente.descripcion or '',
+                'observaciones': pago_cliente.observaciones or ''
+            },
+            'detalles_pago': detalles_data
+        })
+        
+    except PagoCliente.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Pago de cliente no encontrado'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener detalles del pago: {str(e)}'
+        })
+
+@login_required
+def sistema_pagos_view(request):
+    """Vista principal del sistema de pagos dinámico"""
+    # Obtener años disponibles de los proyectos
+    años_disponibles = Proyecto.objects.exclude(año__isnull=True).values_list('año', flat=True).distinct().order_by('-año')
+    
+    context = {
+        'años_disponibles': años_disponibles
+    }
+    
+    return render(request, 'pagos_cliente/sistema_pagos.html', context)
+
+@login_required
+def obtener_proyectos_con_pagos_ajax(request):
+    """Vista AJAX para obtener todos los proyectos con información de pagos"""
+    try:
+        proyectos = Proyecto.objects.all().order_by('-id')
+        
+        proyectos_data = []
+        for proyecto in proyectos:
+            # Obtener información de pagos del proyecto
+            pagos_cliente = PagoCliente.objects.filter(proyecto=proyecto).order_by('-fecha_creacion')
+            
+            pagos_info = None
+            if pagos_cliente.exists():
+                # Tomar el pago más reciente para mostrar en la tabla
+                pago_principal = pagos_cliente.first()
+                pago_principal.actualizar_estado()
+                
+                # Usar los valores del PagoCliente principal
+                total_pagado = pago_principal.monto_pagado
+                total_pendiente = pago_principal.monto_pendiente
+                total_total = pago_principal.monto_total
+                
+                # Obtener último pago registrado
+                ultimo_detalle = DetallePago.objects.filter(
+                    pago_cliente__proyecto=proyecto
+                ).order_by('-fecha_pago').first()
+                
+                pagos_info = {
+                    'monto_total': total_total,
+                    'monto_pagado': total_pagado,
+                    'monto_pendiente': total_pendiente,
+                    'monto_total_formateado': f"${total_total:,}",
+                    'monto_pagado_formateado': f"${total_pagado:,}",
+                    'monto_pendiente_formateado': f"${total_pendiente:,}",
+                    'porcentaje_pagado': round((total_pagado / total_total) * 100) if total_total > 0 else 0,
+                    'ultimo_pago': ultimo_detalle.fecha_pago.strftime('%d/%m/%Y') if ultimo_detalle else None,
+                    'estado_pago': pago_principal.estado_pago
+                }
+            
+            proyectos_data.append({
+                'id': proyecto.id,
+                'nombre': proyecto.nombre,
+                'correo': proyecto.correo,
+                'telefono': proyecto.telefono,
+                'presupuesto': proyecto.presupuesto,
+                'estado_proyecto': proyecto.estado_proyecto,
+                'año': proyecto.año,
+                'descripcion': proyecto.descripcion,
+                'pagos_info': pagos_info
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'proyectos': proyectos_data
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener proyectos: {str(e)}'
+        })
+
+@login_required
+def obtener_info_proyecto_completa_ajax(request, proyecto_id):
+    """Vista AJAX para obtener información completa de un proyecto"""
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        pago_cliente = PagoCliente.objects.filter(proyecto=proyecto).first()
+        
+        proyecto_data = {
+            'id': proyecto.id,
+            'nombre': proyecto.nombre,
+            'correo': proyecto.correo or '',
+            'telefono': proyecto.telefono or '',
+            'presupuesto': proyecto.presupuesto or '',
+            'estado_proyecto': proyecto.estado_proyecto or '',
+            'año': proyecto.año,
+            'descripcion': proyecto.descripcion or ''
+        }
+        
+        pago_cliente_data = None
+        if pago_cliente:
+            pago_cliente.actualizar_estado()
+            pago_cliente_data = {
+                'id': pago_cliente.id,
+                'cliente_nombre': pago_cliente.cliente_nombre,
+                'monto_total': pago_cliente.monto_total,
+                'monto_pagado': pago_cliente.monto_pagado,
+                'monto_pendiente': pago_cliente.monto_pendiente,
+                'monto_total_formateado': pago_cliente.monto_total_formateado,
+                'monto_pagado_formateado': pago_cliente.monto_pagado_formateado,
+                'monto_pendiente_formateado': pago_cliente.monto_pendiente_formateado,
+                'estado_pago': pago_cliente.get_estado_pago_display(),
+                'porcentaje_pagado': pago_cliente.porcentaje_pagado
+            }
+        
+        return JsonResponse({
+            'success': True,
+            'proyecto': proyecto_data,
+            'pago_cliente': pago_cliente_data
+        })
+        
+    except Proyecto.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Proyecto no encontrado'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener información del proyecto: {str(e)}'
+        })
+
+@login_required
+def obtener_detalles_proyecto_completos_ajax(request, proyecto_id):
+    """Vista AJAX para obtener detalles completos de un proyecto con todos sus pagos"""
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        pagos_cliente = PagoCliente.objects.filter(proyecto=proyecto).order_by('-fecha_creacion')
+        
+        proyecto_data = {
+            'id': proyecto.id,
+            'nombre': proyecto.nombre,
+            'correo': proyecto.correo or '',
+            'telefono': proyecto.telefono or '',
+            'presupuesto': proyecto.presupuesto or '',
+            'estado_proyecto': proyecto.estado_proyecto or '',
+            'año': proyecto.año,
+            'descripcion': proyecto.descripcion or ''
+        }
+        
+        pagos_data = []
+        for pago in pagos_cliente:
+            pago.actualizar_estado()
+            detalles = []
+            
+            for detalle in pago.detalles_pago.all():
+                detalles.append({
+                    'fecha_pago': detalle.fecha_pago.strftime('%d/%m/%Y'),
+                    'monto_pago': detalle.monto_pago_formateado,
+                    'forma_pago': detalle.get_forma_pago_display(),
+                    'numero_referencia': detalle.numero_referencia or '',
+                    'notas': detalle.notas or '',
+                    'fecha_registro': detalle.fecha_registro.strftime('%d/%m/%Y %H:%M')
+                })
+            
+            pagos_data.append({
+                'id': pago.id,
+                'cliente_nombre': pago.cliente_nombre,
+                'monto_total': pago.monto_total,
+                'monto_pagado': pago.monto_pagado,
+                'monto_pendiente': pago.monto_pendiente,
+                'monto_total_formateado': pago.monto_total_formateado,
+                'monto_pagado_formateado': pago.monto_pagado_formateado,
+                'monto_pendiente_formateado': pago.monto_pendiente_formateado,
+                'estado_pago': pago.get_estado_pago_display(),
+                'porcentaje_pagado': pago.porcentaje_pagado,
+                'fecha_creacion': pago.fecha_creacion.strftime('%d/%m/%Y'),
+                'fecha_vencimiento': pago.fecha_vencimiento.strftime('%d/%m/%Y') if pago.fecha_vencimiento else '',
+                'descripcion': pago.descripcion or '',
+                'observaciones': pago.observaciones or '',
+                'detalles': detalles
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'proyecto': proyecto_data,
+            'pagos_cliente': pagos_data
+        })
+        
+    except Proyecto.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Proyecto no encontrado'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al obtener detalles del proyecto: {str(e)}'
+        })
+
+@login_required
+@require_POST
+def establecer_monto_total_ajax(request):
+    proyecto_id = request.POST.get('proyecto_id')
+    monto_total = request.POST.get('monto_total')
+    descripcion = request.POST.get('descripcion', '')
+    if not proyecto_id or not monto_total:
+        return JsonResponse({'success': False, 'message': 'Datos incompletos.'})
+    try:
+        proyecto = Proyecto.objects.get(id=proyecto_id)
+        if PagoCliente.objects.filter(proyecto=proyecto).exists():
+            return JsonResponse({'success': False, 'message': 'Este proyecto ya tiene un monto total asignado.'})
+        pago_cliente = PagoCliente.objects.create(
+            proyecto=proyecto,
+            cliente_nombre=proyecto.nombre,
+            monto_total=monto_total,
+            descripcion=descripcion or 'Monto total inicial',
+            estado_pago='pendiente',
+        )
+        pago_cliente.actualizar_estado()
+        return JsonResponse({'success': True, 'pago_cliente': {
+            'id': pago_cliente.id,
+            'monto_total': pago_cliente.monto_total,
+        }})
+    except Proyecto.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Proyecto no encontrado.'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
+@login_required
+def recalcular_montos_pagados(request):
+    """Función para recalcular todos los montos pagados en caso de inconsistencias"""
+    try:
+        pagos_clientes = PagoCliente.objects.all()
+        actualizados = 0
+        
+        for pago_cliente in pagos_clientes:
+            # Calcular el monto pagado real sumando todos los detalles
+            monto_pagado_real = pago_cliente.detalles_pago.aggregate(
+                total=models.Sum('monto_pago')
+            )['total'] or 0
+            
+            # Actualizar si hay diferencia
+            if pago_cliente.monto_pagado != monto_pagado_real:
+                pago_cliente.monto_pagado = monto_pagado_real
+                pago_cliente.actualizar_estado()
+                pago_cliente.save()
+                actualizados += 1
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Se actualizaron {actualizados} registros de pagos de cliente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al recalcular montos: {str(e)}'
+        })
 
 

@@ -3,58 +3,122 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4 text-center text-primary fw-bold">Crear Nuevo Enlace</h1>
-    <div class="card shadow-lg mx-auto" style="max-width: 500px; border-radius: 20px; border: 1px solid #ddd;">
-        <div class="card-body p-4">
-            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label for="id_titulo" class="form-label">
-                        <i class="fas fa-heading text-primary"></i> Título
-                    </label>
-                    {{ form.titulo|add_class:"form-control"}}
+<div class="container-fluid px-4 py-5">
+    <!-- Header Moderno -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-0 text-primary fw-bold">
+                        <i class="fas fa-plus-circle me-2"></i>Crear Nuevo Enlace
+                    </h1>
+                    <p class="text-muted mb-0">Agrega un nuevo enlace o documento a tu colección</p>
                 </div>
-                
-                <div class="mb-3">
-                    <label for="id_description" class="form-label">
-                        <i class="fas fa-align-left text-success"></i> Descripción
-                    </label>
-                    {{ form.description|add_class:"form-control" }}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_link" class="form-label">
-                        <i class="fas fa-link text-info"></i> Enlace
-                    </label>
-                    {{ form.link|add_class:"form-control" }}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_documento_pdf" class="form-label">
-                        <i class="fas fa-file-pdf text-danger"></i> Subir Documento PDF
-                    </label>
-                    {{ form.documento_pdf|add_class:"form-control" }}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_avatar" class="form-label">
-                        <i class="fas fa-user-circle text-secondary"></i> Subir Avatar (Opcional)
-                    </label>
-                    {{ form.avatar|add_class:"form-control" }}
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check-circle"></i> Crear
-                    </button>
-                    <a href="{% url 'enlace_list' %}" class="btn btn-secondary">
-                        <i class="fas fa-times-circle"></i> Cancelar
+                <div class="d-flex gap-2">
+                    <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
                     </a>
                 </div>
-            </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-link me-2"></i>Información del Enlace
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="id_titulo" class="form-label">
+                                        <i class="fas fa-heading text-primary me-2"></i>Título *
+                                    </label>
+                                    {{ form.titulo|add_class:"form-control" }}
+                                    <div class="form-text">Nombre descriptivo para el enlace</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="id_link" class="form-label">
+                                        <i class="fas fa-link text-info me-2"></i>Enlace
+                                    </label>
+                                    {{ form.link|add_class:"form-control" }}
+                                    <div class="form-text">URL del enlace (opcional)</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">
+                                <i class="fas fa-align-left text-success me-2"></i>Descripción
+                            </label>
+                            {{ form.description|add_class:"form-control" }}
+                            <div class="form-text">Describe el contenido o propósito del enlace</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_documento_pdf" class="form-label">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>Documento PDF
+                                    </label>
+                                    {{ form.documento_pdf|add_class:"form-control" }}
+                                    <div class="form-text">Sube un archivo PDF (opcional)</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_avatar" class="form-label">
+                                        <i class="fas fa-user-circle text-secondary me-2"></i>Avatar
+                                    </label>
+                                    {{ form.avatar|add_class:"form-control" }}
+                                    <div class="form-text">Imagen representativa (opcional)</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center pt-3">
+                            <a href="{% url 'enlace_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Crear Enlace
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+.card {
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+</style>
 {% endblock %}

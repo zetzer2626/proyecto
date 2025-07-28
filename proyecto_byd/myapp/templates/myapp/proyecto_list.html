@@ -6,405 +6,2449 @@
 {% block content %}
 <div class="container-fluid py-4">
 
-    <h2 class="text-center mb-4 text-primary fw-bold">Gestión de Proyectos</h2>
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Gestión de Proyectos</h1>
+                    <p class="text-muted mb-0">Administra y supervisa todos los proyectos del sistema</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#nuevoProyectoModal">
+                        <i class="fas fa-plus"></i>
+                        <span>Nuevo Proyecto</span>
+                    </button>
+                    <a href="{% url 'exportar_excel' %}" class="btn btn-outline-success d-flex align-items-center gap-2">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Exportar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- Tarjetas de Resumen (más compactas) -->
+    <!-- Statistics Cards -->
     <div class="row g-3 mb-4">
         <!-- Total Proyectos -->
         <div class="col-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="totalProyectos">
-                <div class="card-body d-flex align-items-center p-3">
-                    <div class="me-2">
-                        <i class="bi bi-collection-fill fa-2x text-primary"></i>
-                    </div>
-                    <div>
-                        <h6 id="totalProyectos" class="text-primary fw-bold mb-1">Total</h6>
-                        <p class="h4 mb-0 text-primary">{{ total_proyectos }}</p>
-                        <small class="text-muted">Proyectos</small>
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-folder-open text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Total</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ total_proyectos }}</h3>
+                            <small class="text-white">Proyectos</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
         <!-- Proyectos Aprobados -->
         <div class="col-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosAprobados">
-                <div class="card-body d-flex align-items-center p-3">
-                    <div class="me-2">
-                        <i class="bi bi-check-circle-fill fa-2x text-success"></i>
-                    </div>
-                    <div>
-                        <h6 id="proyectosAprobados" class="text-success fw-bold mb-1">Aprobados</h6>
-                        <p class="h4 mb-0 text-success">{{ total_aprobados }}</p>
-                        <small class="text-muted">Proyectos</small>
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-trophy text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Aprobados</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ total_aprobados }}</h3>
+                            <small class="text-white">Proyectos</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
         <!-- Proyectos No Concretados -->
         <div class="col-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosNoConcretados">
-                <div class="card-body d-flex align-items-center p-3">
-                    <div class="me-2">
-                        <i class="bi bi-x-circle-fill fa-2x text-danger"></i>
-                    </div>
-                    <div>
-                        <h6 id="proyectosNoConcretados" class="text-danger fw-bold mb-1">No Concretados</h6>
-                        <p class="h4 mb-0 text-danger">{{ total_no_concretados }}</p>
-                        <small class="text-muted">Proyectos</small>
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-circle-pause text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">No Concretados</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ total_no_concretados }}</h3>
+                            <small class="text-white">Proyectos</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
         <!-- Proyectos Trabajando -->
         <div class="col-6 col-md-3">
-            <div class="card shadow-sm border-0 h-100" aria-labelledby="proyectosTrabajando">
-                <div class="card-body d-flex align-items-center p-3">
-                    <div class="me-2">
-                        <i class="bi bi-gear-fill fa-2x text-warning"></i>
-                    </div>
-                    <div>
-                        <h6 id="proyectosTrabajando" class="text-warning fw-bold mb-1">Trabajando</h6>
-                        <p class="h4 mb-0 text-warning">{{ total_trabajando }}</p>
-                        <small class="text-muted">En desarrollo</small>
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                                <i class="fa-solid fa-hammer text-white fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-white mb-1 fw-semibold">Trabajando</h6>
+                            <h3 class="text-white mb-0 fw-bold">{{ total_trabajando }}</h3>
+                            <small class="text-white">En desarrollo</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-   <!-- Formulario de Búsqueda y Filtros (más compacto) -->
-<div class="bg-white bg-opacity-90 rounded-3 shadow-lg p-3 mb-4">
-    <form method="get" class="row gy-2 gx-3 align-items-end">
-        <!-- Campo de búsqueda -->
-        <div class="col-lg-3 col-md-4">
-            <label for="search" class="form-label fw-bold small">Buscar</label>
-            <input 
-                type="text" 
-                id="search" 
-                name="q" 
-                class="form-control form-control-sm border-primary" 
-                placeholder="Nombre, proyecto, dirección..." 
-                value="{{ request.GET.q }}">
-        </div>
+    <!-- Search and Filters Section -->
+    <div class="filters-container mb-4">
+        <div class="filters-card">
+            <div class="filters-header">
+                <div class="filters-title">
+                    <button id="btnToggleFilters" class="btn btn-link text-dark p-0 me-2" style="border: none; background: none;">
+                        <i class="fas fa-chevron-down" id="iconToggleFilters"></i>
+                    </button>
+                    <div class="title-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <div class="title-content">
+                        <h4 class="title-text">Filtros de Búsqueda</h4>
+                        <p class="title-subtitle">Refina tus resultados con filtros avanzados</p>
+                    </div>
+                </div>
+                <div class="filters-actions">
+                    <div class="active-filters">
+                        <span class="filter-count">3</span>
+                        <span class="filter-status-label">filtros activos</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filters-body" id="filtersBody" style="display: none;">
+                <form method="get" class="filters-form">
+                    {% csrf_token %}
+                    <div class="filters-grid">
+                        <!-- Campo de búsqueda principal -->
+                        <div class="filter-item search-filter">
+                            <div class="filter-input-wrapper">
+                                <div class="input-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    id="search" 
+                                    name="q" 
+                                    class="filter-input search-input" 
+                                    placeholder="Buscar proyectos, clientes, direcciones..." 
+                                    value="{{ request.GET.q }}">
+                                <div class="input-focus-border"></div>
+                            </div>
+                        </div>
 
-        <!-- Filtro por estado del proyecto -->
-        <div class="col-lg-2 col-md-4">
-            <label for="estado" class="form-label fw-bold small">Estado</label>
-            <select id="estado" name="estado" class="form-select form-select-sm border-primary">
-                <option value="">Todos los Estados</option>
-                <option value="no_concretado" {% if request.GET.estado == 'no_concretado' %}selected{% endif %}>No Concretado</option>
-                <option value="trabajando" {% if request.GET.estado == 'trabajando' %}selected{% endif %}>Trabajar en Proyecto</option>
-                <option value="ingreso_dom" {% if request.GET.estado == 'ingreso_dom' %}selected{% endif %}>Ingresado DOM</option>
-                <option value="ingresado_sag" {% if request.GET.estado == 'ingresado_sag' %}selected{% endif %}>Ingresado SAG</option>
-                <option value="ingresado_minvu" {% if request.GET.estado == 'ingresado_minvu' %}selected{% endif %}>Ingresado Minvu</option>
-                <option value="ingresado_monumento" {% if request.GET.estado == 'ingresado_monumento' %}selected{% endif %}>Ingresado Monumento</option>
-                <option value="observado" {% if request.GET.estado == 'observado' %}selected{% endif %}>Ingresado Observado</option>
-                <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Ingresado Rechazado</option>
-                <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
-                <option value="realizado" {% if request.GET.estado == 'realizado' %}selected{% endif %}>Realizado</option>
-                <option value="congelado" {% if request.GET.estado == 'congelado' %}selected{% endif %}>Congelado</option>
-            </select>
-        </div>
+                        <!-- Filtro por estado -->
+                        <div class="filter-item">
+                            <label class="filter-label">Estado del Proyecto</label>
+                            <div class="filter-input-wrapper">
+                                <div class="input-icon">
+                                    <i class="fas fa-flag"></i>
+                                </div>
+                                <select id="estado" name="estado" class="filter-input">
+                                    <option value="">Seleccionar estado</option>
+                                    <option value="no_concretado" {% if request.GET.estado == 'no_concretado' %}selected{% endif %}>No Concretado</option>
+                                    <option value="trabajando" {% if request.GET.estado == 'trabajando' %}selected{% endif %}>Trabajar en Proyecto</option>
+                                    <option value="ingreso_dom" {% if request.GET.estado == 'ingreso_dom' %}selected{% endif %}>Ingresado DOM</option>
+                                    <option value="ingresado_sag" {% if request.GET.estado == 'ingresado_sag' %}selected{% endif %}>Ingresado SAG</option>
+                                    <option value="ingresado_minvu" {% if request.GET.estado == 'ingresado_minvu' %}selected{% endif %}>Ingresado Minvu</option>
+                                    <option value="ingresado_monumento" {% if request.GET.estado == 'ingresado_monumento' %}selected{% endif %}>Ingresado Monumento</option>
+                                    <option value="observado" {% if request.GET.estado == 'observado' %}selected{% endif %}>Ingresado Observado</option>
+                                    <option value="rechazado" {% if request.GET.estado == 'rechazado' %}selected{% endif %}>Ingresado Rechazado</option>
+                                    <option value="aprobado" {% if request.GET.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
+                                    <option value="realizado" {% if request.GET.estado == 'realizado' %}selected{% endif %}>Realizado</option>
+                                    <option value="congelado" {% if request.GET.estado == 'congelado' %}selected{% endif %}>Congelado</option>
+                                </select>
+                                <div class="input-focus-border"></div>
+                            </div>
+                        </div>
 
-        <!-- Filtro por proceso -->
-        <div class="col-lg-2 col-md-4">
-            <label for="proceso" class="form-label fw-bold small">Proceso</label>
-            <select id="proceso" name="proceso" class="form-select form-select-sm border-success">
-                <option value="">Todos los Procesos</option>
-                <option value="terminado" {% if request.GET.proceso == 'terminado' %}selected{% endif %}>Terminado</option>
-                <option value="no aplica" {% if request.GET.proceso == 'no aplica' %}selected{% endif %}>No Aplica</option>
-                <option value="pendiente" {% if request.GET.proceso == 'pendiente' %}selected{% endif %}>Pendiente</option>
-            </select>
-        </div>
+                        <!-- Filtro por proceso -->
+                        <div class="filter-item">
+                            <label class="filter-label">Proceso</label>
+                            <div class="filter-input-wrapper">
+                                <div class="input-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <select id="proceso" name="proceso" class="filter-input">
+                                    <option value="">Seleccionar proceso</option>
+                                    <option value="terminado" {% if request.GET.proceso == 'terminado' %}selected{% endif %}>Terminado</option>
+                                    <option value="no aplica" {% if request.GET.proceso == 'no aplica' %}selected{% endif %}>No Aplica</option>
+                                    <option value="pendiente" {% if request.GET.proceso == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                </select>
+                                <div class="input-focus-border"></div>
+                            </div>
+                        </div>
 
-        <!-- Filtro por año -->
-        <div class="col-lg-1 col-md-3">
-            <label for="año" class="form-label fw-bold small">Año</label>
-            <input 
-                type="number" 
-                id="año" 
-                name="año" 
-                class="form-control form-control-sm border-warning" 
-                placeholder="Año" 
-                value="{{ request.GET.año }}">
-        </div>
+                        <!-- Filtro por año -->
+                        <div class="filter-item">
+                            <label class="filter-label">Año</label>
+                            <div class="filter-input-wrapper">
+                                <div class="input-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    id="año" 
+                                    name="año" 
+                                    class="filter-input" 
+                                    placeholder="Ej: 2024" 
+                                    value="{{ request.GET.año }}">
+                                <div class="input-focus-border"></div>
+                            </div>
+                        </div>
 
-        <!-- Botones de acción (reorganizados) -->
-        <div class="col-lg-4 col-md-8">
-            <div class="d-flex flex-wrap gap-1">
-                <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-                <a href="{% url 'proyecto-create' %}" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus"></i> Nuevo
-                </a>
-                <a href="{% url 'proyecto-list' %}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-eraser"></i> Limpiar
-                </a>
-                <a href="{% url 'exportar_excel' %}" class="btn btn-info btn-sm">
-                    <i class="fas fa-file-excel"></i> Excel
-                </a>
+                        <!-- Botones de acción -->
+                        <div class="filter-item actions-filter">
+                            <div class="filter-actions">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-search"></i>
+                                    <span>Buscar</span>
+                                </button>
+                                <a href="{% url 'proyecto-list' %}" class="btn-secondary">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Limpiar</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </form>
+    </div>
+
+    <!-- Print Options Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button id="btnTogglePrintOptions" class="btn btn-link text-dark p-0 me-2" style="border: none; background: none;">
+                        <i class="fas fa-chevron-down" id="iconTogglePrint"></i>
+                    </button>
+                    <h5 class="mb-0 text-dark fw-semibold">
+                        <i class="fas fa-print me-2 text-primary"></i>
+                        Opciones de Impresión
+                    </h5>
+                </div>
+                <button id="btnImprimirSeleccionados" class="btn btn-primary btn-sm" disabled>
+                    <i class="fas fa-print me-1"></i>
+                    Imprimir Seleccionados (<span id="contadorSeleccionados">0</span>)
+                </button>
+            </div>
+        </div>
+        <div class="card-body" id="printOptionsBody" style="display: none;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-muted mb-0">Seleccionar columnas para imprimir:</h6>
+                        <button id="btnLimpiarSeleccion" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times me-1"></i>
+                            Limpiar Columnas
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colPresup" value="0" checked>
+                                <label class="form-check-label" for="colPresup">Presup</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colAno" value="1" checked>
+                                <label class="form-check-label" for="colAno">Año</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colNombre" value="2" checked>
+                                <label class="form-check-label" for="colNombre">Nombre</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colProyecto" value="3" checked>
+                                <label class="form-check-label" for="colProyecto">Proyecto</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colDireccion" value="4" checked>
+                                <label class="form-check-label" for="colDireccion">Dirección</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colEstado" value="5" checked>
+                                <label class="form-check-label" for="colEstado">Estado</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="colDetalle" value="6" checked>
+                                <label class="form-check-label" for="colDetalle">Detalle</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Table Section -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0 text-dark fw-semibold">
+                <i class="fas fa-table me-2 text-primary"></i>
+                Lista de Proyectos
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="example" class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 50px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                    <label class="form-check-label" for="selectAll"></label>
+                                </div>
+                            </th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 80px;">Presup</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 60px;">Año</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 120px;">Nombre</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 150px;">Proyecto</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 120px;">Dirección</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 100px;">Estado</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 100px;">Detalle</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 80px;">Kardex</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 90px;">Presup.</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 90px;">Drive</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 90px;">Pago</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 90px;">Proceso</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 150px;">Notas</th>
+                            <th class="border-0 fw-semibold text-dark" style="min-width: 120px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proyecto in proyectos %}
+                        <tr class="border-bottom">
+                            <td class="text-center">
+                                <div class="form-check">
+                                    <input class="form-check-input row-checkbox" type="checkbox" value="{{ proyecto.id }}" data-proyecto="{{ proyecto.presupuesto }}">
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);">
+                                    {{ proyecto.presupuesto }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold text-dark">{{ proyecto.año }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-medium proyecto-nombre" 
+                                      data-id="{{ proyecto.id }}"
+                                      data-nombre="{{ proyecto.nombre }}"
+                                      data-telefono="{{ proyecto.telefono|default:'No disponible' }}"
+                                      data-correo="{{ proyecto.correo|default:'No disponible' }}"
+                                      data-descripcion="{{ proyecto.descripcion|default:'No hay descripción disponible' }}">
+                                    {{ proyecto.nombre }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-wrap" style="max-width: 150px;">
+                                    <span class="text-dark">{{ proyecto.proyecto }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-dark">{{ proyecto.direccion }}</span>
+                            </td>
+                            <td>
+                                {% if proyecto.estado_proyecto == 'aprobado' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                        {{ proyecto.get_estado_proyecto_display }}
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'no_concretado' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);">
+                                        {{ proyecto.get_estado_proyecto_display }}
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'trabajando' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                        {{ proyecto.get_estado_proyecto_display }}
+                                    </span>
+                                {% elif proyecto.estado_proyecto == 'congelado' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        {{ proyecto.get_estado_proyecto_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-secondary">
+                                        {{ proyecto.get_estado_proyecto_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="text-dark">{{ proyecto.detalle }}</span>
+                            </td>
+                            <td>
+                                <div class="text-wrap" style="max-width: 100px;">
+                                    <span class="text-dark">{{ proyecto.kardex }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if proyecto.enlace_documento %}
+                                    <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill" title="Ver Presupuesto">
+                                        <i class="fas fa-file-alt"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if proyecto.link_1 %}
+                                    <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-sm btn-outline-warning rounded-pill" title="Ver Documentos" style="border-color: #ffc107; color: #856404;">
+                                        <i class="fas fa-folder" style="color: #ffc107;"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if proyecto.presupuesto_link %}
+                                    <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill" title="Enlace de Pago">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if proyecto.proceso|lower == 'terminado' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                        {{ proyecto.proceso }}
+                                    </span>
+                                {% elif proyecto.proceso|lower == 'no aplica' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);">
+                                        {{ proyecto.proceso }}
+                                    </span>
+                                {% elif proyecto.proceso|lower == 'pendiente' %}
+                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                        {{ proyecto.proceso }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-secondary">
+                                        {{ proyecto.proceso }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="notas-container" data-proyecto-id="{{ proyecto.id }}">
+                                    <div class="notas-display" onclick="editarNota(this)">
+                                        <span class="notas-texto" id="notas-{{ proyecto.id }}">
+                                            {% if proyecto.notas_internas %}
+                                                {{ proyecto.notas_internas|truncatechars:50 }}
+                                            {% else %}
+                                                <span class="text-muted">Click para agregar nota...</span>
+                                            {% endif %}
+                                        </span>
+                                        <i class="fas fa-edit text-muted ms-1" style="font-size: 0.8rem;"></i>
+                                    </div>
+                                    <div class="notas-editor" style="display: none;">
+                                        <textarea class="form-control form-control-sm" 
+                                                  id="notas-textarea-{{ proyecto.id }}" 
+                                                  rows="2" 
+                                                  placeholder="Escribe tu nota interna aquí..."
+                                                  data-original-value="{{ proyecto.notas_internas|default:"" }}"
+                                                  style="resize: none; font-size: 0.85rem;">{{ proyecto.notas_internas|default:"" }}</textarea>
+                                        <div class="d-flex gap-1 mt-1">
+                                            <button class="btn btn-sm btn-success" onclick="guardarNota({{ proyecto.id }})" style="font-size: 0.75rem;">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary" onclick="cancelarEdicionNota(this)" style="font-size: 0.75rem;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill" title="Ver Detalles" 
+                                            data-proyecto-id="{{ proyecto.id }}" onclick="abrirModalDetalle(this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning rounded-pill" title="Editar Proyecto" 
+                                            data-proyecto-id="{{ proyecto.id }}" onclick="abrirModalEditar(this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar Proyecto" 
+                                            data-proyecto-id="{{ proyecto.id }}" onclick="abrirModalEliminar(this)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="14" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-search fa-3x mb-3 opacity-50"></i>
+                                    <h5 class="fw-semibold">No se encontraron proyectos</h5>
+                                    <p class="mb-0">No hay proyectos que coincidan con los criterios de búsqueda.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-    <!-- Tabla de Proyectos Optimizada -->
-    <div class="table-responsive">
-        <table id="example" class="table table-striped table-hover table-bordered" style="font-size: 0.85rem;">
-            <thead class="table-dark">
-                <tr>
-                    <th style="min-width: 80px;">Presup</th>
-                    <th style="min-width: 60px;">Año</th>
-                    <th style="min-width: 120px;">Nombre</th>
-                    <th style="min-width: 150px;">Proyecto</th>
-                    <th style="min-width: 120px;">Dirección</th>
-                    <th style="min-width: 100px;">Estado</th>
-                    <th style="min-width: 100px;">Detalle</th>
-                    <th style="min-width: 80px;">Kardex</th>
-                    <th style="min-width: 90px;">Presup.</th>
-                    <th style="min-width: 90px;">Drive</th>
-                    <th style="min-width: 90px;">Pago</th>
-                    <th style="min-width: 90px;">Proceso</th>
-                    <th style="min-width: 120px;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for proyecto in proyectos %}
-                <tr>
-                    <td><span class="badge bg-danger">{{ proyecto.presupuesto }}</span></td>
-                    <td class="text-center"><strong>{{ proyecto.año }}</strong></td>
-                    <td>
-                       {{ proyecto.nombre }}
-                    </td>
-                    <td>
-                        <div style="max-width: 150px; word-wrap: break-word; white-space: normal;">
-                            {{ proyecto.proyecto }}
+<!-- Modal Detalle del Proyecto -->
+<div class="modal fade" id="detalleProyectoModal" tabindex="-1" aria-labelledby="detalleProyectoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="detalleProyectoModalLabel">
+                    <i class="fas fa-user me-2"></i>Detalle del Cliente
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0 fw-bold text-primary">
+                                    <i class="fas fa-info-circle me-2"></i>Información del Cliente
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold text-dark">
+                                            <i class="fas fa-user me-1"></i>Nombre del Cliente
+                                        </label>
+                                        <p class="form-control-plaintext" id="modal-nombre"></p>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-dark">
+                                            <i class="fas fa-phone me-1"></i>Teléfono
+                                        </label>
+                                        <p class="form-control-plaintext" id="modal-telefono"></p>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-dark">
+                                            <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                                        </label>
+                                        <p class="form-control-plaintext" id="modal-correo"></p>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold text-dark">
+                                            <i class="fas fa-align-left me-1"></i>Descripción del Proyecto
+                                        </label>
+                                        <div class="form-control-plaintext" id="modal-descripcion" style="min-height: 100px; background-color: #f8f9fa; border-radius: 8px; padding: 15px; border: 1px solid #e9ecef;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                    <td>
-                         {{ proyecto.direccion }}
-                    </td>
-                    <td>
-                        <span class="badge {% if proyecto.estado_proyecto == 'aprobado' %}bg-success{% elif proyecto.estado_proyecto == 'no_concretado' %}bg-danger{% elif proyecto.estado_proyecto == 'trabajando' %}bg-warning{% elif proyecto.estado_proyecto == 'congelado' %}bg-info{% else %}bg-secondary{% endif %}">
-                            {{ proyecto.get_estado_proyecto_display }}
-                        </span>
-                    </td>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cerrarModalBtn">
+                    <i class="fas fa-times me-2"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-                    <td>{{ proyecto.detalle }}</td>
+<!-- Modal Nuevo Proyecto -->
+<div class="modal fade" id="nuevoProyectoModal" tabindex="-1" aria-labelledby="nuevoProyectoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="nuevoProyectoModalLabel">
+                    <i class="fas fa-plus me-2"></i>Crear Nuevo Proyecto
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'proyecto-create' %}" enctype="multipart/form-data" id="nuevoProyectoForm">
+                    {% csrf_token %}
                     
-                    <td>
-                        <div style="max-width: 100px; word-wrap: break-word; white-space: normal;">
-                            {{ proyecto.kardex }}
+                    <!-- Información Principal -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-primary text-white">
+                                    <i class="fas fa-info-circle me-2"></i>Información Principal
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="id_nombre" class="form-label fw-bold text-primary">
+                                                <i class="fas fa-user me-1"></i>Nombre del Cliente *
+                                            </label>
+                                            <input type="text" name="nombre" id="id_nombre" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_año" class="form-label fw-bold text-primary">
+                                                <i class="fas fa-calendar me-1"></i>Año *
+                                            </label>
+                                            <input type="number" name="año" id="id_año" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_telefono" class="form-label fw-bold">
+                                                <i class="fas fa-phone me-1"></i>Teléfono
+                                            </label>
+                                            <input type="tel" name="telefono" id="id_telefono" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_correo" class="form-label fw-bold">
+                                                <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                                            </label>
+                                            <input type="email" name="correo" id="id_correo" class="form-control">
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="id_direccion" class="form-label fw-bold text-primary">
+                                                <i class="fas fa-map-marker-alt me-1"></i>Dirección del Proyecto *
+                                            </label>
+                                            <input type="text" name="direccion" id="id_direccion" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                    
-                    <td class="text-center">
-                        {% if proyecto.enlace_documento %}
-                            <a href="{{ proyecto.enlace_documento }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Presupuesto">
-                                <i class="fas fa-file-alt"></i>
-                            </a>
-                        {% else %}
-                            <span class="text-muted">-</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        {% if proyecto.link_1 %}
-                            <a href="{{ proyecto.link_1 }}" target="_blank" class="btn btn-outline-primary btn-sm" title="Ver Documentos">
-                                <i class="fas fa-folder"></i>
-                            </a>
-                        {% else %}
-                            <span class="text-muted">-</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        {% if proyecto.presupuesto_link %}
-                            <a href="{{ proyecto.presupuesto_link }}" target="_blank" class="btn btn-outline-success btn-sm" title="Enlace de Pago">
-                                <i class="fas fa-credit-card"></i>
-                            </a>
-                        {% else %}
-                            <span class="text-muted">-</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        <span class="badge {% if proyecto.proceso|lower == 'terminado' %}bg-success{% elif proyecto.proceso|lower == 'no aplica' %}bg-danger{% elif proyecto.proceso|lower == 'pendiente' %}bg-warning{% else %}bg-secondary{% endif %}">
-                            {{ proyecto.proceso }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-buttons d-flex gap-1 justify-content-center">
-                            <a href="{% url 'proyecto-detail' proyecto.pk %}" class="btn-action btn-view" title="Ver Detalles" data-bs-toggle="tooltip">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{% url 'proyecto-update' proyecto.pk %}" class="btn-action btn-edit" title="Editar Proyecto" data-bs-toggle="tooltip">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'proyecto-delete' proyecto.pk %}" class="btn-action btn-delete" title="Eliminar Proyecto" data-bs-toggle="tooltip" onclick="return confirm('¿Estás seguro de eliminar este proyecto?')">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
+                    </div>
+
+                    <!-- Detalles del Proyecto -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-success text-white">
+                                    <i class="fas fa-project-diagram me-2"></i>Detalles del Proyecto
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label for="id_proyecto" class="form-label fw-bold text-success">
+                                                <i class="fas fa-tasks me-1"></i>Nombre del Proyecto *
+                                            </label>
+                                            <input type="text" name="proyecto" id="id_proyecto" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_estado_proyecto" class="form-label fw-bold">
+                                                <i class="fas fa-flag me-1"></i>Estado del Proyecto
+                                            </label>
+                                            <select name="estado_proyecto" id="id_estado_proyecto" class="form-control">
+                                                <option value="">Seleccionar estado...</option>
+                                                <option value="no_concretado">No Concretado</option>
+                                                <option value="trabajando">Trabajar en Proyecto</option>
+                                                <option value="ingreso_dom">Ingresado DOM</option>
+                                                <option value="ingresado_sag">Ingresado SAG</option>
+                                                <option value="ingresado_minvu">Ingresado Minvu</option>
+                                                <option value="ingresado_monumento">Ingresado Monumento</option>
+                                                <option value="observado">Ingresado Observado</option>
+                                                <option value="rechazado">Ingresado Rechazado</option>
+                                                <option value="aprobado">Aprobado</option>
+                                                <option value="realizado">Realizado</option>
+                                                <option value="congelado">Congelado</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_proceso" class="form-label fw-bold">
+                                                <i class="fas fa-cogs me-1"></i>Proceso
+                                            </label>
+                                            <select name="proceso" id="id_proceso" class="form-control">
+                                                <option value="">Seleccionar proceso...</option>
+                                                <option value="terminado">Terminado</option>
+                                                <option value="no aplica">No Aplica</option>
+                                                <option value="pendiente">Pendiente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_presupuesto" class="form-label fw-bold">
+                                                <i class="fas fa-calculator me-1"></i>Presupuesto
+                                            </label>
+                                            <input type="text" name="presupuesto" id="id_presupuesto" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_rol_avaluo" class="form-label fw-bold">
+                                                <i class="fas fa-clipboard-list me-1"></i>Rol de Avalúo
+                                            </label>
+                                            <input type="text" name="rol_avaluo" id="id_rol_avaluo" class="form-control">
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="id_detalle" class="form-label fw-bold">
+                                                <i class="fas fa-edit me-1"></i>Detalles Adicionales
+                                            </label>
+                                            <textarea name="detalle" id="id_detalle" class="form-control" rows="3" placeholder="Información adicional sobre el proyecto..."></textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="id_kardex" class="form-label fw-bold">
+                                                <i class="fas fa-archive me-1"></i>Kardex
+                                            </label>
+                                            <input type="text" name="kardex" id="id_kardex" class="form-control" placeholder="Número de kardex...">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="13" class="text-center text-muted py-4">
-                        <i class="fas fa-search fa-2x mb-2"></i>
-                        <br>No hay proyectos que coincidan con la búsqueda.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </div>
+
+                    <!-- Enlaces y Documentos -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-info text-white">
+                                    <i class="fas fa-link me-2"></i>Enlaces y Documentos
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="id_presupuesto_link" class="form-label fw-bold">
+                                                <i class="fas fa-credit-card me-1"></i>Link de Pago
+                                            </label>
+                                            <input type="url" name="presupuesto_link" id="id_presupuesto_link" class="form-control" placeholder="Ej: https://drive.google.com/...">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="enlace_documento" class="form-label fw-bold">
+                                                <i class="fas fa-file-invoice-dollar me-1"></i>Enlace de Presupuesto
+                                            </label>
+                                            <input type="url" name="enlace_documento" id="enlace_documento" class="form-control" placeholder="Ej: https://drive.google.com/...">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_link_1" class="form-label fw-bold">
+                                                <i class="fas fa-cloud me-1"></i>Enlace de Drive
+                                            </label>
+                                            <input type="url" name="link_1" id="id_link_1" class="form-control" placeholder="Ej: https://drive.google.com/...">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_nombre_enlace_1" class="form-label fw-bold">
+                                                <i class="fas fa-tag me-1"></i>Nombre del Enlace
+                                            </label>
+                                            <input type="text" name="nombre_enlace_1" id="id_nombre_enlace_1" class="form-control" placeholder="Descripción del enlace...">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Descripción Detallada -->
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-warning text-dark">
+                                    <i class="fas fa-file-alt me-2"></i>Descripción Detallada
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="id_descripcion" class="form-label fw-bold text-warning">
+                                            <i class="fas fa-align-left me-1"></i>Descripción Completa del Proyecto
+                                        </label>
+                                        <textarea name="descripcion" id="id_descripcion" class="form-control" rows="6" placeholder="Describe detalladamente el proyecto, incluyendo objetivos, alcance, características especiales y cualquier información relevante..."></textarea>
+                                        <small class="form-text text-muted mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Esta descripción ayudará a entender mejor el alcance y objetivos del proyecto.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="submit" form="nuevoProyectoForm" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Crear Proyecto
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
+    /* Professional Design Improvements */
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f8f9fa;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
     }
     
-    /* Optimizaciones para la tabla */
-    .table td, .table th {
-        vertical-align: top;
-        padding: 0.5rem 0.25rem;
-        word-wrap: break-word;
+    /* FontAwesome Icon Styles */
+    .fa-solid, .fas, .fa {
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        line-height: 1;
     }
     
-    /* Permitir que las celdas se expandan verticalmente */
-    .table td div {
-        line-height: 1.3;
+    .fa-lg {
+        font-size: 1.33333em;
+        line-height: 0.75em;
+        vertical-align: -0.0667em;
     }
     
-    /* Mejorar legibilidad en dispositivos pequeños */
+    /* Card Icon Styles */
+    .card .bg-white.bg-opacity-25 {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .card .bg-white.bg-opacity-25:hover {
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .card .bg-white.bg-opacity-25 i {
+        font-size: 1.5rem;
+        color: white !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    
+    /* Card Enhancements */
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Statistics Cards Specific Styles */
+    .row.g-3 .card {
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .row.g-3 .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        pointer-events: none;
+    }
+    
+    .row.g-3 .card .card-body {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Table Improvements */
+    .table {
+        font-size: 0.875rem;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .table thead th {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: none;
+        padding: 1rem 0.75rem;
+        font-weight: 600;
+        color: #495057;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        transform: scale(1.001);
+    }
+    
+    .table td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border: none;
+        border-bottom: 1px solid #f1f3f4;
+    }
+    
+    /* Badge Improvements */
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.75em;
+        font-size: 0.75rem;
+    }
+    
+    /* Button Improvements */
+    .btn {
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .btn-outline-primary {
+        border: 2px solid #007bff;
+        color: #007bff;
+    }
+    
+    .btn-outline-primary:hover {
+        background: #007bff;
+        border-color: #007bff;
+    }
+    
+    .btn-outline-warning {
+        border: 2px solid #ffc107;
+        color: #ffc107;
+    }
+    
+    .btn-outline-warning:hover {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+    
+    .btn-outline-danger {
+        border: 2px solid #dc3545;
+        color: #dc3545;
+    }
+    
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .btn-outline-success {
+        border: 2px solid #28a745;
+        color: #28a745;
+    }
+    
+    .btn-outline-success:hover {
+        background: #28a745;
+        border-color: #28a745;
+    }
+    
+    .btn-outline-info {
+        border: 2px solid #17a2b8;
+        color: #17a2b8;
+    }
+    
+    .btn-outline-info:hover {
+        background: #17a2b8;
+        border-color: #17a2b8;
+    }
+    
+    .btn-outline-secondary {
+        border: 2px solid #6c757d;
+        color: #6c757d;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #6c757d;
+        border-color: #6c757d;
+    }
+    
+    /* Form Improvements */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .input-group-text {
+        border-radius: 8px 0 0 8px;
+        border: 2px solid #e9ecef;
+        background: #f8f9fa;
+    }
+    
+    /* Responsive Improvements */
     @media (max-width: 768px) {
         .table {
             font-size: 0.75rem;
         }
         
-        /* Botones de formulario también mejorados */
-        .btn-group .btn {
-            padding: 0.25rem 0.4rem;
-        }
-        
-        .btn-action {
-            width: 30px;
-            height: 30px;
-            font-size: 12px;
+        .btn {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
         }
         
         .card-body {
-            padding: 0.75rem !important;
+            padding: 1rem !important;
         }
         
-        .h4 {
-            font-size: 1.1rem;
+        .h3 {
+            font-size: 1.5rem;
+        }
+        
+        .h6 {
+            font-size: 0.875rem;
         }
     }
     
-    /* Scroll horizontal suave */
+    /* Smooth scrolling */
     .table-responsive {
         -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
     }
     
-    /* Badges más pequeños */
-    .badge {
-        font-size: 0.7rem;
+    /* Loading animation for empty state */
+    .opacity-50 {
+        opacity: 0.5;
     }
     
-    /* Botones de acción modernos y atractivos */
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
-        border: none;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        font-size: 14px;
+    /* Professional shadows */
+    .shadow-sm {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
     }
     
-    .btn-action::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
+    /* Text improvements */
+    .text-dark {
+        color: #212529 !important;
     }
     
-    .btn-action:hover::before {
-        left: 100%;
+    .fw-semibold {
+        font-weight: 600 !important;
     }
     
-    .btn-view {
-        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    }
-    
-    .btn-view:hover {
-        background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
-        color: white;
-    }
-    
-    .btn-edit {
-        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-    }
-    
-    .btn-edit:hover {
-        background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
-        color: white;
-    }
-    
-    .btn-delete {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    }
-    
-    .btn-delete:hover {
-        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        color: white;
-    }
-    
-    .btn-action:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .action-buttons {
-        min-width: 120px;
-    }
-    
-    /* Animación de pulso para botón de eliminar */
-    .btn-delete:hover {
-        animation: pulse-delete 2s infinite;
-    }
-    
-    @keyframes pulse-delete {
-        0% {
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-        50% {
-            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.6);
-        }
-        100% {
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-    }
+         .fw-medium {
+         font-weight: 500 !important;
+     }
+     
+     /* Modal Styles */
+     .modal-xl {
+         max-width: 1200px;
+     }
+     
+     .modal-content {
+         border-radius: 12px;
+         border: none;
+         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+     }
+     
+     .modal-header {
+         border-radius: 12px 12px 0 0;
+         border-bottom: none;
+         padding: 1.5rem;
+     }
+     
+     .modal-body {
+         padding: 2rem;
+         max-height: 70vh;
+         overflow-y: auto;
+     }
+     
+     .modal-footer {
+         border-top: none;
+         padding: 1.5rem;
+         background: #f8f9fa;
+         border-radius: 0 0 12px 12px;
+     }
+     
+     .modal-title {
+         font-weight: 600;
+         font-size: 1.25rem;
+     }
+     
+     .btn-close-white {
+         filter: brightness(0) invert(1);
+     }
+     
+     /* Form styles within modal */
+     .modal .form-control {
+         border-radius: 8px;
+         padding: 0.75rem 1rem;
+         font-size: 0.9rem;
+         transition: all 0.3s ease;
+     }
+     
+     .modal .form-control:focus {
+         transform: translateY(-1px);
+         box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+     }
+     
+     .modal .card {
+         border: none;
+         border-radius: 12px;
+         transition: transform 0.2s ease-in-out;
+     }
+     
+     .modal .card:hover {
+         transform: translateY(-2px);
+     }
+     
+     .modal .card-header {
+         font-weight: 600;
+         border-radius: 12px 12px 0 0 !important;
+         padding: 1rem 1.25rem;
+         border: none;
+     }
+     
+     .modal .form-label {
+         font-size: 0.9rem;
+         font-weight: 600;
+         margin-bottom: 0.5rem;
+         color: #495057;
+     }
+     
+     /* Responsive modal */
+     @media (max-width: 768px) {
+         .modal-xl {
+             max-width: 95%;
+             margin: 1rem;
+         }
+         
+         .modal-body {
+             padding: 1rem;
+             max-height: 60vh;
+         }
+         
+         .modal-header,
+         .modal-footer {
+             padding: 1rem;
+         }
+     }
+     
+     /* Estilos para nombres clickeables */
+     .proyecto-nombre {
+         transition: all 0.3s ease;
+         border-radius: 6px;
+         padding: 4px 8px;
+         cursor: pointer;
+         color: #495057 !important;
+         font-weight: 500;
+         position: relative;
+         display: inline-block;
+     }
+     
+     .proyecto-nombre:hover {
+         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+         color: #1976d2 !important;
+         transform: translateY(-1px);
+         box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+     }
+     
+     .proyecto-nombre::after {
+         content: '👁️';
+         position: absolute;
+         right: -20px;
+         top: 50%;
+         transform: translateY(-50%);
+         font-size: 0.8rem;
+         opacity: 0;
+         transition: opacity 0.3s ease;
+     }
+     
+     .proyecto-nombre:hover::after {
+         opacity: 1;
+     }
+     
+     /* Estilos para el modal de detalle */
+     #detalleProyectoModal .modal-content {
+         border-radius: 12px;
+         border: none;
+         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+     }
+     
+     #detalleProyectoModal .modal-header {
+         border-radius: 12px 12px 0 0;
+         border-bottom: none;
+         padding: 1.5rem;
+     }
+     
+     #detalleProyectoModal .modal-body {
+         padding: 2rem;
+     }
+     
+     #detalleProyectoModal .modal-footer {
+         border-top: none;
+         padding: 1.5rem;
+         background: #f8f9fa;
+         border-radius: 0 0 12px 12px;
+     }
+     
+     #detalleProyectoModal .form-control-plaintext {
+         background: transparent;
+         border: none;
+         padding: 0.5rem 0;
+         font-size: 0.95rem;
+         color: #495057;
+     }
+     
+     #detalleProyectoModal .card {
+         border: none;
+         border-radius: 12px;
+         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+     }
+     
+     #detalleProyectoModal .card-header {
+         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+         border-radius: 12px 12px 0 0;
+         border: none;
+         padding: 1rem 1.25rem;
+     }
+     
+     /* Estilos elegantes para la sección de filtros */
+     .filters-container {
+         margin-bottom: 2rem;
+     }
+     
+     .filters-card {
+         background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+         border-radius: 16px;
+         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+         border: 1px solid rgba(226, 232, 240, 0.6);
+         overflow: hidden;
+         position: relative;
+         backdrop-filter: blur(10px);
+     }
+     
+     .filters-card::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         right: 0;
+         height: 2px;
+         background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+         opacity: 0.8;
+     }
+     
+     .filters-header {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         padding: 1.5rem 2rem;
+         color: white;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         position: relative;
+         overflow: hidden;
+     }
+     
+     .filters-header::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+         pointer-events: none;
+     }
+     
+     .filters-title {
+         display: flex;
+         align-items: center;
+         gap: 1rem;
+         position: relative;
+         z-index: 1;
+     }
+     
+     .title-icon {
+         width: 48px;
+         height: 48px;
+         background: rgba(255, 255, 255, 0.15);
+         border-radius: 12px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         backdrop-filter: blur(8px);
+         border: 1px solid rgba(255, 255, 255, 0.2);
+     }
+     
+     .title-icon i {
+         font-size: 1.25rem;
+         color: white;
+         opacity: 0.95;
+     }
+     
+     .title-content {
+         flex: 1;
+     }
+     
+     .title-text {
+         font-size: 1.25rem;
+         font-weight: 600;
+         margin: 0;
+         letter-spacing: -0.3px;
+     }
+     
+     .title-subtitle {
+         font-size: 0.85rem;
+         opacity: 0.85;
+         margin: 0.2rem 0 0 0;
+         font-weight: 400;
+         letter-spacing: 0.2px;
+     }
+     
+     .filters-actions {
+         position: relative;
+         z-index: 1;
+     }
+     
+     .active-filters {
+         background: rgba(255, 255, 255, 0.12);
+         border-radius: 10px;
+         padding: 0.6rem 1rem;
+         backdrop-filter: blur(8px);
+         border: 1px solid rgba(255, 255, 255, 0.18);
+         display: flex;
+         align-items: center;
+         gap: 0.4rem;
+     }
+     
+     .filter-count {
+         background: rgba(255, 255, 255, 0.9);
+         color: #667eea;
+         width: 20px;
+         height: 20px;
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 0.75rem;
+         font-weight: 600;
+     }
+     
+     .filter-status-label {
+         font-size: 0.85rem;
+         font-weight: 500;
+         color: white;
+     }
+     
+     .filters-body {
+         padding: 1.75rem 2rem;
+     }
+     
+     .filters-grid {
+         display: grid;
+         grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+         gap: 1.25rem;
+         align-items: end;
+     }
+     
+     .filter-item {
+         position: relative;
+     }
+     
+     .filter-label {
+         font-size: 0.75rem;
+         font-weight: 500;
+         color: #64748b;
+         text-transform: uppercase;
+         letter-spacing: 0.4px;
+         margin-bottom: 0.4rem;
+         display: block;
+     }
+     
+     .filter-input-wrapper {
+         position: relative;
+         background: #ffffff;
+         border-radius: 10px;
+         border: 1.5px solid #e2e8f0;
+         transition: all 0.25s ease;
+         overflow: hidden;
+     }
+     
+     .filter-input-wrapper:hover {
+         border-color: #cbd5e1;
+         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+         transform: translateY(-1px);
+     }
+     
+     .filter-input-wrapper:focus-within {
+         border-color: #667eea;
+         box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.08);
+         transform: translateY(-1px);
+     }
+     
+     .input-icon {
+         position: absolute;
+         left: 0.875rem;
+         top: 50%;
+         transform: translateY(-50%);
+         color: #94a3b8;
+         z-index: 2;
+         transition: color 0.25s ease;
+         font-size: 0.9rem;
+     }
+     
+     .filter-input-wrapper:focus-within .input-icon {
+         color: #667eea;
+     }
+     
+     .filter-input {
+         width: 100%;
+         padding: 0.875rem 1rem 0.875rem 2.75rem;
+         border: none;
+         background: transparent;
+         font-size: 0.9rem;
+         color: #1e293b;
+         outline: none;
+         transition: all 0.25s ease;
+     }
+     
+     .filter-input::placeholder {
+         color: #94a3b8;
+         font-weight: 400;
+     }
+     
+     .search-filter .filter-input-wrapper {
+         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+         border-color: #e2e8f0;
+     }
+     
+     .search-filter .filter-input-wrapper:focus-within {
+         background: #ffffff;
+         border-color: #667eea;
+     }
+     
+     .input-focus-border {
+         position: absolute;
+         bottom: 0;
+         left: 0;
+         width: 0;
+         height: 2px;
+         background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+         transition: width 0.25s ease;
+     }
+     
+     .filter-input-wrapper:focus-within .input-focus-border {
+         width: 100%;
+     }
+     
+     .filter-actions {
+         display: flex;
+         flex-direction: column;
+         gap: 0.6rem;
+     }
+     
+     .btn-primary, .btn-secondary {
+         padding: 0.875rem 1.25rem;
+         border: none;
+         border-radius: 10px;
+         font-weight: 500;
+         font-size: 0.85rem;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         gap: 0.4rem;
+         transition: all 0.25s ease;
+         text-decoration: none;
+         cursor: pointer;
+         position: relative;
+         overflow: hidden;
+     }
+     
+     .btn-primary {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         color: white;
+         box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+     }
+     
+     .btn-primary:hover {
+         transform: translateY(-1px);
+         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+         color: white;
+     }
+     
+     .btn-secondary {
+         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+         color: #64748b;
+         border: 1.5px solid #e2e8f0;
+     }
+     
+     .btn-secondary:hover {
+         transform: translateY(-1px);
+         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+         color: #475569;
+         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+     }
+     
+     /* Responsive para filtros elegantes */
+     @media (max-width: 1200px) {
+         .filters-grid {
+             grid-template-columns: 1fr 1fr;
+             gap: 1rem;
+         }
+         
+         .search-filter {
+             grid-column: 1 / -1;
+         }
+         
+         .actions-filter {
+             grid-column: 1 / -1;
+         }
+         
+         .filter-actions {
+             flex-direction: row;
+             justify-content: center;
+         }
+     }
+     
+     @media (max-width: 768px) {
+         .filters-header {
+             padding: 1.5rem;
+             flex-direction: column;
+             gap: 1rem;
+             text-align: center;
+         }
+         
+         .filters-title {
+             flex-direction: column;
+             gap: 0.75rem;
+         }
+         
+         .title-icon {
+             width: 50px;
+             height: 50px;
+         }
+         
+         .title-text {
+             font-size: 1.25rem;
+         }
+         
+         .filters-body {
+             padding: 1.5rem;
+         }
+         
+         .filters-grid {
+             grid-template-columns: 1fr;
+             gap: 1rem;
+         }
+         
+         .filter-actions {
+             flex-direction: column;
+         }
+         
+         .btn-primary, .btn-secondary {
+             padding: 0.875rem 1.25rem;
+             font-size: 0.85rem;
+         }
+     }
+
+/* Mejorar visibilidad de los checkboxes de selección en la tabla de proyectos */
+.table .form-check-input.row-checkbox,
+.table .form-check-input#selectAll {
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid #64748b;
+    background-color: #f1f5f9;
+    border-radius: 0.35em;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.table .form-check-input.row-checkbox:focus,
+.table .form-check-input#selectAll:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px #2563eb33;
+}
+.table .form-check-input.row-checkbox:checked,
+.table .form-check-input#selectAll:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+/* Estilos para el botón de limpiar selección */
+#btnLimpiarSeleccion {
+    transition: all 0.2s ease;
+}
+#btnLimpiarSeleccion:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Estilos para el botón de toggle de opciones de impresión */
+#btnTogglePrintOptions {
+    transition: all 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+#btnTogglePrintOptions:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.1);
+}
+#btnTogglePrintOptions:focus {
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+    outline: none;
+}
+#iconTogglePrint {
+    transition: transform 0.2s ease;
+    font-size: 0.9rem;
+}
+
+/* Estilos para el botón de toggle de filtros */
+#btnToggleFilters {
+    transition: all 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+#btnToggleFilters:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.1);
+}
+#btnToggleFilters:focus {
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+    outline: none;
+}
+#iconToggleFilters {
+    transition: transform 0.2s ease;
+    font-size: 0.9rem;
+}
+
+/* Estilos para la columna de notas */
+.notas-container {
+    position: relative;
+    min-width: 150px;
+}
+
+.notas-display {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.notas-display:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.notas-texto {
+    font-size: 0.85rem;
+    line-height: 1.3;
+    word-wrap: break-word;
+}
+
+.notas-editor {
+    position: relative;
+    z-index: 10;
+}
+
+.notas-editor textarea {
+    border: 2px solid #007bff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.notas-editor .btn {
+    padding: 2px 6px;
+    min-width: 28px;
+}
+
+.notas-editor .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.notas-editor .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.notas-editor .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.notas-editor .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Estilos para los iconos de Drive y Pago */
+.btn-outline-warning .fas.fa-folder {
+    color: #ffc107 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.btn-outline-warning:hover .fas.fa-folder {
+    color: #e0a800 !important;
+}
+
+.btn-outline-success .fas.fa-dollar-sign {
+    color: #28a745 !important;
+    font-weight: bold;
+}
+
+.btn-outline-success:hover .fas.fa-dollar-sign {
+    color: #1e7e34 !important;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variable para almacenar la instancia del modal
+    let modalInstance = null;
+    
+    // Variables para checkboxes
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+    const btnImprimir = document.getElementById('btnImprimirSeleccionados');
+    const contadorSeleccionados = document.getElementById('contadorSeleccionados');
+    
+    // Función para actualizar el contador de seleccionados
+    function actualizarContador() {
+        const seleccionados = document.querySelectorAll('.row-checkbox:checked').length;
+        contadorSeleccionados.textContent = seleccionados;
+        btnImprimir.disabled = seleccionados === 0;
+    }
+    
+    // Función para seleccionar/deseleccionar todos
+    function toggleSelectAll() {
+        const isChecked = selectAllCheckbox.checked;
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+        actualizarContador();
+    }
+    
+    // Event listener para "Seleccionar todos"
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', toggleSelectAll);
+    }
+    
+    // Event listeners para checkboxes individuales
+    rowCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            // Verificar si todos están seleccionados para actualizar "Seleccionar todos"
+            const todosSeleccionados = Array.from(rowCheckboxes).every(cb => cb.checked);
+            const algunosSeleccionados = Array.from(rowCheckboxes).some(cb => cb.checked);
+            
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = todosSeleccionados;
+                selectAllCheckbox.indeterminate = algunosSeleccionados && !todosSeleccionados;
+            }
+            
+            actualizarContador();
+        });
+    });
+    
+    // Función para imprimir proyectos seleccionados
+    function imprimirSeleccionados() {
+        const proyectosSeleccionados = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+        
+        if (proyectosSeleccionados.length === 0) {
+            alert('Por favor selecciona al menos un proyecto para imprimir.');
+            return;
+        }
+        
+        // Obtener columnas seleccionadas
+        const columnasSeleccionadas = [];
+        document.querySelectorAll('input[id^="col"]:checked').forEach(checkbox => {
+            columnasSeleccionadas.push(parseInt(checkbox.value));
+        });
+        
+        if (columnasSeleccionadas.length === 0) {
+            alert('Por favor selecciona al menos una columna para imprimir.');
+            return;
+        }
+        
+        // Crear ventana de impresión
+        const ventanaImpresion = window.open('', '_blank', 'width=800,height=600');
+        const tabla = document.getElementById('example');
+        
+        // Crear contenido HTML para imprimir
+        let contenidoHTML = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Proyectos Seleccionados - BYD Arquitectura</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; font-weight: bold; }
+                    .header { text-align: center; margin-bottom: 20px; }
+                    .header h1 { color: #333; margin-bottom: 5px; }
+                    .header p { color: #666; margin: 0; }
+                    @media print {
+                        body { margin: 0; }
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>BYD Arquitectura</h1>
+                    <p>Reporte de Proyectos Seleccionados</p>
+                    <p>Fecha: ${new Date().toLocaleDateString('es-ES')}</p>
+                    <p>Total de proyectos: ${proyectosSeleccionados.length}</p>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+        `;
+        
+        // Agregar encabezados de columnas seleccionadas
+        const headers = tabla.querySelectorAll('thead th');
+        columnasSeleccionadas.forEach(index => {
+            if (headers[index + 1]) { // +1 porque agregamos columna de checkbox
+                contenidoHTML += `<th>${headers[index + 1].textContent.trim()}</th>`;
+            }
+        });
+        
+        contenidoHTML += `
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        // Agregar filas de proyectos seleccionados
+        proyectosSeleccionados.forEach(checkbox => {
+            const fila = checkbox.closest('tr');
+            const celdas = fila.querySelectorAll('td');
+            
+            contenidoHTML += '<tr>';
+            columnasSeleccionadas.forEach(index => {
+                if (celdas[index + 1]) { // +1 porque agregamos columna de checkbox
+                    // Limpiar contenido HTML y obtener solo texto
+                    let contenido = celdas[index + 1].textContent.trim();
+                    // Remover espacios extra y saltos de línea
+                    contenido = contenido.replace(/\s+/g, ' ');
+                    contenidoHTML += `<td>${contenido}</td>`;
+                }
+            });
+            contenidoHTML += '</tr>';
+        });
+        
+        contenidoHTML += `
+                    </tbody>
+                </table>
+                <div class="no-print" style="margin-top: 20px; text-align: center;">
+                    <button onclick="window.print()">Imprimir</button>
+                    <button onclick="window.close()">Cerrar</button>
+                </div>
+            </body>
+            </html>
+        `;
+        
+        ventanaImpresion.document.write(contenidoHTML);
+        ventanaImpresion.document.close();
+    }
+    
+    // Event listener para el botón de imprimir
+    if (btnImprimir) {
+        btnImprimir.addEventListener('click', imprimirSeleccionados);
+    }
+    
+    // Función para limpiar selección de columnas de impresión
+    function limpiarSeleccionColumnas() {
+        console.log('Limpiando selección de columnas...'); // Debug
+        
+        // Desmarcar todos los checkboxes de columnas de impresión
+        const checkboxesColumnas = document.querySelectorAll('input[id^="col"]');
+        checkboxesColumnas.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        console.log('Selección de columnas limpiada'); // Debug
+    }
+    
+    // Event listener para el botón de limpiar selección
+    const btnLimpiarSeleccion = document.getElementById('btnLimpiarSeleccion');
+    if (btnLimpiarSeleccion) {
+        btnLimpiarSeleccion.addEventListener('click', function(e) {
+            e.preventDefault();
+            limpiarSeleccionColumnas();
+        });
+    }
+    
+    // Función para toggle de opciones de impresión
+    function togglePrintOptions() {
+        const printOptionsBody = document.getElementById('printOptionsBody');
+        const iconToggle = document.getElementById('iconTogglePrint');
+        const btnToggle = document.getElementById('btnTogglePrintOptions');
+        
+        if (printOptionsBody.style.display === 'none') {
+            // Expandir
+            printOptionsBody.style.display = 'block';
+            iconToggle.className = 'fas fa-chevron-up';
+            btnToggle.setAttribute('title', 'Ocultar opciones de impresión');
+        } else {
+            // Colapsar
+            printOptionsBody.style.display = 'none';
+            iconToggle.className = 'fas fa-chevron-down';
+            btnToggle.setAttribute('title', 'Mostrar opciones de impresión');
+        }
+    }
+    
+    // Event listener para el botón de toggle de impresión
+    const btnTogglePrintOptions = document.getElementById('btnTogglePrintOptions');
+    if (btnTogglePrintOptions) {
+        btnTogglePrintOptions.addEventListener('click', function(e) {
+            e.preventDefault();
+            togglePrintOptions();
+        });
+    }
+    
+    // Función para toggle de filtros
+    function toggleFilters() {
+        const filtersBody = document.getElementById('filtersBody');
+        const iconToggle = document.getElementById('iconToggleFilters');
+        const btnToggle = document.getElementById('btnToggleFilters');
+        
+        if (filtersBody.style.display === 'none') {
+            // Expandir
+            filtersBody.style.display = 'block';
+            iconToggle.className = 'fas fa-chevron-up';
+            btnToggle.setAttribute('title', 'Ocultar filtros de búsqueda');
+        } else {
+            // Colapsar
+            filtersBody.style.display = 'none';
+            iconToggle.className = 'fas fa-chevron-down';
+            btnToggle.setAttribute('title', 'Mostrar filtros de búsqueda');
+        }
+    }
+    
+    // Event listener para el botón de toggle de filtros
+    const btnToggleFilters = document.getElementById('btnToggleFilters');
+    if (btnToggleFilters) {
+        btnToggleFilters.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleFilters();
+        });
+    }
+    
+    // Capturar clics en los nombres de proyectos
+    const proyectoNombres = document.querySelectorAll('.proyecto-nombre');
+    
+    proyectoNombres.forEach(function(elemento) {
+        elemento.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Obtener los datos del proyecto desde los atributos data
+            const id = this.getAttribute('data-id');
+            const nombre = this.getAttribute('data-nombre');
+            const telefono = this.getAttribute('data-telefono');
+            const correo = this.getAttribute('data-correo');
+            const descripcion = this.getAttribute('data-descripcion');
+            
+            // Actualizar el contenido del modal
+            document.getElementById('modal-nombre').textContent = nombre;
+            document.getElementById('modal-telefono').textContent = telefono;
+            document.getElementById('modal-correo').textContent = correo;
+            document.getElementById('modal-descripcion').textContent = descripcion;
+            
+            // Crear nueva instancia del modal y mostrarlo
+            const modalElement = document.getElementById('detalleProyectoModal');
+            modalInstance = new bootstrap.Modal(modalElement);
+            modalInstance.show();
+        });
+    });
+    
+    // Manejar el cierre del modal
+    const modalElement = document.getElementById('detalleProyectoModal');
+    modalElement.addEventListener('hidden.bs.modal', function () {
+        // Limpiar la instancia cuando se cierra
+        if (modalInstance) {
+            modalInstance.dispose();
+            modalInstance = null;
+        }
+    });
+    
+    // Manejar clic en el botón de cerrar
+    const cerrarModalBtn = document.getElementById('cerrarModalBtn');
+    if (cerrarModalBtn) {
+        cerrarModalBtn.addEventListener('click', function() {
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        });
+    }
+    
+    // Manejar clic en el botón X del header
+    const closeHeaderBtn = document.querySelector('.btn-close');
+    if (closeHeaderBtn) {
+        closeHeaderBtn.addEventListener('click', function() {
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        });
+    }
+    
+    // Manejar clic fuera del modal para cerrarlo
+    modalElement.addEventListener('click', function(e) {
+        if (e.target === modalElement) {
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        }
+    });
+    
+    // Función para abrir modal de detalles
+    window.abrirModalDetalle = function(button) {
+        const proyectoId = button.getAttribute('data-proyecto-id');
+        const fila = button.closest('tr');
+        
+        // Obtener datos de la fila
+        const presupuesto = fila.cells[1].textContent.trim();
+        const nombre = fila.cells[3].textContent.trim();
+        const proyecto = fila.cells[4].textContent.trim();
+        const direccion = fila.cells[5].textContent.trim();
+        const estado = fila.cells[6].textContent.trim();
+        const detalle = fila.cells[7].textContent.trim();
+        const kardex = fila.cells[8].textContent.trim();
+        const proceso = fila.cells[11].textContent.trim();
+        
+        // Llenar el modal con los datos
+        document.getElementById('detalle-presupuesto').textContent = presupuesto;
+        document.getElementById('detalle-nombre').textContent = nombre;
+        document.getElementById('detalle-proyecto').textContent = proyecto;
+        document.getElementById('detalle-direccion').textContent = direccion;
+        document.getElementById('detalle-estado').textContent = estado;
+        document.getElementById('detalle-detalle').textContent = detalle;
+        document.getElementById('detalle-kardex').textContent = kardex;
+        document.getElementById('detalle-proceso').textContent = proceso;
+        document.getElementById('detalle-telefono').textContent = 'No disponible';
+        document.getElementById('detalle-correo').textContent = 'No disponible';
+        document.getElementById('detalle-descripcion').textContent = 'No disponible';
+        
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalDetalleProyecto'));
+        modal.show();
+    };
+    
+    // Función para abrir modal de editar
+    window.abrirModalEditar = function(button) {
+        const proyectoId = button.getAttribute('data-proyecto-id');
+        const fila = button.closest('tr');
+        
+        // Obtener datos de la fila
+        const presupuesto = fila.cells[1].textContent.trim();
+        const nombre = fila.cells[3].textContent.trim();
+        const proyecto = fila.cells[4].textContent.trim();
+        const direccion = fila.cells[5].textContent.trim();
+        const estado = fila.cells[6].textContent.trim();
+        const detalle = fila.cells[7].textContent.trim();
+        const kardex = fila.cells[8].textContent.trim();
+        const proceso = fila.cells[11].textContent.trim();
+        
+        // Llenar el formulario con los datos
+        document.getElementById('editar-presupuesto').value = presupuesto;
+        document.getElementById('editar-nombre').value = nombre;
+        document.getElementById('editar-proyecto').value = proyecto;
+        document.getElementById('editar-direccion').value = direccion;
+        document.getElementById('editar-detalle').value = detalle;
+        document.getElementById('editar-kardex').value = kardex;
+        document.getElementById('editar-proceso').value = proceso;
+        document.getElementById('editar-telefono').value = '';
+        document.getElementById('editar-correo').value = '';
+        document.getElementById('editar-descripcion').value = '';
+        
+        // Configurar el estado
+        const estadoSelect = document.getElementById('editar-estado');
+        if (estado.includes('Aprobado')) {
+            estadoSelect.value = 'aprobado';
+        } else if (estado.includes('No Concretado')) {
+            estadoSelect.value = 'no_concretado';
+        } else if (estado.includes('Trabajando')) {
+            estadoSelect.value = 'trabajando';
+        } else if (estado.includes('Congelado')) {
+            estadoSelect.value = 'congelado';
+        }
+        
+        // Configurar la acción del formulario
+        document.getElementById('formEditarProyecto').action = `/proyecto/${proyectoId}/update/`;
+        
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarProyecto'));
+        modal.show();
+    };
+    
+    // Función para abrir modal de eliminar
+    window.abrirModalEliminar = function(button) {
+        const proyectoId = button.getAttribute('data-proyecto-id');
+        const fila = button.closest('tr');
+        
+        // Obtener datos de la fila
+        const presupuesto = fila.cells[1].textContent.trim();
+        const nombre = fila.cells[3].textContent.trim();
+        
+        // Llenar el modal con los datos
+        document.getElementById('eliminar-presupuesto').textContent = presupuesto;
+        document.getElementById('eliminar-nombre').textContent = nombre;
+        
+        // Configurar el botón de confirmar
+        document.getElementById('btnConfirmarEliminar').onclick = function() {
+            window.location.href = `/proyecto/${proyectoId}/delete/`;
+        };
+        
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminarProyecto'));
+        modal.show();
+    };
+    
+    // Función para editar nota
+    window.editarNota = function(element) {
+        const container = element.closest('.notas-container');
+        const display = container.querySelector('.notas-display');
+        const editor = container.querySelector('.notas-editor');
+        const textarea = editor.querySelector('textarea');
+        
+        // Ocultar display y mostrar editor
+        display.style.display = 'none';
+        editor.style.display = 'block';
+        
+        // Enfocar el textarea
+        textarea.focus();
+        
+        // Seleccionar todo el texto si existe
+        if (textarea.value.trim()) {
+            textarea.select();
+        }
+    };
+    
+    // Función para guardar nota
+    window.guardarNota = function(proyectoId) {
+        const textarea = document.getElementById(`notas-textarea-${proyectoId}`);
+        const notasTexto = document.getElementById(`notas-${proyectoId}`);
+        const container = textarea.closest('.notas-container');
+        const display = container.querySelector('.notas-display');
+        const editor = container.querySelector('.notas-editor');
+        
+        const nuevaNota = textarea.value.trim();
+        
+        // Enviar al servidor via AJAX
+        fetch(`/proyecto/${proyectoId}/actualizar-notas/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                notas_internas: nuevaNota
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Actualizar el texto mostrado
+                if (nuevaNota) {
+                    notasTexto.innerHTML = nuevaNota.length > 50 ? 
+                        nuevaNota.substring(0, 50) + '...' : nuevaNota;
+                } else {
+                    notasTexto.innerHTML = '<span class="text-muted">Click para agregar nota...</span>';
+                }
+                
+                // Mostrar mensaje de éxito
+                mostrarNotificacion('Nota guardada exitosamente', 'success');
+                
+                // Volver al modo display
+                display.style.display = 'block';
+                editor.style.display = 'none';
+            } else {
+                mostrarNotificacion('Error al guardar la nota', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarNotificacion('Error al guardar la nota', 'error');
+        });
+    };
+    
+    // Función para cancelar edición de nota
+    window.cancelarEdicionNota = function(button) {
+        const container = button.closest('.notas-container');
+        const display = container.querySelector('.notas-display');
+        const editor = container.querySelector('.notas-editor');
+        const textarea = editor.querySelector('textarea');
+        
+        // Restaurar el valor original
+        const proyectoId = container.getAttribute('data-proyecto-id');
+        const notasTexto = document.getElementById(`notas-${proyectoId}`);
+        const textoOriginal = notasTexto.textContent.trim();
+        
+        // Obtener el valor original del textarea (que se establece al cargar la página)
+        const valorOriginal = textarea.getAttribute('data-original-value') || '';
+        textarea.value = valorOriginal;
+        
+        // Volver al modo display
+        display.style.display = 'block';
+        editor.style.display = 'none';
+    };
+    
+    // Función para mostrar notificaciones
+    function mostrarNotificacion(mensaje, tipo) {
+        const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
+        const notificacion = document.createElement('div');
+        notificacion.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        notificacion.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notificacion.innerHTML = `
+            <i class="fas ${icon} me-2"></i>
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notificacion);
+        
+        // Auto-remover después de 3 segundos
+        setTimeout(() => {
+            if (notificacion.parentNode) {
+                notificacion.remove();
+            }
+        }, 3000);
+    }
+    
+    // Inicializar contador
+    actualizarContador();
+});
+</script>
+
+<!-- Modal para detalles del proyecto -->
+<div class="modal fade" id="modalDetalleProyecto" tabindex="-1" aria-labelledby="modalDetalleProyectoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetalleProyectoLabel">
+                    <i class="fas fa-eye text-primary me-2"></i>
+                    Detalles del Proyecto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Número de Presupuesto:</label>
+                            <p id="detalle-presupuesto" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Nombre del Cliente:</label>
+                            <p id="detalle-nombre" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Tipo de Proyecto:</label>
+                            <p id="detalle-proyecto" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Dirección del Proyecto:</label>
+                            <p id="detalle-direccion" class="mb-0"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Estado:</label>
+                            <p id="detalle-estado" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Detalle:</label>
+                            <p id="detalle-detalle" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Kardex:</label>
+                            <p id="detalle-kardex" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Proceso:</label>
+                            <p id="detalle-proceso" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Teléfono:</label>
+                            <p id="detalle-telefono" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Correo Electrónico:</label>
+                            <p id="detalle-correo" class="mb-0"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Descripción:</label>
+                            <p id="detalle-descripcion" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar proyecto -->
+<div class="modal fade" id="modalEditarProyecto" tabindex="-1" aria-labelledby="modalEditarProyectoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarProyectoLabel">
+                    <i class="fas fa-edit text-warning me-2"></i>
+                    Editar Proyecto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarProyecto" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editar-presupuesto" class="form-label">Número de Presupuesto</label>
+                                <input type="text" class="form-control" id="editar-presupuesto" name="presupuesto" placeholder="Ej: 001-2024" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar-nombre" class="form-label">Nombre del Cliente</label>
+                                <input type="text" class="form-control" id="editar-nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar-proyecto" class="form-label">Tipo de Proyecto</label>
+                                <input type="text" class="form-control" id="editar-proyecto" name="proyecto" placeholder="Ej: Casa habitación" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar-direccion" class="form-label">Dirección del Proyecto</label>
+                                <input type="text" class="form-control" id="editar-direccion" name="direccion" placeholder="Ej: Av. Principal 123, Santiago" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editar-estado" class="form-label">Estado</label>
+                                <select class="form-select" id="editar-estado" name="estado_proyecto" required>
+                                    <option value="aprobado">Aprobado</option>
+                                    <option value="no_concretado">No Concretado</option>
+                                    <option value="trabajando">Trabajando</option>
+                                    <option value="congelado">Congelado</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar-detalle" class="form-label">Detalle</label>
+                                <textarea class="form-control" id="editar-detalle" name="detalle" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar-kardex" class="form-label">Kardex</label>
+                                <input type="text" class="form-control" id="editar-kardex" name="kardex">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar-proceso" class="form-label">Proceso</label>
+                                <input type="text" class="form-control" id="editar-proceso" name="proceso">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                                                            <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="editar-telefono" class="form-label">Teléfono</label>
+                                            <input type="text" class="form-control" id="editar-telefono" name="telefono" placeholder="Ej: +56 9 1234 5678">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="editar-correo" class="form-label">Correo Electrónico</label>
+                                            <input type="email" class="form-control" id="editar-correo" name="correo" placeholder="Ej: cliente@email.com">
+                                        </div>
+                                    </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editar-descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="editar-descripcion" name="descripcion" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save me-1"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para eliminar proyecto -->
+<div class="modal fade" id="modalEliminarProyecto" tabindex="-1" aria-labelledby="modalEliminarProyectoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalEliminarProyectoLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">¿Estás seguro de que deseas eliminar el proyecto <strong id="eliminar-nombre"></strong> (Número de Presupuesto: <strong id="eliminar-presupuesto"></strong>)?</p>
+                <p class="text-danger mt-2 mb-0"><small>Esta acción no se puede deshacer.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">
+                    <i class="fas fa-trash-alt me-1"></i>
+                    Eliminar Proyecto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

@@ -4,172 +4,481 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Boleta</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Detalle de Boleta - {{ boleta.numero_talonario }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="boleta-container">
+        <!-- Header de la Boleta -->
         <div class="boleta-header">
-            <img src="{% static 'img/byd-logo.jpeg' %}" alt="Logo Empresa">
-            <h2>Detalle de Boleta</h2>
-            <div class="talonario">
-                <span><strong>N°Folio:</strong> {{ boleta.numero_talonario }}</span>
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="{% static 'img/byd-logo.jpeg' %}" alt="BYD Arquitectura" class="logo">
+                    <div class="company-info">
+                        <h1>BYD Arquitectura</h1>
+                        <p>Servicios de Arquitectura y Construcción</p>
+                    </div>
+                </div>
+                <div class="boleta-info">
+                    <div class="boleta-number">
+                        <i class="fas fa-receipt me-2"></i>
+                        <span>Boleta N° {{ boleta.numero_talonario }}</span>
+                    </div>
+                    <div class="boleta-date">
+                        <i class="fas fa-calendar me-2"></i>
+                        <span>{{ boleta.fecha }}</span>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Detalles de la Boleta -->
         <div class="boleta-details">
-            <div class="boleta-row">
-                <span><strong>N° Presupuesto:</strong> {{ boleta.presupuesto }}/{{ boleta.año }}</span>
-                <span><strong>Fecha:</strong> {{ boleta.fecha }}</span>
+            <div class="details-header">
+                <h2><i class="fas fa-info-circle me-2"></i>Información del Pago</h2>
             </div>
-            <div class="boleta-row">
-                <span><strong>Nombre:</strong> {{ boleta.nombre }}</span>
-            </div>
-            <div class="boleta-row">
-                <span><strong>Corresponde:</strong> {{ boleta.correspondiente }}</span>
-            </div>
-            <div class="boleta-row">
-                <span><strong>Forma de Pago:</strong> {{ boleta.forma_pago }}</span>
-                <span><strong>N° Cheque:</strong> {{ boleta.numero_cheque }}</span>
+            
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-file-invoice me-2"></i>N° Presupuesto
+                    </div>
+                    <div class="detail-value">{{ boleta.presupuesto }}/{{ boleta.año }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-user me-2"></i>Cliente
+                    </div>
+                    <div class="detail-value">{{ boleta.nombre }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-tasks me-2"></i>Corresponde a
+                    </div>
+                    <div class="detail-value">{{ boleta.correspondiente }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-credit-card me-2"></i>Forma de Pago
+                    </div>
+                    <div class="detail-value">{{ boleta.forma_pago }}</div>
+                </div>
+                
+                {% if boleta.numero_cheque %}
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-money-check me-2"></i>N° Cheque
+                    </div>
+                    <div class="detail-value">{{ boleta.numero_cheque }}</div>
+                </div>
+                {% endif %}
             </div>
         </div>
 
-        <div class="boleta-summary">
-            <strong>Total Boleta:</strong> ${{ boleta.monto }}
-        </div>
-
-        <div class="boleta-images">
-            <img src="{% static 'img/sello.jpeg' %}" alt="Sello">
-            <img src="{% static 'img/firma.jpeg' %}" alt="Firma">
-        </div>
-
-        <div class="boleta-footer">
-            <div class="footer-row">
-                <strong>GLORIA DELGADO ARAYA</strong>
+        <!-- Resumen del Pago -->
+        <div class="payment-summary">
+            <div class="summary-header">
+                <h3><i class="fas fa-calculator me-2"></i>Resumen del Pago</h3>
             </div>
-            <div class="footer-row">Representante Legal</div>
+            <div class="total-amount">
+                <span class="amount-label">Total Boleta:</span>
+                <span class="amount-value">${{ boleta.monto }}</span>
+            </div>
         </div>
 
-        <div class="contact-info">
-            <p><strong>Correo:</strong> byd_arquitectura@yahoo.com</p>
-            <p><strong>Contacto:</strong> 97987 0427</p>
+        <!-- Firmas y Sellos -->
+        <div class="signature-section">
+            <div class="signature-content">
+                <div class="signature-item">
+                    <img src="{% static 'img/sello.jpeg' %}" alt="Sello" class="signature-image">
+                    <span class="signature-label">Sello</span>
+                </div>
+                <div class="signature-item">
+                    <img src="{% static 'img/firma.jpeg' %}" alt="Firma" class="signature-image">
+                    <span class="signature-label">Firma</span>
+                </div>
+            </div>
         </div>
 
-        <div class="print-button">
-            <button onclick="window.print()">Imprimir</button>
+        <!-- Información de Contacto -->
+        <div class="contact-section">
+            <div class="contact-header">
+                <h4><i class="fas fa-address-card me-2"></i>Información de Contacto</h4>
+            </div>
+            <div class="contact-details">
+                <div class="contact-item">
+                    <i class="fas fa-envelope me-2"></i>
+                    <span>byd_arquitectura@yahoo.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone me-2"></i>
+                    <span>97987 0427</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Representante Legal -->
+        <div class="legal-section">
+            <div class="legal-info">
+                <div class="legal-name">
+                    <strong>GLORIA DELGADO ARAYA</strong>
+                </div>
+                <div class="legal-title">Representante Legal</div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+            <button onclick="window.print()" class="btn btn-primary btn-modern">
+                <i class="fas fa-print me-2"></i>Imprimir Boleta
+            </button>
+            <button onclick="window.history.back()" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </button>
         </div>
     </div>
 
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
 
         .boleta-container {
             width: 95%;
-            max-width: 500px;
-            margin: 20px auto;
-            background: #ffffff;
-            border: 2px solid #000;
-            padding: 20px;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header de la Boleta */
         .boleta-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            color: white;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .boleta-header img {
-            max-width: 120px;
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .boleta-header h2 {
-            flex: 1;
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .company-info h1 {
             margin: 0;
-            font-size: 24px;
-            text-align: center;
+            font-size: 1.5rem;
             font-weight: 700;
         }
 
-        .talonario {
+        .company-info p {
+            margin: 0.25rem 0 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .boleta-info {
             text-align: right;
-            font-size: 14px;
         }
 
+        .boleta-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .boleta-date {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Detalles de la Boleta */
         .boleta-details {
-            margin-bottom: 20px;
+            padding: 2rem;
         }
 
-        .boleta-row {
+        .details-header h2 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .details-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .detail-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
 
-        .boleta-summary {
-            font-size: 20px;
-            font-weight: 700;
-            text-align: right;
-            margin-top: 20px;
+        .detail-item:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
         }
 
-        .boleta-images {
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* Resumen del Pago */
+        .payment-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            margin: 0 2rem;
+            border-radius: 16px;
+        }
+
+        .summary-header h3 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .total-amount {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .amount-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 1rem;
+        }
+
+        .amount-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* Firmas y Sellos */
+        .signature-section {
+            padding: 2rem;
+        }
+
+        .signature-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .signature-item {
+            text-align: center;
+        }
+
+        .signature-image {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .signature-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Información de Contacto */
+        .contact-section {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+        }
+
+        .contact-header h4 {
+            color: #2c3e50;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        /* Representante Legal */
+        .legal-section {
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .legal-name {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .legal-title {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* Botones de Acción */
+        .action-buttons {
+            padding: 2rem;
+            display: flex;
+            gap: 1rem;
             justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
+            background: #f8f9fa;
         }
 
-        .boleta-images img {
-            max-width: 100px;
-            height: auto;
-        }
-
-        .boleta-footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 16px;
-        }
-
-        .footer-row {
-            margin-top: 10px;
-        }
-
-        .contact-info {
-            margin-top: 20px;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .print-button {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .print-button button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .print-button button:hover {
-            background-color: #0056b3;
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
 
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .boleta-info {
+                text-align: center;
+            }
+
+            .signature-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .detail-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Estilos para impresión */
         @media print {
-            .print-button {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .boleta-container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .action-buttons {
                 display: none;
             }
         }

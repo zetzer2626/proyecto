@@ -330,33 +330,81 @@ $(document).ready(function() {
         }
     });
 
-    // Inicializar DataTable
-    $('#tablaPagos').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
-        },
-        "pageLength": 25,
-        "order": [[ 7, "asc" ]], // Ordenar por fecha de vencimiento
-        "columnDefs": [
-            { "orderable": false, "targets": [5, 8] }, // Deshabilitar ordenamiento en columnas de progreso y acciones
-            { 
-                "targets": [2, 3, 4], // Columnas de montos
-                "render": function(data, type, row) {
-                    if (type === 'display' || type === 'type') {
-                        return data;
-                    }
-                    // Para ordenamiento, extraer solo el número
-                    return parseFloat(data.replace(/[$.,]/g, '')) || 0;
-                }
-            }
-        ],
-        "responsive": true,
-        "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
-        "initComplete": function() {
-            // Agregar tooltips a los botones
-            $('[title]').tooltip();
+    // Variable global para evitar múltiples inicializaciones
+    let dataTableInitialized = false;
+    
+    // Función para inicializar DataTable de forma segura
+    function initializeDataTable() {
+        // Verificar que jQuery y DataTables estén disponibles
+        if (typeof $ === 'undefined' || typeof $.fn.DataTable === 'undefined') {
+            console.warn('jQuery o DataTables no están disponibles');
+            return;
         }
-    });
+        
+        // Verificar que la tabla existe
+        const table = document.getElementById('tablaPagos');
+        if (!table) {
+            console.warn('Tabla con id "tablaPagos" no encontrada');
+            return;
+        }
+        
+        // Evitar múltiples inicializaciones
+        if (dataTableInitialized) {
+            console.log('DataTable ya está inicializado');
+            return;
+        }
+        
+        try {
+            // Verificar si DataTable ya está inicializado en la tabla
+            if ($.fn.DataTable.isDataTable('#tablaPagos')) {
+                console.log('Destruyendo instancia existente de DataTable');
+                $('#tablaPagos').DataTable().destroy();
+            }
+            
+            // Inicializar DataTable
+            $('#tablaPagos').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
+                },
+                "pageLength": 25,
+                "order": [[ 7, "asc" ]], // Ordenar por fecha de vencimiento
+                "columnDefs": [
+                    { "orderable": false, "targets": [5, 8] }, // Deshabilitar ordenamiento en columnas de progreso y acciones
+                    { 
+                        "targets": [2, 3, 4], // Columnas de montos
+                        "render": function(data, type, row) {
+                            if (type === 'display' || type === 'type') {
+                                return data;
+                            }
+                            // Para ordenamiento, extraer solo el número
+                            return parseFloat(data.replace(/[$.,]/g, '')) || 0;
+                        }
+                    }
+                ],
+                "responsive": true,
+                "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+                // Configuraciones adicionales para evitar conflictos
+                "destroy": true,
+                "autoWidth": false,
+                "deferRender": true,
+                "processing": true,
+                "serverSide": false,
+                "initComplete": function() {
+                    // Agregar tooltips a los botones
+                    $('[title]').tooltip();
+                }
+            });
+            
+            dataTableInitialized = true;
+            console.log('DataTable inicializado correctamente');
+            
+        } catch (error) {
+            console.error('Error al inicializar DataTable:', error);
+        }
+    }
+    
+    // Inicializar DataTable
+    initializeDataTable();
 
     // Inicializar Select2 para el filtro de proyecto
     $('#id_proyecto').select2({

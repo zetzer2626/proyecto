@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block title %}Registrar Solicitud{% endblock %}
@@ -8,10 +7,9 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <!-- Tarjeta con sombra y bordes redondeados -->
             <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-gradient text-white text-center py-3" style="background: linear-gradient(45deg, #007bff, #6610f2);">
-                    <h4 class="mb-0 font-weight-bold">Registrar Nueva Solicitud</h4>
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                    <h4 class="mb-0 text-white fw-bold text-center">Registrar Nueva Solicitud</h4>
                 </div>
                 <div class="card-body px-5">
                     <p class="text-muted text-center mb-4">Complete el formulario a continuación para registrar su solicitud.</p>
@@ -19,94 +17,89 @@
                         {% csrf_token %}
                         {{ form.non_field_errors }}
                         
-                        <!-- Fila para los primeros campos en dos columnas -->
-                        <div class="row">
+                        <!-- Primera fila: Solicitante y Documento -->
+                        <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.solicitante.id_for_label }}" class="form-label font-weight-bold">{{ form.solicitante.label }}</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text bg-light border-0">
-                                                <i class="fas fa-user text-secondary"></i>
-                                            </span>
-                                        </div>
-                                        {{ form.solicitante }}
-                                    </div>
+                                <div class="form-group">
+                                    <label for="{{ form.solicitante.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-user text-primary me-2"></i>{{ form.solicitante.label }}
+                                    </label>
+                                    {{ form.solicitante }}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.nombre_documento.id_for_label }}" class="form-label font-weight-bold">{{ form.nombre_documento.label }}</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text bg-light border-0">
-                                                <i class="fas fa-file-alt text-secondary"></i>
-                                            </span>
-                                        </div>
-                                        {{ form.nombre_documento }}
-                                    </div>
+                                <div class="form-group">
+                                    <label for="{{ form.nombre_documento.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-file-alt text-primary me-2"></i>{{ form.nombre_documento.label }}
+                                    </label>
+                                    {{ form.nombre_documento }}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Fila para otros campos en dos columnas -->
-                        <div class="row">
+                        <!-- Segunda fila: Nombre y Dirección -->
+                        <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.nombre.id_for_label }}" class="form-label font-weight-bold">{{ form.nombre.label }}</label>
+                                <div class="form-group">
+                                    <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-tag text-primary me-2"></i>{{ form.nombre.label }}
+                                    </label>
                                     {{ form.nombre }}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.direccion.id_for_label }}" class="form-label font-weight-bold">{{ form.direccion.label }}</label>
+                                <div class="form-group">
+                                    <label for="{{ form.direccion.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-map-marker-alt text-primary me-2"></i>{{ form.direccion.label }}
+                                    </label>
                                     {{ form.direccion }}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Fila para fechas en dos columnas -->
-                        <div class="row">
+                        <!-- Tercera fila: Fechas -->
+                        <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.fecha_solicitud.label }}</label>
+                                <div class="form-group">
+                                    <label for="{{ form.fecha_solicitud.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-calendar-plus text-primary me-2"></i>{{ form.fecha_solicitud.label }}
+                                    </label>
                                     {{ form.fecha_solicitud }}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label font-weight-bold">{{ form.fecha_recepcion.label }}</label>
+                                <div class="form-group">
+                                    <label for="{{ form.fecha_recepcion.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        <i class="fas fa-calendar-check text-primary me-2"></i>{{ form.fecha_recepcion.label }}
+                                    </label>
                                     {{ form.fecha_recepcion }}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Campo de descripción en una sola fila completa -->
+                        <!-- Descripción -->
                         <div class="form-group mb-3">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label font-weight-bold">{{ form.descripcion.label }}</label>
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold text-dark">
+                                <i class="fas fa-align-left text-primary me-2"></i>{{ form.descripcion.label }}
+                            </label>
                             {{ form.descripcion }}
                         </div>
 
-                        <!-- Fila para archivo y enlace en dos columnas -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.documento_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.documento_solicitud.label }}</label>
-                                    {{ form.documento_solicitud }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.link_solicitud.id_for_label }}" class="form-label font-weight-bold">{{ form.link_solicitud.label }}</label>
-                                    {{ form.link_solicitud }}
-                                </div>
-                            </div>
+                        <!-- Enlace de Drive -->
+                        <div class="form-group mb-3">
+                            <label for="{{ form.link_solicitud.id_for_label }}" class="form-label fw-semibold text-dark">
+                                <i class="fas fa-link text-primary me-2"></i>{{ form.link_solicitud.label }}
+                            </label>
+                            {{ form.link_solicitud }}
                         </div>
 
-                        <!-- Botón de envío centrado -->
+                        <!-- Botones -->
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">
-                                <i class="fas fa-paper-plane mr-2"></i> Crear Solicitud
+                            <a href="{% url 'solicitud-list' %}" class="btn btn-secondary me-2">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Crear Solicitud
                             </button>
                         </div>
                     </form>
@@ -116,6 +109,54 @@
     </div>
 </div>
 
-<!-- Librería de Font Awesome para íconos -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<style>
+    .form-control {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.25s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.08);
+        outline: none;
+    }
+    
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.25s ease;
+        border: none;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        color: #64748b;
+        border: 1.5px solid #e2e8f0;
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        color: #475569;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+</style>
 {% endblock %}

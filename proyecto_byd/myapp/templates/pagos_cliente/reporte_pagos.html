@@ -255,22 +255,70 @@
 </div>
 
 <script>
+// Variable global para evitar múltiples inicializaciones
+let dataTableInitialized = false;
+
 $(document).ready(function() {
+    // Función para inicializar DataTable de forma segura
+    function initializeDataTable() {
+        // Verificar que jQuery y DataTables estén disponibles
+        if (typeof $ === 'undefined' || typeof $.fn.DataTable === 'undefined') {
+            console.warn('jQuery o DataTables no están disponibles');
+            return;
+        }
+        
+        // Verificar que la tabla existe
+        const table = document.getElementById('tablaReporte');
+        if (!table) {
+            console.warn('Tabla con id "tablaReporte" no encontrada');
+            return;
+        }
+        
+        // Evitar múltiples inicializaciones
+        if (dataTableInitialized) {
+            console.log('DataTable ya está inicializado');
+            return;
+        }
+        
+        try {
+            // Verificar si DataTable ya está inicializado en la tabla
+            if ($.fn.DataTable.isDataTable('#tablaReporte')) {
+                console.log('Destruyendo instancia existente de DataTable');
+                $('#tablaReporte').DataTable().destroy();
+            }
+            
+            // Inicializar DataTable
+            $('#tablaReporte').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
+                },
+                "pageLength": 50,
+                "order": [[ 7, "asc" ]], // Ordenar por fecha de vencimiento
+                "columnDefs": [
+                    { "orderable": false, "targets": [5] } // Deshabilitar ordenamiento en columna de progreso
+                ],
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                // Configuraciones adicionales para evitar conflictos
+                "destroy": true,
+                "autoWidth": false,
+                "deferRender": true,
+                "processing": true,
+                "serverSide": false
+            });
+            
+            dataTableInitialized = true;
+            console.log('DataTable inicializado correctamente');
+            
+        } catch (error) {
+            console.error('Error al inicializar DataTable:', error);
+        }
+    }
+    
     // Inicializar DataTable
-    $('#tablaReporte').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
-        },
-        "pageLength": 50,
-        "order": [[ 7, "asc" ]], // Ordenar por fecha de vencimiento
-        "columnDefs": [
-            { "orderable": false, "targets": [5] } // Deshabilitar ordenamiento en columna de progreso
-        ],
-        "dom": 'Bfrtip',
-        "buttons": [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
-    });
+    initializeDataTable();
 
     // Inicializar Select2
     $('#id_proyecto').select2({

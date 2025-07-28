@@ -1,51 +1,286 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Listado{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-lg">
-        <div class="card-header bg-warning text-white text-center">
-            <h2>Editar Listado</h2>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Editar Listado</h1>
+                    <p class="text-muted mb-0">Modifica la información del listado: {{ listado.presupuesto }}</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'listado_detail' listado.pk %}" class="btn btn-outline-info d-flex align-items-center gap-2">
+                        <i class="fas fa-eye"></i>
+                        <span>Ver Detalles</span>
+                    </a>
+                    <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_presupuesto" class="form-label">Presupuesto:</label>
-                        <input type="text" id="id_presupuesto" name="presupuesto" class="form-control" value="{{ listado.presupuesto }}" placeholder="Ingrese el presupuesto" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_año" class="form-label">Año:</label>
-                        <input type="text" id="id_año" name="año" class="form-control" value="{{ listado.año }}" placeholder="Ingrese el año" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_nombre" class="form-label">Nombre:</label>
-                        <input type="text" id="id_nombre" name="nombre" class="form-control" value="{{ listado.nombre }}" placeholder="Ingrese el Nombre" required>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="id_gestion" class="form-label">Gestión:</label>
-                    <textarea id="id_gestion" name="gestion" rows="3" class="form-control" placeholder="Describa la gestión" required>{{ listado.gestion }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="id_nota" class="form-label">Nota:</label>
-                    <textarea id="id_nota" name="nota" rows="3" class="form-control" placeholder="Describa la Nota" required>{{ listado.nota }}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_listado" class="form-label">URL del Pagos:</label>
-                        <input type="url" id="id_listado" name="listado" class="form-control" value="{{ listado.listado }}" placeholder="Ingrese la URL del listado">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_drive" class="form-label">URL de Google Drive:</label>
-                        <input type="url" id="id_drive" name="drive" class="form-control" value="{{ listado.drive }}" placeholder="Ingrese la URL del drive">
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                                <i class="fas fa-edit text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0 fw-semibold">Editar Información del Listado</h5>
+                            <small class="opacity-75">Modifique los campos que desee actualizar</small>
+                        </div>
                     </div>
                 </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-                    <a href="{% url 'listado_list' %}" class="btn btn-secondary">Cancelar</a>
+                <div class="card-body p-4">
+                    <form method="POST" id="formListado">
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="id_presupuesto" class="form-label fw-semibold">
+                                    <i class="fas fa-hashtag me-1 text-primary"></i>
+                                    N° Presupuesto
+                                </label>
+                                <input type="text" id="id_presupuesto" name="presupuesto" 
+                                       class="form-control form-control-lg" 
+                                       value="{{ listado.presupuesto }}"
+                                       placeholder="Ej: 2024-001" required>
+                                <div class="form-text">Número único del presupuesto</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_año" class="form-label fw-semibold">
+                                    <i class="fas fa-calendar me-1 text-primary"></i>
+                                    Año
+                                </label>
+                                <input type="text" id="id_año" name="año" 
+                                       class="form-control form-control-lg" 
+                                       value="{{ listado.año }}"
+                                       placeholder="Ej: 2024" required>
+                                <div class="form-text">Año del proyecto</div>
+                            </div>
+                        </div>
+
+                        <!-- Nombre del Proyecto -->
+                        <div class="mb-4">
+                            <label for="id_nombre" class="form-label fw-semibold">
+                                <i class="fas fa-user me-1 text-primary"></i>
+                                Nombre del Proyecto
+                            </label>
+                            <input type="text" id="id_nombre" name="nombre" 
+                                   class="form-control form-control-lg" 
+                                   value="{{ listado.nombre }}"
+                                   placeholder="Nombre completo del proyecto" required>
+                            <div class="form-text">Nombre descriptivo del proyecto</div>
+                        </div>
+
+                        <!-- Gestión -->
+                        <div class="mb-4">
+                            <label for="id_gestion" class="form-label fw-semibold">
+                                <i class="fas fa-tasks me-1 text-primary"></i>
+                                Gestión
+                            </label>
+                            <textarea id="id_gestion" name="gestion" rows="4" 
+                                      class="form-control" 
+                                      placeholder="Describa la gestión realizada en este proyecto..." required>{{ listado.gestion }}</textarea>
+                            <div class="form-text">Descripción detallada de la gestión</div>
+                        </div>
+
+                        <!-- Nota -->
+                        <div class="mb-4">
+                            <label for="id_nota" class="form-label fw-semibold">
+                                <i class="fas fa-sticky-note me-1 text-primary"></i>
+                                Nota
+                            </label>
+                            <textarea id="id_nota" name="nota" rows="3" 
+                                      class="form-control" 
+                                      placeholder="Notas adicionales sobre el proyecto..." required>{{ listado.nota }}</textarea>
+                            <div class="form-text">Información adicional o comentarios</div>
+                        </div>
+
+                        <!-- Enlaces -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="id_listado" class="form-label fw-semibold">
+                                    <i class="fas fa-money-bill-wave me-1 text-primary"></i>
+                                    URL de Pagos
+                                </label>
+                                <input type="url" id="id_listado" name="listado" 
+                                       class="form-control" 
+                                       value="{{ listado.listado }}"
+                                       placeholder="https://ejemplo.com/pagos">
+                                <div class="form-text">Enlace al listado de pagos</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_drive" class="form-label fw-semibold">
+                                    <i class="fab fa-google-drive me-1 text-primary"></i>
+                                    URL de Google Drive
+                                </label>
+                                <input type="url" id="id_drive" name="drive" 
+                                       class="form-control" 
+                                       value="{{ listado.drive }}"
+                                       placeholder="https://drive.google.com/...">
+                                <div class="form-text">Enlace a la carpeta de Google Drive</div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Auditoría -->
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <div>
+                                    <strong>Información de Auditoría:</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        Última modificación: {{ listado.updated_at|default:"No disponible" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex gap-3 justify-content-end pt-3 border-top">
+                            <a href="{% url 'listado_detail' listado.pk %}" class="btn btn-outline-info btn-lg">
+                                <i class="fas fa-eye me-2"></i>
+                                Ver Detalles
+                            </a>
+                            <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-save me-2"></i>
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+    }
+    
+    .btn {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .form-label {
+        color: #374151;
+        font-weight: 600;
+    }
+    
+    .form-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación del formulario
+    const form = document.getElementById('formListado');
+    const presupuestoInput = document.getElementById('id_presupuesto');
+    const añoInput = document.getElementById('id_año');
+    
+    // Validar año
+    añoInput.addEventListener('input', function() {
+        const año = this.value;
+        if (año && !/^\d{4}$/.test(año)) {
+            this.setCustomValidity('El año debe tener 4 dígitos');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Validar presupuesto
+    presupuestoInput.addEventListener('input', function() {
+        const presupuesto = this.value;
+        if (presupuesto && presupuesto.length < 3) {
+            this.setCustomValidity('El presupuesto debe tener al menos 3 caracteres');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Envío del formulario
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos');
+        } else {
+            // Mostrar indicador de guardado
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+            submitBtn.disabled = true;
+        }
+    });
+    
+    // Confirmar antes de salir si hay cambios
+    let hasChanges = false;
+    const inputs = form.querySelectorAll('input, textarea');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            hasChanges = true;
+        });
+    });
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (hasChanges) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+});
+</script>
 {% endblock %}

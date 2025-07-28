@@ -1,14 +1,282 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Listado - {{ listado.presupuesto }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Confirmar Eliminación</h1>
-    <p>¿Estás seguro de que deseas eliminar el proyecto <strong>{{ listado.presupuesto }}</strong>?</p>
-    
-    <form method="post">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 text-dark fw-bold mb-1">Eliminar Listado</h1>
+                    <p class="text-muted mb-0">Confirmar eliminación del listado: {{ listado.presupuesto }}</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'listado_detail' listado.pk %}" class="btn btn-outline-info d-flex align-items-center gap-2">
+                        <i class="fas fa-eye"></i>
+                        <span>Ver Detalles</span>
+                    </a>
+                    <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmación de Eliminación -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-2">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0 fw-semibold">Confirmar Eliminación</h5>
+                            <small class="opacity-75">Esta acción no se puede deshacer</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Alerta de Advertencia -->
+                    <div class="alert alert-danger border-0 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-1">¡Atención!</h6>
+                                <p class="mb-0">Estás a punto de eliminar permanentemente este listado. Esta acción no se puede deshacer.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Listado a Eliminar -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning bg-opacity-10 border-warning py-3">
+                            <h6 class="mb-0 fw-semibold text-warning">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Información del Listado
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-hashtag text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">N° Presupuesto</small>
+                                            <span class="fw-semibold">{{ listado.presupuesto }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-calendar text-success"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Año</small>
+                                            <span class="fw-semibold">{{ listado.año }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-user text-info"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Nombre del Proyecto</small>
+                                            <span class="fw-semibold">{{ listado.nombre }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalles Adicionales -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                    <h6 class="mb-0 fw-semibold">Enlace de Pagos</h6>
+                                </div>
+                                {% if listado.listado %}
+                                    <span class="badge bg-success">Disponible</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No disponible</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fab fa-google-drive text-info me-2"></i>
+                                    <h6 class="mb-0 fw-semibold">Enlace de Drive</h6>
+                                </div>
+                                {% if listado.drive %}
+                                    <span class="badge bg-success">Disponible</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No disponible</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Confirmación -->
+                    <form method="POST" id="formEliminar">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="{% url 'listado_list' %}" class="btn btn-secondary">Cancelar</a>
+                        
+                        <!-- Checkbox de Confirmación -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="confirmarEliminacion" required>
+                            <label class="form-check-label fw-semibold" for="confirmarEliminacion">
+                                <i class="fas fa-check-circle text-danger me-2"></i>
+                                Confirmo que entiendo que esta acción es <strong>irreversible</strong> y eliminará permanentemente este listado
+                            </label>
+                        </div>
+
+                        <!-- Campo de Confirmación por Texto -->
+                        <div class="mb-4">
+                            <label for="confirmacionTexto" class="form-label fw-semibold">
+                                <i class="fas fa-keyboard me-1 text-danger"></i>
+                                Escriba "ELIMINAR" para confirmar
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="confirmacionTexto" name="confirmacionTexto" 
+                                   placeholder="Escriba ELIMINAR aquí" required>
+                            <div class="form-text">Debe escribir exactamente "ELIMINAR" para proceder</div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex gap-3 justify-content-end pt-3 border-top">
+                            <a href="{% url 'listado_detail' listado.pk %}" class="btn btn-outline-info btn-lg">
+                                <i class="fas fa-eye me-2"></i>
+                                Ver Detalles
+                            </a>
+                            <a href="{% url 'listado_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg" id="btnEliminar" disabled>
+                                <i class="fas fa-trash-alt me-2"></i>
+                                Eliminar Definitivamente
+                            </button>
+                        </div>
     </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    }
+    
+    .btn {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .form-control:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    
+    .alert {
+        border-radius: 0.5rem;
+    }
+    
+    .rounded-circle {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .badge {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formEliminar');
+    const checkbox = document.getElementById('confirmarEliminacion');
+    const textoInput = document.getElementById('confirmacionTexto');
+    const btnEliminar = document.getElementById('btnEliminar');
+    
+    function validarConfirmacion() {
+        const checkboxChecked = checkbox.checked;
+        const textoCorrecto = textoInput.value.trim() === 'ELIMINAR';
+        
+        btnEliminar.disabled = !(checkboxChecked && textoCorrecto);
+        
+        if (checkboxChecked && textoCorrecto) {
+            btnEliminar.classList.remove('btn-outline-danger');
+            btnEliminar.classList.add('btn-danger');
+        } else {
+            btnEliminar.classList.remove('btn-danger');
+            btnEliminar.classList.add('btn-outline-danger');
+        }
+    }
+    
+    checkbox.addEventListener('change', validarConfirmacion);
+    textoInput.addEventListener('input', validarConfirmacion);
+    
+    // Envío del formulario
+    form.addEventListener('submit', function(e) {
+        if (!checkbox.checked || textoInput.value.trim() !== 'ELIMINAR') {
+            e.preventDefault();
+            alert('Debe marcar la casilla de confirmación y escribir "ELIMINAR" para proceder.');
+            return;
+        }
+        
+        // Confirmación final
+        if (!confirm('¿Está completamente seguro de que desea eliminar este listado? Esta acción no se puede deshacer.')) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Mostrar indicador de eliminación
+        btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
+        btnEliminar.disabled = true;
+    });
+    
+    // Prevenir navegación accidental
+    window.addEventListener('beforeunload', function(e) {
+        if (checkbox.checked || textoInput.value.trim() !== '') {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+});
+</script>
 {% endblock %}

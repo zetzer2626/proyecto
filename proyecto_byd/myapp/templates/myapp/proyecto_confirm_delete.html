@@ -1,16 +1,357 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
-{% block title %}Eliminar Proyecto{% endblock %}
+{% block title %}Eliminar Proyecto - {{ object.nombre }}{% endblock %}
 
 {% block content %}
-    <h2>¿Estás seguro de que deseas eliminar este proyecto?</h2>
-    <p><strong>{{ object.nombre }}</strong></p>
+<div class="container-fluid py-4">
+    <!-- Header de Confirmación -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="delete-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 text-dark fw-bold mb-1">
+                            <i class="fas fa-exclamation-triangle me-2 text-danger"></i>Confirmar Eliminación
+                        </h1>
+                        <p class="text-muted mb-0">Esta acción no se puede deshacer</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary btn-modern">
+                            <i class="fas fa-arrow-left me-2"></i>Regresar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="{% url 'proyecto-list' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="delete-card">
+                <div class="delete-card-header">
+                    <div class="delete-icon">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <h3 class="delete-title">Eliminar Proyecto</h3>
+                    <p class="delete-subtitle">¿Estás seguro de que deseas eliminar este proyecto?</p>
+                </div>
+                <div class="delete-card-body">
+                    <div class="project-info">
+                        <div class="project-name">
+                            <i class="fas fa-project-diagram me-2"></i>
+                            <strong>{{ object.nombre }}</strong>
+                        </div>
+                        <div class="project-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Cliente:</span>
+                                <span class="detail-value">{{ object.nombre }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Proyecto:</span>
+                                <span class="detail-value">{{ object.proyecto }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Estado:</span>
+                                <span class="badge bg-{% if object.estado_proyecto == 'aprobado' %}success{% elif object.estado_proyecto == 'trabajando' %}warning{% elif object.estado_proyecto == 'no_concretado' %}danger{% else %}secondary{% endif %} badge-modern">
+                                    {{ object.get_estado_proyecto_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-message">
+                        <div class="warning-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="warning-content">
+                            <h5>¡Atención!</h5>
+                            <p>Esta acción eliminará permanentemente el proyecto y todos sus datos asociados. Esta operación no se puede deshacer.</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" class="delete-form">
+                        {% csrf_token %}
+                        <div class="action-buttons">
+                            <a href="{% url 'proyecto-list' %}" class="btn btn-outline-secondary btn-modern">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-modern">
+                                <i class="fas fa-trash me-2"></i>Eliminar Proyecto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Header de eliminación */
+.delete-header {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.15);
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.delete-header h1 {
+    color: white !important;
+}
+
+.delete-header p {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Botones modernos */
+.btn-modern {
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-danger.btn-modern {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    border-color: transparent;
+}
+
+.btn-danger.btn-modern:hover {
+    background: linear-gradient(135deg, #e83e8c 0%, #dc3545 100%);
+}
+
+.btn-outline-secondary.btn-modern {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    background: transparent;
+}
+
+.btn-outline-secondary.btn-modern:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Tarjeta de eliminación */
+.delete-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.delete-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.delete-card-header {
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.delete-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+}
+
+.delete-title {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.delete-subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.delete-card-body {
+    padding: 2rem;
+}
+
+/* Información del proyecto */
+.project-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.project-name {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.project-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+/* Badges modernos */
+.badge-modern {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+/* Mensaje de advertencia */
+.warning-message {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.warning-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffc107;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.warning-content h5 {
+    color: #856404;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.warning-content p {
+    color: #856404;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Formulario de eliminación */
+.delete-form {
+    margin-top: 1.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .delete-header {
+        padding: 1.5rem;
+    }
+    
+    .delete-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start !important;
+    }
+    
+    .delete-card-header {
+        padding: 1.5rem;
+    }
+    
+    .delete-card-body {
+        padding: 1.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+    
+    .project-details {
+        gap: 0.5rem;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* Animaciones de entrada */
+.delete-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Efectos hover adicionales */
+.delete-icon:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.warning-message:hover {
+    transform: translateX(4px);
+    transition: transform 0.2s ease;
+}
+</style>
 {% endblock %}
