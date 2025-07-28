@@ -11,6 +11,7 @@ urlpatterns = [
     path('proyectos/<int:pk>/', ProyectoDetailView.as_view(), name='proyecto-detail'),  # Detalles del proyecto
     path('proyectos/<int:pk>/editar/', ProyectoUpdateView.as_view(), name='proyecto-update'),  # Editar proyecto
     path('proyectos/<int:pk>/eliminar/', ProyectoDeleteView.as_view(), name='proyecto-delete'),  # Eliminar proyecto
+    path('proyecto/<int:proyecto_id>/detail/', proyecto_detail_json, name='proyecto-detail-json'),  # Datos JSON para modales
    
 
     # Solicitudes

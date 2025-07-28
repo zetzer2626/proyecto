@@ -22,6 +22,74 @@
     <!-- Critical CSS - Cargar primero para renderizado inmediato -->
     <link rel="stylesheet" href="{% static 'css/critical.css' %}">
     
+    <!-- Critical Sidebar CSS - Prevenir parpadeo -->
+    <style>
+        /* CSS crítico para sidebar - prevenir parpadeo */
+        .sidebar-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .sidebar {
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0 20px 20px 0;
+        }
+        
+        .main-wrapper {
+            margin-left: 280px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.sidebar-collapsed .sidebar {
+            width: 70px;
+        }
+        
+        body.sidebar-collapsed .main-wrapper {
+            margin-left: 70px;
+        }
+        
+        /* Prevenir FOUC (Flash of Unstyled Content) */
+        .sidebar-content {
+            opacity: 0;
+            animation: fadeIn 0.3s ease-in forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* Prevenir parpadeo durante navegación */
+        .sidebar-wrapper,
+        .sidebar,
+        .main-wrapper {
+            will-change: transform, width, margin-left;
+        }
+        
+        /* Asegurar que el sidebar esté visible inmediatamente */
+        .sidebar-wrapper {
+            visibility: visible !important;
+        }
+        
+        /* Optimizar transiciones para mejor rendimiento */
+        .sidebar,
+        .main-wrapper {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+    </style>
+    
     <!-- Google Fonts - Cargar primero para evitar FOUT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,15 +119,7 @@
 </head>
 
 <body>
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" class="loading-spinner">
-        <div class="spinner-container">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
-            <p class="loading-text">Cargando sistema...</p>
-        </div>
-    </div>
+
 
     <!-- Sidebar Navigation -->
     <div class="sidebar-wrapper">
@@ -340,6 +400,31 @@
 
     <!-- Custom Scripts -->
     <script>
+        // Función para actualizar contenido sin recargar toda la página
+        function updatePageContent() {
+            // Simular una actualización suave
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.style.opacity = '0.7';
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                }, 300);
+            }
+        }
+
+        // Función para navegar suavemente
+        function smoothNavigate(url) {
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.style.opacity = '0.7';
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 300);
+            } else {
+                window.location.href = url;
+            }
+        }
+
         // Variable global para evitar múltiples inicializaciones de DataTables
         let dataTableInitialized = false;
         
@@ -410,33 +495,34 @@
                 $('body').toggleClass('sidebar-collapsed');
                 $('#sidebar').toggleClass('collapsed');
                 
+                // Guardar estado en localStorage
+                const isCollapsed = $('body').hasClass('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+                
                 // Update button icon
                 const icon = $(this).find('i');
-                if ($('body').hasClass('sidebar-collapsed')) {
+                if (isCollapsed) {
                     icon.removeClass('fa-bars').addClass('fa-chevron-right');
                 } else {
                     icon.removeClass('fa-chevron-right').addClass('fa-bars');
                 }
             });
 
-            // Hide loading spinner with better timing
-            $(document).ready(function() {
-                // Check if all critical resources are loaded
-                function hideSpinner() {
-                    $('#loading-spinner').fadeOut(300, function() {
-                        // Add a class to body to indicate page is fully loaded
-                        $('body').addClass('page-loaded');
-                    });
-                }
+            // Inicializar sidebar inmediatamente para prevenir parpadeo
+            $(function() {
+                // Agregar clase page-loaded inmediatamente
+                $('body').addClass('page-loaded');
                 
-                // Hide spinner after a minimum time to ensure smooth transition
-                setTimeout(hideSpinner, 800);
+                // Mostrar contenido del sidebar con animación suave
+                $('.sidebar-content').css('opacity', '1');
+                
+                // Verificar estado del sidebar desde localStorage
+                const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (sidebarCollapsed) {
+                    $('body').addClass('sidebar-collapsed');
+                    $('#sidebar').addClass('collapsed');
+                }
             });
-
-            // Fallback: hide spinner if page takes too long
-            setTimeout(function() {
-                $('#loading-spinner').fadeOut(300);
-            }, 4000);
 
             // Auto-hide alerts after 5 seconds
             setTimeout(function() {
@@ -509,38 +595,7 @@
             color: var(--dark-color);
         }
 
-        /* Loading Spinner */
-        .loading-spinner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            backdrop-filter: blur(10px);
-            transition: opacity 0.3s ease-out;
-        }
 
-        .spinner-container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .loading-text {
-            margin-top: 1rem;
-            color: #64748b;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
 
         /* Sidebar */
         .sidebar-wrapper {

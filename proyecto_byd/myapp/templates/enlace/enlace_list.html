@@ -523,9 +523,10 @@ function crearEnlace() {
             mostrarAlerta('success', data.message);
             bootstrap.Modal.getInstance(document.getElementById('modalCrearEnlace')).hide();
             document.getElementById('formCrearEnlace').reset();
+            // Update the page content without reload
             setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+                updatePageContent();
+            }, 1000);
         } else {
             mostrarAlerta('danger', data.message);
         }
@@ -553,9 +554,10 @@ function guardarEdicionEnlace() {
         if (data.success) {
             mostrarAlerta('success', data.message);
             bootstrap.Modal.getInstance(document.getElementById('modalEditarEnlace')).hide();
+            // Update the page content without reload
             setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+                updatePageContent();
+            }, 1000);
         } else {
             mostrarAlerta('danger', data.message);
         }
@@ -581,9 +583,10 @@ function confirmarEliminacionEnlace() {
         if (data.success) {
             mostrarAlerta('success', data.message);
             bootstrap.Modal.getInstance(document.getElementById('modalEliminarEnlace')).hide();
+            // Update the page content without reload
             setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+                updatePageContent();
+            }, 1000);
         } else {
             mostrarAlerta('danger', data.message);
         }

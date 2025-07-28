@@ -28,6 +28,12 @@
                                     </label>
                                     {{ form.presupuesto|add_class:"form-control form-control-sm shadow-sm border-primary" }}
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="id_año" class="form-label fw-bold">
+                                        <i class="fas fa-calendar me-1"></i>Año
+                                    </label>
+                                    {{ form.año|add_class:"form-control form-control-sm shadow-sm border-primary" }}
+                                </div>
                             </div>
 
                             <div class="row g-3 mt-2">
@@ -76,13 +82,6 @@
                                 </div>
                                 
                                 <div class="col-md-6">
-                                    <label for="id_año" class="form-label fw-bold">
-                                        <i class="fas fa-calendar me-1"></i>Año
-                                    </label>
-                                    {{ form.año|add_class:"form-control form-control-sm shadow-sm border-secondary" }}
-                                </div>
-                                
-                                <div class="col-md-6">
                                     <label for="id_telefono" class="form-label fw-bold">
                                         <i class="fas fa-phone me-1"></i>Teléfono
                                     </label>
@@ -96,18 +95,18 @@
                                     {{ form.correo|add_class:"form-control form-control-sm shadow-sm border-secondary" }}
                                 </div>
                                 
-                                <div class="col-12">
-                                    <label for="id_direccion" class="form-label fw-bold">
-                                        <i class="fas fa-map-marker-alt me-1"></i>Dirección
-                                    </label>
-                                    {{ form.direccion|add_class:"form-control form-control-sm shadow-sm border-secondary" }}
-                                </div>
-                                
                                 <div class="col-md-6">
                                     <label for="id_rol_avaluo" class="form-label fw-bold">
                                         <i class="fas fa-clipboard-list me-1"></i>Rol de Avalúo
                                     </label>
                                     {{ form.rol_avaluo|add_class:"form-control form-control-sm shadow-sm border-secondary" }}
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="id_direccion" class="form-label fw-bold">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Dirección
+                                    </label>
+                                    {{ form.direccion|add_class:"form-control form-control-sm shadow-sm border-secondary" }}
                                 </div>
                             </div>
                         </div>
@@ -153,280 +152,307 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Notas Internas -->
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-3"><i class="fas fa-sticky-note me-2"></i>Notas Internas</h6>
+                            
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="id_notas_internas" class="form-label fw-bold">
+                                        <i class="fas fa-comment me-1"></i>Notas Internas
+                                    </label>
+                                    {{ form.notas_internas|add_class:"form-control form-control-sm shadow-sm border-secondary" }}
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Notas internas del proyecto (solo visibles para administradores).
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Documentos Adicionales -->
-            <!-- <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">Documentos Adicionales</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="id_levantamiento">Levantamiento</label>
-                            {{ form.levantamiento }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_escritura">Escritura</label>
-                            {{ form.escritura }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_dominio_vigente">Dominio Vigente</label>
-                            {{ form.dominio_vigente }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_cedula_identidad">Cédula de Identidad</label>
-                            {{ form.cedula_identidad }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_poder">Poder</label>
-                            {{ form.poder }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_boleta_agua">Boleta de Agua</label>
-                            {{ form.boleta_agua }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_boleta_luz">Boleta de Luz</label>
-                            {{ form.boleta_luz }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_rol_avaluo_detallado">Rol de Avalúo Detallado</label>
-                            {{ form.rol_avaluo_detallado }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_proyecto_anterior">Proyecto Anterior</label>
-                            {{ form.proyecto_anterior }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_conjunto_habitacional">Conjunto Habitacional</label>
-                            {{ form.conjunto_habitacional }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_informe_previo">Informe Previo</label>
-                            {{ form.informe_previo }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_utilidad_publica">Utilidad Pública</label>
-                            {{ form.utilidad_publica }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_certificado_numero">Certificado Número</label>
-                            {{ form.certificado_numero }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_factibilidad">Factibilidad</label>
-                            {{ form.factibilidad }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_seim">SEIM</label>
-                            {{ form.seim }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_listado">Listado</label>
-                            {{ form.listado }}
-                        </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-file-upload me-2"></i>Documentos Adicionales
                     </div>
-                </div>
-            </div> -->
-
-            <!-- Opcionales -->
-               <!--  <div class="col-lg-6 mb-4">
-                    <div class="card">
-                    <div class="card-header">Ingresos</div>
                     <div class="card-body">
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                               
-                                <div class="col-md-6">
-                                    <label for="id_opcional_1" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 1
-                                    </label>
-                                    {{ form.opcional_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_1" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 1
-                                    </label>
-                                    {{ form.nombre_ingreso_1|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="id_levantamiento" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Levantamiento
+                                </label>
+                                {{ form.levantamiento|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-                       
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                              
-                                <div class="col-md-6">
-                                    <label for="id_opcional_1" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 2
-                                    </label>
-                                    {{ form.opcional_2|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                               
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_2" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 2
-                                    </label>
-                                    {{ form.nombre_ingreso_2|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_escritura" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Escritura
+                                </label>
+                                {{ form.escritura|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_3" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 3
-                                    </label>
-                                    {{ form.opcional_3|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                        
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_3" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 3
-                                    </label>
-                                    {{ form.nombre_ingreso_3|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_dominio_vigente" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Dominio Vigente
+                                </label>
+                                {{ form.dominio_vigente|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_4" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 4
-                                    </label>
-                                    {{ form.opcional_4|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                              
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_4" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 4
-                                    </label>
-                                    {{ form.nombre_ingreso_4|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_cedula_identidad" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Cédula de Identidad
+                                </label>
+                                {{ form.cedula_identidad|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                      
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                          
-                                <div class="col-md-6">
-                                    <label for="id_opcional_5" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 5
-                                    </label>
-                                    {{ form.opcional_5|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                              
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_5" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 5
-                                    </label>
-                                    {{ form.nombre_ingreso_5|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_poder" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Poder
+                                </label>
+                                {{ form.poder|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                              
-                                <div class="col-md-6">
-                                    <label for="id_opcional_6" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 6
-                                    </label>
-                                    {{ form.opcional_6|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                               
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_6" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 6
-                                    </label>
-                                    {{ form.nombre_ingreso_6|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_boleta_agua" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Boleta de Agua
+                                </label>
+                                {{ form.boleta_agua|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                              
-                                <div class="col-md-6">
-                                    <label for="id_opcional_7" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 7
-                                    </label>
-                                    {{ form.opcional_7|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                    
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_7" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 7
-                                    </label>
-                                    {{ form.nombre_ingreso_7|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_boleta_luz" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Boleta de Luz
+                                </label>
+                                {{ form.boleta_luz|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_8" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 8
-                                    </label>
-                                    {{ form.opcional_8|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                               
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_8" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 8
-                                    </label>
-                                    {{ form.nombre_ingreso_8|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_rol_avaluo_detallado" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Rol de Avalúo Detallado
+                                </label>
+                                {{ form.rol_avaluo_detallado|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                           
-                                <div class="col-md-6">
-                                    <label for="id_opcional_9" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 9
-                                    </label>
-                                    {{ form.opcional_9|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                       
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_9" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 9
-                                    </label>
-                                    {{ form.nombre_ingreso_9|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_proyecto_anterior" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Proyecto Anterior
+                                </label>
+                                {{ form.proyecto_anterior|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row g-3 align-items-center">
-                                
-                                <div class="col-md-6">
-                                    <label for="id_opcional_10" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-hashtag me-2"></i>N° 10
-                                    </label>
-                                    {{ form.opcional_10|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
-                             
-                                <div class="col-md-6">
-                                    <label for="id_nombre_ingreso_10" class="form-label fw-bold text-secondary">
-                                        <i class="fas fa-pencil-alt me-2"></i>Nombre Ingreso 10
-                                    </label>
-                                    {{ form.nombre_ingreso_10|add_class:"form-control shadow-sm border-secondary uniform-field" }}
-                                </div>
+                            <div class="col-md-6">
+                                <label for="id_conjunto_habitacional" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Conjunto Habitacional
+                                </label>
+                                {{ form.conjunto_habitacional|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_informe_previo" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Informe Previo
+                                </label>
+                                {{ form.informe_previo|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_utilidad_publica" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Utilidad Pública
+                                </label>
+                                {{ form.utilidad_publica|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_certificado_numero" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Certificado Número
+                                </label>
+                                {{ form.certificado_numero|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_factibilidad" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Factibilidad
+                                </label>
+                                {{ form.factibilidad|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_seim" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>SEIM
+                                </label>
+                                {{ form.seim|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_listado" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Listado
+                                </label>
+                                {{ form.listado|add_class:"form-control form-control-sm shadow-sm" }}
                             </div>
                         </div>
                     </div>
                 </div>
-                </div> -->
+            </div>
+
+            <!-- Documentos de Presupuesto -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Documentos de Presupuesto
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="id_documento_presupuesto_1" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Documento Presupuesto 1
+                                </label>
+                                {{ form.documento_presupuesto_1|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_documento_presupuesto_2" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Documento Presupuesto 2
+                                </label>
+                                {{ form.documento_presupuesto_2|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingresos Opcionales -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-folder-open me-2"></i>Ingresos Opcionales
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="id_opcional_1" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 1
+                                </label>
+                                {{ form.opcional_1|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_2" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 2
+                                </label>
+                                {{ form.opcional_2|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_3" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 3
+                                </label>
+                                {{ form.opcional_3|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_4" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 4
+                                </label>
+                                {{ form.opcional_4|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_5" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 5
+                                </label>
+                                {{ form.opcional_5|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_6" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 6
+                                </label>
+                                {{ form.opcional_6|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_7" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 7
+                                </label>
+                                {{ form.opcional_7|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_8" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 8
+                                </label>
+                                {{ form.opcional_8|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_9" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 9
+                                </label>
+                                {{ form.opcional_9|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_opcional_10" class="form-label fw-bold">
+                                    <i class="fas fa-file me-1"></i>Opcional 10
+                                </label>
+                                {{ form.opcional_10|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nombres de Ingresos -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fas fa-tags me-2"></i>Nombres de Ingresos
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_1" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 1
+                                </label>
+                                {{ form.nombre_ingreso_1|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_2" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 2
+                                </label>
+                                {{ form.nombre_ingreso_2|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_3" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 3
+                                </label>
+                                {{ form.nombre_ingreso_3|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_4" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 4
+                                </label>
+                                {{ form.nombre_ingreso_4|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_5" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 5
+                                </label>
+                                {{ form.nombre_ingreso_5|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_6" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 6
+                                </label>
+                                {{ form.nombre_ingreso_6|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_7" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 7
+                                </label>
+                                {{ form.nombre_ingreso_7|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_8" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 8
+                                </label>
+                                {{ form.nombre_ingreso_8|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_9" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 9
+                                </label>
+                                {{ form.nombre_ingreso_9|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_nombre_ingreso_10" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1"></i>Nombre Ingreso 10
+                                </label>
+                                {{ form.nombre_ingreso_10|add_class:"form-control form-control-sm shadow-sm" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
              <!-- Descripción -->
              <div class="col-lg-6">

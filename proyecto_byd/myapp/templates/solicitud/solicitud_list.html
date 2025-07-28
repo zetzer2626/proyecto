@@ -1885,9 +1885,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset form
                     createSolicitudForm.reset();
                     
-                    // Reload page to show new solicitud
+                    // Update the page content without reload
                     setTimeout(() => {
-                        window.location.reload();
+                        updatePageContent();
                     }, 1000);
                 } else {
                     // Show error message
@@ -2059,9 +2059,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         modal.hide();
                     }
                     
-                    // Reload page to show updated data
+                    // Update the page content without reload
                     setTimeout(() => {
-                        window.location.reload();
+                        updatePageContent();
                     }, 1000);
                 } else {
                     // Show error message
@@ -2126,9 +2126,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         modal.hide();
                     }
                     
-                    // Reload page to show updated data
+                    // Update the page content without reload
                     setTimeout(() => {
-                        window.location.reload();
+                        updatePageContent();
                     }, 1000);
                 } else {
                     // Show error message

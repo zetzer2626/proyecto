@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Botón refresh
     $('#btnRefresh').click(function() {
-        location.reload();
+        updatePageContent();
     });
 
     // Búsqueda en tiempo real
@@ -777,10 +777,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Limpiar formulario
                 formCrear.reset();
                 
-                // Recargar página después de un delay
+                // Update the page content without reload
                 setTimeout(() => {
-                    location.reload();
-                }, 1500);
+                    updatePageContent();
+                }, 1000);
             } else {
                 mostrarAlerta('danger', data.message);
                 submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Listado';
@@ -867,10 +867,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarListado'));
                 modal.hide();
                 
-                // Recargar página después de un delay
+                // Update the page content without reload
                 setTimeout(() => {
-                    location.reload();
-                }, 1500);
+                    updatePageContent();
+                }, 1000);
             } else {
                 mostrarAlerta('danger', data.message);
                 submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
@@ -951,10 +951,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarListado'));
                 modal.hide();
                 
-                // Recargar página después de un delay
+                // Update the page content without reload
                 setTimeout(() => {
-                    location.reload();
-                }, 1500);
+                    updatePageContent();
+                }, 1000);
             } else {
                 mostrarAlerta('danger', data.message);
                 btnEliminar.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Eliminar Definitivamente';

@@ -526,51 +526,74 @@
 
 <!-- Modal Detalle del Proyecto -->
 <div class="modal fade" id="detalleProyectoModal" tabindex="-1" aria-labelledby="detalleProyectoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="detalleProyectoModalLabel">
-                    <i class="fas fa-user me-2"></i>Detalle del Cliente
+                    <i class="fas fa-eye me-2"></i>Detalle del Proyecto
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <!-- Información Principal -->
+                <div class="row mb-4">
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-light">
-                                <h6 class="mb-0 fw-bold text-primary">
-                                    <i class="fas fa-info-circle me-2"></i>Información del Cliente
-                                </h6>
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Principal</h6>
                             </div>
                             <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <label class="form-label fw-bold text-dark">
-                                            <i class="fas fa-user me-1"></i>Nombre del Cliente
-                                        </label>
-                                        <p class="form-control-plaintext" id="modal-nombre"></p>
-                                    </div>
-                                    
+                                <div class="row">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold text-dark">
-                                            <i class="fas fa-phone me-1"></i>Teléfono
-                                        </label>
-                                        <p class="form-control-plaintext" id="modal-telefono"></p>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Número de Presupuesto</label>
+                                            <p class="form-control-plaintext" id="detalle-presupuesto"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Año</label>
+                                            <p class="form-control-plaintext" id="detalle-año"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Nombre del Cliente</label>
+                                            <p class="form-control-plaintext" id="detalle-nombre"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Teléfono</label>
+                                            <p class="form-control-plaintext" id="detalle-telefono"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Correo Electrónico</label>
+                                            <p class="form-control-plaintext" id="detalle-correo"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Dirección del Proyecto</label>
+                                            <p class="form-control-plaintext" id="detalle-direccion"></p>
+                                        </div>
                                     </div>
-                                    
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold text-dark">
-                                            <i class="fas fa-envelope me-1"></i>Correo Electrónico
-                                        </label>
-                                        <p class="form-control-plaintext" id="modal-correo"></p>
-                                    </div>
-                                    
-                                    <div class="col-12">
-                                        <label class="form-label fw-bold text-dark">
-                                            <i class="fas fa-align-left me-1"></i>Descripción del Proyecto
-                                        </label>
-                                        <div class="form-control-plaintext" id="modal-descripcion" style="min-height: 100px; background-color: #f8f9fa; border-radius: 8px; padding: 15px; border: 1px solid #e9ecef;">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Rol de Avalúo</label>
+                                            <p class="form-control-plaintext" id="detalle-rol_avaluo"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Tipo de Proyecto</label>
+                                            <p class="form-control-plaintext" id="detalle-proyecto"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Estado</label>
+                                            <p class="form-control-plaintext" id="detalle-estado"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Proceso</label>
+                                            <p class="form-control-plaintext" id="detalle-proceso"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Kardex</label>
+                                            <p class="form-control-plaintext" id="detalle-kardex"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Detalle</label>
+                                            <p class="form-control-plaintext" id="detalle-detalle"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -578,9 +601,65 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Enlaces -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-link me-2"></i>Enlaces</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Link de Pago</label>
+                                            <p class="form-control-plaintext" id="detalle-presupuesto_link"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Enlace de Presupuesto</label>
+                                            <p class="form-control-plaintext" id="detalle-enlace_documento"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Enlace de Drive</label>
+                                            <p class="form-control-plaintext" id="detalle-link_1"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Nombre del Enlace</label>
+                                            <p class="form-control-plaintext" id="detalle-nombre_enlace_1"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>Descripción del Proyecto</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Descripción Detallada</label>
+                                    <div class="form-control-plaintext" id="detalle-descripcion" style="min-height: 100px; background-color: #f8f9fa; border-radius: 8px; padding: 15px; border: 1px solid #e9ecef;"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Notas Internas</label>
+                                    <div class="form-control-plaintext" id="detalle-notas_internas" style="min-height: 80px; background-color: #f8f9fa; border-radius: 8px; padding: 15px; border: 1px solid #e9ecef;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cerrarModalBtn">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times me-2"></i>Cerrar
                 </button>
             </div>
@@ -2045,104 +2124,166 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para abrir modal de detalles
     window.abrirModalDetalle = function(button) {
         const proyectoId = button.getAttribute('data-proyecto-id');
-        const fila = button.closest('tr');
         
-        // Obtener datos de la fila
-        const presupuesto = fila.cells[1].textContent.trim();
-        const nombre = fila.cells[3].textContent.trim();
-        const proyecto = fila.cells[4].textContent.trim();
-        const direccion = fila.cells[5].textContent.trim();
-        const estado = fila.cells[6].textContent.trim();
-        const detalle = fila.cells[7].textContent.trim();
-        const kardex = fila.cells[8].textContent.trim();
-        const proceso = fila.cells[11].textContent.trim();
-        
-        // Llenar el modal con los datos
-        document.getElementById('detalle-presupuesto').textContent = presupuesto;
-        document.getElementById('detalle-nombre').textContent = nombre;
-        document.getElementById('detalle-proyecto').textContent = proyecto;
-        document.getElementById('detalle-direccion').textContent = direccion;
-        document.getElementById('detalle-estado').textContent = estado;
-        document.getElementById('detalle-detalle').textContent = detalle;
-        document.getElementById('detalle-kardex').textContent = kardex;
-        document.getElementById('detalle-proceso').textContent = proceso;
-        document.getElementById('detalle-telefono').textContent = 'No disponible';
-        document.getElementById('detalle-correo').textContent = 'No disponible';
-        document.getElementById('detalle-descripcion').textContent = 'No disponible';
-        
-        // Mostrar el modal
-        const modal = new bootstrap.Modal(document.getElementById('modalDetalleProyecto'));
-        modal.show();
+        // Hacer petición AJAX para obtener todos los datos del proyecto
+        fetch(`/accounts/proyecto/${proyectoId}/detail/`)
+            .then(response => response.json())
+            .then(data => {
+                // Llenar el modal con los datos básicos
+                const presupuestoEl = document.getElementById('detalle-presupuesto');
+                const añoEl = document.getElementById('detalle-año');
+                const nombreEl = document.getElementById('detalle-nombre');
+                const telefonoEl = document.getElementById('detalle-telefono');
+                const correoEl = document.getElementById('detalle-correo');
+                const direccionEl = document.getElementById('detalle-direccion');
+                const rolAvaluoEl = document.getElementById('detalle-rol_avaluo');
+                const proyectoEl = document.getElementById('detalle-proyecto');
+                const estadoEl = document.getElementById('detalle-estado');
+                const procesoEl = document.getElementById('detalle-proceso');
+                const kardexEl = document.getElementById('detalle-kardex');
+                const detalleEl = document.getElementById('detalle-detalle');
+                const descripcionEl = document.getElementById('detalle-descripcion');
+                const notasEl = document.getElementById('detalle-notas_internas');
+                
+                // Enlaces
+                const presupuestoLinkEl = document.getElementById('detalle-presupuesto_link');
+                const enlaceDocumentoEl = document.getElementById('detalle-enlace_documento');
+                const link1El = document.getElementById('detalle-link_1');
+                const nombreEnlace1El = document.getElementById('detalle-nombre_enlace_1');
+                
+                // Llenar los campos si existen
+                if (presupuestoEl) presupuestoEl.textContent = data.presupuesto || 'No disponible';
+                if (añoEl) añoEl.textContent = data.año || 'No disponible';
+                if (nombreEl) nombreEl.textContent = data.nombre || 'No disponible';
+                if (telefonoEl) telefonoEl.textContent = data.telefono || 'No disponible';
+                if (correoEl) correoEl.textContent = data.correo || 'No disponible';
+                if (direccionEl) direccionEl.textContent = data.direccion || 'No disponible';
+                if (rolAvaluoEl) rolAvaluoEl.textContent = data.rol_avaluo || 'No disponible';
+                if (proyectoEl) proyectoEl.textContent = data.proyecto || 'No disponible';
+                if (estadoEl) estadoEl.textContent = data.estado_proyecto || 'No disponible';
+                if (procesoEl) procesoEl.textContent = data.proceso || 'No disponible';
+                if (kardexEl) kardexEl.textContent = data.kardex || 'No disponible';
+                if (detalleEl) detalleEl.textContent = data.detalle || 'No disponible';
+                if (descripcionEl) descripcionEl.textContent = data.descripcion || 'No disponible';
+                if (notasEl) notasEl.textContent = data.notas_internas || 'No disponible';
+                
+                // Enlaces
+                if (presupuestoLinkEl) presupuestoLinkEl.textContent = data.presupuesto_link || 'No disponible';
+                if (enlaceDocumentoEl) enlaceDocumentoEl.textContent = data.enlace_documento || 'No disponible';
+                if (link1El) link1El.textContent = data.link_1 || 'No disponible';
+                if (nombreEnlace1El) nombreEnlace1El.textContent = data.nombre_enlace_1 || 'No disponible';
+                
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('detalleProyectoModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Error al obtener datos del proyecto:', error);
+                alert('Error al cargar los datos del proyecto');
+            });
     };
     
     // Función para abrir modal de editar
     window.abrirModalEditar = function(button) {
         const proyectoId = button.getAttribute('data-proyecto-id');
-        const fila = button.closest('tr');
         
-        // Obtener datos de la fila
-        const presupuesto = fila.cells[1].textContent.trim();
-        const nombre = fila.cells[3].textContent.trim();
-        const proyecto = fila.cells[4].textContent.trim();
-        const direccion = fila.cells[5].textContent.trim();
-        const estado = fila.cells[6].textContent.trim();
-        const detalle = fila.cells[7].textContent.trim();
-        const kardex = fila.cells[8].textContent.trim();
-        const proceso = fila.cells[11].textContent.trim();
-        
-        // Llenar el formulario con los datos
-        document.getElementById('editar-presupuesto').value = presupuesto;
-        document.getElementById('editar-nombre').value = nombre;
-        document.getElementById('editar-proyecto').value = proyecto;
-        document.getElementById('editar-direccion').value = direccion;
-        document.getElementById('editar-detalle').value = detalle;
-        document.getElementById('editar-kardex').value = kardex;
-        document.getElementById('editar-proceso').value = proceso;
-        document.getElementById('editar-telefono').value = '';
-        document.getElementById('editar-correo').value = '';
-        document.getElementById('editar-descripcion').value = '';
-        
-        // Configurar el estado
-        const estadoSelect = document.getElementById('editar-estado');
-        if (estado.includes('Aprobado')) {
-            estadoSelect.value = 'aprobado';
-        } else if (estado.includes('No Concretado')) {
-            estadoSelect.value = 'no_concretado';
-        } else if (estado.includes('Trabajando')) {
-            estadoSelect.value = 'trabajando';
-        } else if (estado.includes('Congelado')) {
-            estadoSelect.value = 'congelado';
-        }
-        
-        // Configurar la acción del formulario
-        document.getElementById('formEditarProyecto').action = `/proyecto/${proyectoId}/update/`;
-        
-        // Mostrar el modal
-        const modal = new bootstrap.Modal(document.getElementById('modalEditarProyecto'));
-        modal.show();
+        // Hacer petición AJAX para obtener todos los datos del proyecto
+        fetch(`/accounts/proyecto/${proyectoId}/detail/`)
+            .then(response => response.json())
+            .then(data => {
+                // Llenar el formulario con todos los datos
+                const presupuestoEl = document.getElementById('editar-presupuesto');
+                const añoEl = document.getElementById('editar-año');
+                const nombreEl = document.getElementById('editar-nombre');
+                const telefonoEl = document.getElementById('editar-telefono');
+                const correoEl = document.getElementById('editar-correo');
+                const direccionEl = document.getElementById('editar-direccion');
+                const rolAvaluoEl = document.getElementById('editar-rol_avaluo');
+                const proyectoEl = document.getElementById('editar-proyecto');
+                const estadoEl = document.getElementById('editar-estado');
+                const procesoEl = document.getElementById('editar-proceso');
+                const kardexEl = document.getElementById('editar-kardex');
+                const detalleEl = document.getElementById('editar-detalle');
+                const descripcionEl = document.getElementById('editar-descripcion');
+                const notasInternasEl = document.getElementById('editar-notas_internas');
+                
+                // Enlaces
+                const presupuestoLinkEl = document.getElementById('editar-presupuesto_link');
+                const enlaceDocumentoEl = document.getElementById('editar-enlace_documento');
+                const link1El = document.getElementById('editar-link_1');
+                const nombreEnlace1El = document.getElementById('editar-nombre_enlace_1');
+                
+                // Llenar campos solo si existen
+                if (presupuestoEl) presupuestoEl.value = data.presupuesto || '';
+                if (añoEl) añoEl.value = data.año || '';
+                if (nombreEl) nombreEl.value = data.nombre || '';
+                if (telefonoEl) telefonoEl.value = data.telefono || '';
+                if (correoEl) correoEl.value = data.correo || '';
+                if (direccionEl) direccionEl.value = data.direccion || '';
+                if (rolAvaluoEl) rolAvaluoEl.value = data.rol_avaluo || '';
+                if (proyectoEl) proyectoEl.value = data.proyecto || '';
+                if (estadoEl) estadoEl.value = data.estado_proyecto || '';
+                if (procesoEl) procesoEl.value = data.proceso || '';
+                if (kardexEl) kardexEl.value = data.kardex || '';
+                if (detalleEl) detalleEl.value = data.detalle || '';
+                if (descripcionEl) descripcionEl.value = data.descripcion || '';
+                if (notasInternasEl) notasInternasEl.value = data.notas_internas || '';
+                
+                // Llenar enlaces solo si existen
+                if (presupuestoLinkEl) presupuestoLinkEl.value = data.presupuesto_link || '';
+                if (enlaceDocumentoEl) enlaceDocumentoEl.value = data.enlace_documento || '';
+                if (link1El) link1El.value = data.link_1 || '';
+                if (nombreEnlace1El) nombreEnlace1El.value = data.nombre_enlace_1 || '';
+                
+                // Configurar la acción del formulario
+                document.getElementById('formEditarProyecto').action = `/accounts/proyectos/${proyectoId}/editar/`;
+                
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('modalEditarProyecto'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Error al obtener datos del proyecto:', error);
+                alert('Error al cargar los datos del proyecto');
+            });
     };
     
     // Función para abrir modal de eliminar
     window.abrirModalEliminar = function(button) {
         const proyectoId = button.getAttribute('data-proyecto-id');
+        console.log('Abriendo modal de eliminar para proyecto ID:', proyectoId);
+        
+        let presupuesto = '';
+        let nombre = '';
         const fila = button.closest('tr');
         
-        // Obtener datos de la fila
-        const presupuesto = fila.cells[1].textContent.trim();
-        const nombre = fila.cells[3].textContent.trim();
+        if (fila && fila.cells.length > 3) {
+            presupuesto = fila.cells[1]?.textContent.trim() || '';
+            nombre = fila.cells[3]?.textContent.trim() || '';
+        }
         
         // Llenar el modal con los datos
-        document.getElementById('eliminar-presupuesto').textContent = presupuesto;
-        document.getElementById('eliminar-nombre').textContent = nombre;
+        const presupuestoEl = document.getElementById('eliminar-presupuesto');
+        const nombreEl = document.getElementById('eliminar-nombre');
         
-        // Configurar el botón de confirmar
-        document.getElementById('btnConfirmarEliminar').onclick = function() {
-            window.location.href = `/proyecto/${proyectoId}/delete/`;
-        };
+        if (presupuestoEl) presupuestoEl.textContent = presupuesto;
+        if (nombreEl) nombreEl.textContent = nombre;
+        
+        // Configurar la acción del formulario de eliminar
+        const formEliminar = document.getElementById('formEliminarProyecto');
+        if (formEliminar) {
+            formEliminar.action = `/accounts/proyectos/${proyectoId}/eliminar/`;
+            console.log('Formulario configurado para eliminar en:', formEliminar.action);
+        }
         
         // Mostrar el modal
-        const modal = new bootstrap.Modal(document.getElementById('modalEliminarProyecto'));
-        modal.show();
+        const modalEl = document.getElementById('modalEliminarProyecto');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        } else {
+            console.error('No se encontró el modal de eliminar');
+        }
     };
     
     // Función para editar nota
@@ -2176,7 +2317,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const nuevaNota = textarea.value.trim();
         
         // Enviar al servidor via AJAX
-        fetch(`/proyecto/${proyectoId}/actualizar-notas/`, {
+        fetch(`/accounts/proyecto/${proyectoId}/actualizar-notas/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -2265,67 +2406,363 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Modal para detalles del proyecto -->
 <div class="modal fade" id="modalDetalleProyecto" tabindex="-1" aria-labelledby="modalDetalleProyectoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="modalDetalleProyectoLabel">
-                    <i class="fas fa-eye text-primary me-2"></i>
-                    Detalles del Proyecto
+                    <i class="fas fa-eye me-2"></i>
+                    Detalles Completos del Proyecto
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Número de Presupuesto:</label>
-                            <p id="detalle-presupuesto" class="mb-0"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Nombre del Cliente:</label>
-                            <p id="detalle-nombre" class="mb-0"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Tipo de Proyecto:</label>
-                            <p id="detalle-proyecto" class="mb-0"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Dirección del Proyecto:</label>
-                            <p id="detalle-direccion" class="mb-0"></p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Estado:</label>
-                            <p id="detalle-estado" class="mb-0"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Detalle:</label>
-                            <p id="detalle-detalle" class="mb-0"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Kardex:</label>
-                            <p id="detalle-kardex" class="mb-0"></p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Proceso:</label>
-                            <p id="detalle-proceso" class="mb-0"></p>
+                <!-- Información Principal -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Principal</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Número de Presupuesto:</label>
+                                            <p id="detalle-presupuesto" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Año:</label>
+                                            <p id="detalle-año" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre del Cliente:</label>
+                                            <p id="detalle-nombre" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Teléfono:</label>
+                                            <p id="detalle-telefono" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Correo Electrónico:</label>
+                                            <p id="detalle-correo" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Dirección del Proyecto:</label>
+                                            <p id="detalle-direccion" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Rol de Avalúo:</label>
+                                            <p id="detalle-rol_avaluo" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Tipo de Proyecto:</label>
+                                            <p id="detalle-proyecto" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Estado:</label>
+                                            <p id="detalle-estado" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Proceso:</label>
+                                            <p id="detalle-proceso" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Kardex:</label>
+                                            <p id="detalle-kardex" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Detalle:</label>
+                                            <p id="detalle-detalle" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+
+                <!-- Enlaces -->
+                <div class="row mb-4">
                     <div class="col-12">
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Teléfono:</label>
-                            <p id="detalle-telefono" class="mb-0"></p>
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-link me-2"></i>Enlaces</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Link de Pago:</label>
+                                            <p id="detalle-presupuesto_link" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Enlace de Presupuesto:</label>
+                                            <p id="detalle-enlace_documento" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Enlace de Drive:</label>
+                                            <p id="detalle-link_1" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre del Enlace:</label>
+                                            <p id="detalle-nombre_enlace_1" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Correo Electrónico:</label>
-                            <p id="detalle-correo" class="mb-0"></p>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>Descripción del Proyecto</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Descripción Detallada:</label>
+                                    <div id="detalle-descripcion" class="p-3 bg-light rounded border" style="min-height: 100px;"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold text-muted">Notas Internas:</label>
+                                    <div id="detalle-notas_internas" class="p-3 bg-light rounded border" style="min-height: 50px;"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="fw-bold text-muted">Descripción:</label>
-                            <p id="detalle-descripcion" class="mb-0"></p>
+                    </div>
+                </div>
+
+                <!-- Documentos Adicionales -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0"><i class="fas fa-file-upload me-2"></i>Documentos Adicionales</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Levantamiento:</label>
+                                            <p id="detalle-levantamiento" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Escritura:</label>
+                                            <p id="detalle-escritura" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Dominio Vigente:</label>
+                                            <p id="detalle-dominio_vigente" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Cédula de Identidad:</label>
+                                            <p id="detalle-cedula_identidad" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Poder:</label>
+                                            <p id="detalle-poder" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Boleta de Agua:</label>
+                                            <p id="detalle-boleta_agua" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Boleta de Luz:</label>
+                                            <p id="detalle-boleta_luz" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Rol de Avalúo Detallado:</label>
+                                            <p id="detalle-rol_avaluo_detallado" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Proyecto Anterior:</label>
+                                            <p id="detalle-proyecto_anterior" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Conjunto Habitacional:</label>
+                                            <p id="detalle-conjunto_habitacional" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Informe Previo:</label>
+                                            <p id="detalle-informe_previo" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Utilidad Pública:</label>
+                                            <p id="detalle-utilidad_publica" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Certificado Número:</label>
+                                            <p id="detalle-certificado_numero" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Factibilidad:</label>
+                                            <p id="detalle-factibilidad" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">SEIM:</label>
+                                            <p id="detalle-seim" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Listado:</label>
+                                            <p id="detalle-listado" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentos de Presupuesto -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>Documentos de Presupuesto</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Documento Presupuesto 1:</label>
+                                            <p id="detalle-documento_presupuesto_1" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Documento Presupuesto 2:</label>
+                                            <p id="detalle-documento_presupuesto_2" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ingresos Opcionales -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="fas fa-folder-open me-2"></i>Ingresos Opcionales</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 1:</label>
+                                            <p id="detalle-opcional_1" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 2:</label>
+                                            <p id="detalle-opcional_2" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 3:</label>
+                                            <p id="detalle-opcional_3" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 4:</label>
+                                            <p id="detalle-opcional_4" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 5:</label>
+                                            <p id="detalle-opcional_5" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 6:</label>
+                                            <p id="detalle-opcional_6" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 7:</label>
+                                            <p id="detalle-opcional_7" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 8:</label>
+                                            <p id="detalle-opcional_8" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 9:</label>
+                                            <p id="detalle-opcional_9" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Opcional 10:</label>
+                                            <p id="detalle-opcional_10" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nombres de Ingresos -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-tags me-2"></i>Nombres de Ingresos</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 1:</label>
+                                            <p id="detalle-nombre_ingreso_1" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 2:</label>
+                                            <p id="detalle-nombre_ingreso_2" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 3:</label>
+                                            <p id="detalle-nombre_ingreso_3" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 4:</label>
+                                            <p id="detalle-nombre_ingreso_4" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 5:</label>
+                                            <p id="detalle-nombre_ingreso_5" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 6:</label>
+                                            <p id="detalle-nombre_ingreso_6" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 7:</label>
+                                            <p id="detalle-nombre_ingreso_7" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 8:</label>
+                                            <p id="detalle-nombre_ingreso_8" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 9:</label>
+                                            <p id="detalle-nombre_ingreso_9" class="mb-0"></p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Nombre Ingreso 10:</label>
+                                            <p id="detalle-nombre_ingreso_10" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2339,79 +2776,160 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Modal para editar proyecto -->
 <div class="modal fade" id="modalEditarProyecto" tabindex="-1" aria-labelledby="modalEditarProyectoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title" id="modalEditarProyectoLabel">
-                    <i class="fas fa-edit text-warning me-2"></i>
+                    <i class="fas fa-edit me-2"></i>
                     Editar Proyecto
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="formEditarProyecto" method="POST">
+            <form id="formEditarProyecto" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="editar-presupuesto" class="form-label">Número de Presupuesto</label>
-                                <input type="text" class="form-control" id="editar-presupuesto" name="presupuesto" placeholder="Ej: 001-2024" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editar-nombre" class="form-label">Nombre del Cliente</label>
-                                <input type="text" class="form-control" id="editar-nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editar-proyecto" class="form-label">Tipo de Proyecto</label>
-                                <input type="text" class="form-control" id="editar-proyecto" name="proyecto" placeholder="Ej: Casa habitación" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editar-direccion" class="form-label">Dirección del Proyecto</label>
-                                <input type="text" class="form-control" id="editar-direccion" name="direccion" placeholder="Ej: Av. Principal 123, Santiago" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="editar-estado" class="form-label">Estado</label>
-                                <select class="form-select" id="editar-estado" name="estado_proyecto" required>
-                                    <option value="aprobado">Aprobado</option>
-                                    <option value="no_concretado">No Concretado</option>
-                                    <option value="trabajando">Trabajando</option>
-                                    <option value="congelado">Congelado</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editar-detalle" class="form-label">Detalle</label>
-                                <textarea class="form-control" id="editar-detalle" name="detalle" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editar-kardex" class="form-label">Kardex</label>
-                                <input type="text" class="form-control" id="editar-kardex" name="kardex">
-                            </div>
-                            <div class="mb-3">
-                                <label for="editar-proceso" class="form-label">Proceso</label>
-                                <input type="text" class="form-control" id="editar-proceso" name="proceso">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                                                            <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="editar-telefono" class="form-label">Teléfono</label>
-                                            <input type="text" class="form-control" id="editar-telefono" name="telefono" placeholder="Ej: +56 9 1234 5678">
+                    <!-- Información Principal -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Principal</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="editar-presupuesto" class="form-label fw-bold">Número de Presupuesto</label>
+                                                <input type="text" class="form-control" id="editar-presupuesto" name="presupuesto" placeholder="Ej: 001-2024" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-año" class="form-label fw-bold">Año</label>
+                                                <input type="number" class="form-control" id="editar-año" name="año" placeholder="Ej: 2024" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-nombre" class="form-label fw-bold">Nombre del Cliente</label>
+                                                <input type="text" class="form-control" id="editar-nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-telefono" class="form-label fw-bold">Teléfono</label>
+                                                <input type="text" class="form-control" id="editar-telefono" name="telefono" placeholder="Ej: +56 9 1234 5678">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-correo" class="form-label fw-bold">Correo Electrónico</label>
+                                                <input type="email" class="form-control" id="editar-correo" name="correo" placeholder="Ej: cliente@email.com">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-direccion" class="form-label fw-bold">Dirección del Proyecto</label>
+                                                <input type="text" class="form-control" id="editar-direccion" name="direccion" placeholder="Ej: Av. Principal 123, Santiago" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="editar-rol_avaluo" class="form-label fw-bold">Rol de Avalúo</label>
+                                                <input type="text" class="form-control" id="editar-rol_avaluo" name="rol_avaluo" placeholder="Ej: 12345-6">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-proyecto" class="form-label fw-bold">Tipo de Proyecto</label>
+                                                <input type="text" class="form-control" id="editar-proyecto" name="proyecto" placeholder="Ej: Casa habitación" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-estado" class="form-label fw-bold">Estado</label>
+                                                <select class="form-select" id="editar-estado" name="estado_proyecto" required>
+                                                    <option value="">Seleccionar estado...</option>
+                                                    <option value="no_concretado">No Concretado</option>
+                                                    <option value="trabajando">Trabajar en Proyecto</option>
+                                                    <option value="ingreso_dom">Ingresado DOM</option>
+                                                    <option value="ingresado_sag">Ingresado SAG</option>
+                                                    <option value="ingresado_minvu">Ingresado Minvu</option>
+                                                    <option value="ingresado_monumento">Ingresado Monumento</option>
+                                                    <option value="observado">Ingresado Observado</option>
+                                                    <option value="rechazado">Ingresado Rechazado</option>
+                                                    <option value="aprobado">Aprobado</option>
+                                                    <option value="realizado">Realizado</option>
+                                                    <option value="congelado">Congelado</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-proceso" class="form-label fw-bold">Proceso</label>
+                                                <select class="form-select" id="editar-proceso" name="proceso">
+                                                    <option value="">Seleccionar proceso...</option>
+                                                    <option value="terminado">Terminado</option>
+                                                    <option value="no aplica">No Aplica</option>
+                                                    <option value="pendiente">Pendiente</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-kardex" class="form-label fw-bold">Kardex</label>
+                                                <input type="text" class="form-control" id="editar-kardex" name="kardex" placeholder="Número de kardex...">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-detalle" class="form-label fw-bold">Detalle</label>
+                                                <textarea class="form-control" id="editar-detalle" name="detalle" rows="3" placeholder="Información adicional sobre el proyecto..."></textarea>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="editar-correo" class="form-label">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="editar-correo" name="correo" placeholder="Ej: cliente@email.com">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enlaces -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0"><i class="fas fa-link me-2"></i>Enlaces</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="editar-presupuesto_link" class="form-label fw-bold">Link de Pago</label>
+                                                <input type="url" class="form-control" id="editar-presupuesto_link" name="presupuesto_link" placeholder="Ej: https://drive.google.com/...">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-enlace_documento" class="form-label fw-bold">Enlace de Presupuesto</label>
+                                                <input type="url" class="form-control" id="editar-enlace_documento" name="enlace_documento" placeholder="Ej: https://drive.google.com/...">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="editar-link_1" class="form-label fw-bold">Enlace de Drive</label>
+                                                <input type="url" class="form-control" id="editar-link_1" name="link_1" placeholder="Ej: https://drive.google.com/...">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editar-nombre_enlace_1" class="form-label fw-bold">Nombre del Enlace</label>
+                                                <input type="text" class="form-control" id="editar-nombre_enlace_1" name="nombre_enlace_1" placeholder="Descripción del enlace...">
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editar-descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="editar-descripcion" name="descripcion" rows="3"></textarea>
+
+                    <!-- Descripción -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>Descripción del Proyecto</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="editar-descripcion" class="form-label fw-bold">Descripción Detallada</label>
+                                        <textarea class="form-control" id="editar-descripcion" name="descripcion" rows="6" placeholder="Describe detalladamente el proyecto, incluyendo objetivos, alcance, características especiales y cualquier información relevante..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editar-notas_internas" class="form-label fw-bold">Notas Internas</label>
+                                        <textarea class="form-control" id="editar-notas_internas" name="notas_internas" rows="4" placeholder="Notas internas del proyecto..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -2442,10 +2960,13 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">
-                    <i class="fas fa-trash-alt me-1"></i>
-                    Eliminar Proyecto
-                </button>
+                <form id="formEliminarProyecto" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i>
+                        Eliminar Proyecto
+                    </button>
+                </form>
             </div>
         </div>
     </div>

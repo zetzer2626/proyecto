@@ -115,6 +115,15 @@ class ProyectoDeleteView(DeleteView):
     model = Proyecto
     template_name = 'myapp/proyecto_confirm_delete.html'
     success_url = reverse_lazy('proyecto-list')
+    
+    def delete(self, request, *args, **kwargs):
+        print(f"Intentando eliminar proyecto con ID: {kwargs.get('pk')}")
+        try:
+            return super().delete(request, *args, **kwargs)
+        except Exception as e:
+            print(f"Error al eliminar proyecto: {e}")
+            messages.error(request, f"Error al eliminar el proyecto: {e}")
+            return redirect('proyecto-list')
 
 
 
@@ -294,18 +303,28 @@ class SolicitudListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Obtener los contadores por estado
-        context['completados_count'] = Solicitud.objects.filter(fecha_solicitud__isnull=False, fecha_recepcion__isnull=False).count()
-        context['en_proceso_count'] = Solicitud.objects.filter(fecha_solicitud__isnull=False, fecha_recepcion__isnull=True).count()
-        context['pendientes_count'] = Solicitud.objects.filter(fecha_solicitud__isnull=True).count()
+        try:
+            context = super().get_context_data(**kwargs)
+            
+            # Obtener los contadores por estado
+            context['completados_count'] = Solicitud.objects.filter(fecha_solicitud__isnull=False, fecha_recepcion__isnull=False).count()
+            context['en_proceso_count'] = Solicitud.objects.filter(fecha_solicitud__isnull=False, fecha_recepcion__isnull=True).count()
+            context['pendientes_count'] = Solicitud.objects.filter(fecha_solicitud__isnull=True).count()
 
-        # Mantener los parámetros de búsqueda en el contexto para que se mantengan cuando se navegue entre páginas
-        context['query'] = self.request.GET.get('q', '')
-        context['estado'] = self.request.GET.get('estado', '')
+            # Mantener los parámetros de búsqueda en el contexto para que se mantengan cuando se navegue entre páginas
+            context['query'] = self.request.GET.get('q', '')
+            context['estado'] = self.request.GET.get('estado', '')
 
-        return context
+            return context
+        except Exception as e:
+            # En caso de error, devolver contexto básico
+            context = super().get_context_data(**kwargs)
+            context['completados_count'] = 0
+            context['en_proceso_count'] = 0
+            context['pendientes_count'] = 0
+            context['query'] = self.request.GET.get('q', '')
+            context['estado'] = self.request.GET.get('estado', '')
+            return context
     
 @method_decorator(login_required, name='dispatch')
 class SolicitudCreateView(CreateView):
@@ -847,10 +866,6 @@ class PagoTramitacionCreateView(CreateView):
     template_name = 'pago_tramitacion/pago_tramitacion_create.html'
     form_class = PagoTramitacionForm
     success_url = reverse_lazy('pago_tramitacion_list')
-
-    def form_valid(self, form):
-        # Aquí puedes agregar una validación personalizada si lo necesitas
-        return super().form_valid(form)
 
 
 # Editar registro
@@ -2455,5 +2470,140 @@ def recalcular_montos_pagados(request):
             'success': False,
             'message': f'Error al recalcular montos: {str(e)}'
         })
+
+@login_required
+def obtener_datos_proyecto_ajax(request, proyecto_id):
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        data = {
+            'id': proyecto.id,
+            'presupuesto': proyecto.presupuesto,
+            'año': proyecto.año,
+            'nombre': proyecto.nombre,
+            'telefono': proyecto.telefono,
+            'correo': proyecto.correo,
+            'direccion': proyecto.direccion,
+            'rol_avaluo': proyecto.rol_avaluo,
+            'proyecto': proyecto.proyecto,
+            'estado_proyecto': proyecto.estado_proyecto,
+            'proceso': proyecto.proceso,
+            'kardex': proyecto.kardex,
+            'detalle': proyecto.detalle,
+            'descripcion': proyecto.descripcion,
+            'notas_internas': proyecto.notas_internas,
+            'presupuesto_link': proyecto.presupuesto_link,
+            'enlace_documento': proyecto.enlace_documento,
+            'link_1': proyecto.link_1,
+            'nombre_enlace_1': proyecto.nombre_enlace_1,
+            'levantamiento': proyecto.levantamiento.url if proyecto.levantamiento else None,
+            'escritura': proyecto.escritura.url if proyecto.escritura else None,
+            'dominio_vigente': proyecto.dominio_vigente.url if proyecto.dominio_vigente else None,
+            'cedula_identidad': proyecto.cedula_identidad.url if proyecto.cedula_identidad else None,
+            'poder': proyecto.poder.url if proyecto.poder else None,
+            'boleta_agua': proyecto.boleta_agua.url if proyecto.boleta_agua else None,
+            'boleta_luz': proyecto.boleta_luz.url if proyecto.boleta_luz else None,
+            'rol_avaluo_detallado': proyecto.rol_avaluo_detallado.url if proyecto.rol_avaluo_detallado else None,
+            'proyecto_anterior': proyecto.proyecto_anterior.url if proyecto.proyecto_anterior else None,
+            'conjunto_habitacional': proyecto.conjunto_habitacional.url if proyecto.conjunto_habitacional else None,
+            'informe_previo': proyecto.informe_previo.url if proyecto.informe_previo else None,
+            'utilidad_publica': proyecto.utilidad_publica.url if proyecto.utilidad_publica else None,
+            'certificado_numero': proyecto.certificado_numero.url if proyecto.certificado_numero else None,
+            'factibilidad': proyecto.factibilidad.url if proyecto.factibilidad else None,
+            'seim': proyecto.seim.url if proyecto.seim else None,
+            'listado': proyecto.listado.url if proyecto.listado else None,
+            'documento_presupuesto_1': proyecto.documento_presupuesto_1.url if proyecto.documento_presupuesto_1 else None,
+            'documento_presupuesto_2': proyecto.documento_presupuesto_2.url if proyecto.documento_presupuesto_2 else None,
+            'opcional_1': proyecto.opcional_1.url if proyecto.opcional_1 else None,
+            'opcional_2': proyecto.opcional_2.url if proyecto.opcional_2 else None,
+            'opcional_3': proyecto.opcional_3.url if proyecto.opcional_3 else None,
+            'opcional_4': proyecto.opcional_4.url if proyecto.opcional_4 else None,
+            'opcional_5': proyecto.opcional_5.url if proyecto.opcional_5 else None,
+            'opcional_6': proyecto.opcional_6.url if proyecto.opcional_6 else None,
+            'opcional_7': proyecto.opcional_7.url if proyecto.opcional_7 else None,
+            'opcional_8': proyecto.opcional_8.url if proyecto.opcional_8 else None,
+            'opcional_9': proyecto.opcional_9.url if proyecto.opcional_9 else None,
+            'opcional_10': proyecto.opcional_10.url if proyecto.opcional_10 else None,
+            'nombre_ingreso_1': proyecto.nombre_ingreso_1,
+            'nombre_ingreso_2': proyecto.nombre_ingreso_2,
+            'nombre_ingreso_3': proyecto.nombre_ingreso_3,
+            'nombre_ingreso_4': proyecto.nombre_ingreso_4,
+            'nombre_ingreso_5': proyecto.nombre_ingreso_5,
+            'nombre_ingreso_6': proyecto.nombre_ingreso_6,
+            'nombre_ingreso_7': proyecto.nombre_ingreso_7,
+            'nombre_ingreso_8': proyecto.nombre_ingreso_8,
+            'nombre_ingreso_9': proyecto.nombre_ingreso_9,
+            'nombre_ingreso_10': proyecto.nombre_ingreso_10,
+        }
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+def proyecto_detail_json(request, proyecto_id):
+    """Vista para obtener datos del proyecto en formato JSON para los modales"""
+    try:
+        proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+        data = {
+            'id': proyecto.id,
+            'presupuesto': proyecto.presupuesto,
+            'año': proyecto.año,
+            'nombre': proyecto.nombre,
+            'telefono': proyecto.telefono,
+            'correo': proyecto.correo,
+            'direccion': proyecto.direccion,
+            'rol_avaluo': proyecto.rol_avaluo,
+            'proyecto': proyecto.proyecto,
+            'estado_proyecto': proyecto.estado_proyecto,
+            'proceso': proyecto.proceso,
+            'kardex': proyecto.kardex,
+            'detalle': proyecto.detalle,
+            'descripcion': proyecto.descripcion,
+            'notas_internas': proyecto.notas_internas,
+            'presupuesto_link': proyecto.presupuesto_link,
+            'enlace_documento': proyecto.enlace_documento,
+            'link_1': proyecto.link_1,
+            'nombre_enlace_1': proyecto.nombre_enlace_1,
+            'levantamiento': proyecto.levantamiento.url if proyecto.levantamiento else None,
+            'escritura': proyecto.escritura.url if proyecto.escritura else None,
+            'dominio_vigente': proyecto.dominio_vigente.url if proyecto.dominio_vigente else None,
+            'cedula_identidad': proyecto.cedula_identidad.url if proyecto.cedula_identidad else None,
+            'poder': proyecto.poder.url if proyecto.poder else None,
+            'boleta_agua': proyecto.boleta_agua.url if proyecto.boleta_agua else None,
+            'boleta_luz': proyecto.boleta_luz.url if proyecto.boleta_luz else None,
+            'rol_avaluo_detallado': proyecto.rol_avaluo_detallado.url if proyecto.rol_avaluo_detallado else None,
+            'proyecto_anterior': proyecto.proyecto_anterior.url if proyecto.proyecto_anterior else None,
+            'conjunto_habitacional': proyecto.conjunto_habitacional.url if proyecto.conjunto_habitacional else None,
+            'informe_previo': proyecto.informe_previo.url if proyecto.informe_previo else None,
+            'utilidad_publica': proyecto.utilidad_publica.url if proyecto.utilidad_publica else None,
+            'certificado_numero': proyecto.certificado_numero.url if proyecto.certificado_numero else None,
+            'factibilidad': proyecto.factibilidad.url if proyecto.factibilidad else None,
+            'seim': proyecto.seim.url if proyecto.seim else None,
+            'listado': proyecto.listado.url if proyecto.listado else None,
+            'documento_presupuesto_1': proyecto.documento_presupuesto_1.url if proyecto.documento_presupuesto_1 else None,
+            'documento_presupuesto_2': proyecto.documento_presupuesto_2.url if proyecto.documento_presupuesto_2 else None,
+            'opcional_1': proyecto.opcional_1.url if proyecto.opcional_1 else None,
+            'opcional_2': proyecto.opcional_2.url if proyecto.opcional_2 else None,
+            'opcional_3': proyecto.opcional_3.url if proyecto.opcional_3 else None,
+            'opcional_4': proyecto.opcional_4.url if proyecto.opcional_4 else None,
+            'opcional_5': proyecto.opcional_5.url if proyecto.opcional_5 else None,
+            'opcional_6': proyecto.opcional_6.url if proyecto.opcional_6 else None,
+            'opcional_7': proyecto.opcional_7.url if proyecto.opcional_7 else None,
+            'opcional_8': proyecto.opcional_8.url if proyecto.opcional_8 else None,
+            'opcional_9': proyecto.opcional_9.url if proyecto.opcional_9 else None,
+            'opcional_10': proyecto.opcional_10.url if proyecto.opcional_10 else None,
+            'nombre_ingreso_1': proyecto.nombre_ingreso_1,
+            'nombre_ingreso_2': proyecto.nombre_ingreso_2,
+            'nombre_ingreso_3': proyecto.nombre_ingreso_3,
+            'nombre_ingreso_4': proyecto.nombre_ingreso_4,
+            'nombre_ingreso_5': proyecto.nombre_ingreso_5,
+            'nombre_ingreso_6': proyecto.nombre_ingreso_6,
+            'nombre_ingreso_7': proyecto.nombre_ingreso_7,
+            'nombre_ingreso_8': proyecto.nombre_ingreso_8,
+            'nombre_ingreso_9': proyecto.nombre_ingreso_9,
+            'nombre_ingreso_10': proyecto.nombre_ingreso_10,
+        }
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 

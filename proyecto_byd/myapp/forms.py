@@ -24,6 +24,7 @@ class ProyectoForm(forms.ModelForm):
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'descripcion'}),
             'kardex': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Kardex'}),
             'proceso': forms.Select(attrs={'class': 'form-control'}),
+            'notas_internas': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Notas internas del proyecto'}),
 
             # Documentos adicionales
             'levantamiento': forms.ClearableFileInput(attrs={'class': 'form-control'}),
@@ -57,11 +58,24 @@ class ProyectoForm(forms.ModelForm):
 
             # Links
             'link_1': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Enlace Ondrive'}),
+            'nombre_enlace_1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del enlace'}),
 
             'documento_presupuesto_1': forms.FileInput(attrs={'class': 'form-control'}),
             'documento_presupuesto_2': forms.FileInput(attrs={'class': 'form-control'}),
             'presupuesto_link': forms.URLInput(attrs={'class': 'form-control'}),
             'enlace_documento': forms.URLInput(attrs={'class': 'form-control'}),
+
+            # Nombres de ingresos
+            'nombre_ingreso_1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 1'}),
+            'nombre_ingreso_2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 2'}),
+            'nombre_ingreso_3': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 3'}),
+            'nombre_ingreso_4': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 4'}),
+            'nombre_ingreso_5': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 5'}),
+            'nombre_ingreso_6': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 6'}),
+            'nombre_ingreso_7': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 7'}),
+            'nombre_ingreso_8': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 8'}),
+            'nombre_ingreso_9': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 9'}),
+            'nombre_ingreso_10': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre ingreso 10'}),
         }
         
         def __init__(self, *args, **kwargs):

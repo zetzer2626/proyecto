@@ -2240,10 +2240,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         modal.hide();
                     }
                     
-                    // Recargar página después de un breve delay
+                    // Update the page content without reload
                     setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                        updatePageContent();
+                    }, 1000);
                 } else {
                     // Mostrar errores
                     showAlert('danger', data.message || 'Error al crear la tramitación');
@@ -2365,10 +2365,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         modal.hide();
                     }
                     
-                    // Recargar página después de un breve delay
+                    // Update the page content without reload
                     setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                        updatePageContent();
+                    }, 1000);
                 } else {
                     // Mostrar errores
                     showAlert('danger', data.message || 'Error al actualizar la tramitación');
@@ -2448,10 +2448,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         modal.hide();
                     }
                     
-                    // Recargar página después de un breve delay
+                    // Update the page content without reload
                     setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                        updatePageContent();
+                    }, 1000);
                 } else {
                     // Mostrar errores
                     showAlert('danger', data.message || 'Error al eliminar la tramitación');
